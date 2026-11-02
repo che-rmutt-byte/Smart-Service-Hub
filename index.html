@@ -1,210 +1,458 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>LINE Chatbot UI - Full Menu Integrated</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChE Smart Hub - หน้าหลัก</title>
     
-    /* --- แก้ไขเรื่องความสูงหน้าจอแบบไดนามิก --- */
-    html, body { 
-      margin: 0; 
-      padding: 0; 
-      height: 100%; 
-      height: 100dvh; 
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    body { 
-      background-color: #7494c0; 
-      display: flex; 
-      flex-direction: column; 
-      overflow: hidden; 
-    }
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
-    /* --- 1. พื้นที่ห้องแชต --- */
-    .chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-    .msg-row-bot { display: flex; align-items: flex-start; gap: 10px; max-width: 85%; }
-    .bot-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #35495e; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
-    .bot-bubble { background-color: #ffffff; padding: 10px 14px; border-radius: 15px; border-top-left-radius: 2px; font-size: 15px; color: #333; box-shadow: 0 1px 2px rgba(0,0,0,0.1); line-height: 1.4; }
-    
-    /* สไตล์กล่องผลลัพธ์ปุ่มดาวน์โหลด (Rich Card) */
-    .form-card-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%; max-width: 320px; }
-    .drive-link { 
-      display: flex; align-items: center; gap: 10px; padding: 12px 15px; background-color: #ffffff; color: #1e7e34; 
-      text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: bold; border: 1px solid #ced4da;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s;
-    }
-    .drive-link:hover { background-color: #f8f9fa; color: #218838; border-color: #b1bbc4; }
-    .drive-link i.fa-google-drive { color: #ffc107; font-size: 16px; }
-    .drive-link i.fa-link { color: #007bff; font-size: 16px; } /* ไอคอนลิงก์ทั่วไปสำหรับเว็บภายใน */
+    <style>
+        :root {
+            --sidebar-bg: #1e293b; 
+            --sidebar-hover: #334155;
+            --sidebar-text: #cbd5e1;
+            --primary-color: #16a085; 
+            --primary-hover: #117a65;
+            --bg-light: #f4f6f9;
+            --text-dark: #333333;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --sidebar-width: 280px;
+        }
 
-    .msg-row-user { display: flex; justify-content: flex-end; width: 100%; }
-    .user-bubble { background-color: #8ce28a; padding: 10px 14px; border-radius: 15px; border-top-right-radius: 2px; font-size: 15px; color: #333; max-width: 85%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
 
-    /* --- ส่วนควบคุมด้านล่าง --- */
-    .bottom-controls-wrapper { 
-      background-color: #ffffff; 
-      border-top: 1px solid #ddd; 
-      display: flex; 
-      flex-direction: column; 
-      width: 100%; 
-      padding-bottom: env(safe-area-inset-bottom); 
-    }
-    
-    .input-container { display: flex; align-items: center; padding: 10px; gap: 10px; background-color: #ffffff; }
-    .toggle-menu-btn { background-color: #f4f4f4; color: #555; border: 1px solid #ccc; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .chat-input { flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; font-size: 15px; outline: none; background-color: #f9f9f9; }
-    .chat-input:focus { border-color: #06c755; background-color: #fff; }
-    .send-btn { background-color: #06c755; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        /* Sidebar Styles */
+        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+        .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header .logo-icon { width: 40px; height: 40px; background-color: var(--primary-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .sidebar-header h2 { font-size: 18px; font-weight: 600; }
+        .nav-menu { padding: 20px 0; overflow-y: auto; flex: 1; }
+        .nav-menu::-webkit-scrollbar { width: 5px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: #475569; border-radius: 5px; }
+        .nav-item { display: flex; align-items: center; padding: 12px 25px; color: var(--sidebar-text); text-decoration: none; font-size: 15px; transition: 0.2s; margin-bottom: 5px; border-left: 4px solid transparent; }
+        .nav-item i { width: 25px; font-size: 18px; margin-right: 12px; text-align: center; }
+        .nav-item:hover, .nav-item.active { background-color: var(--sidebar-hover); color: white; border-left-color: var(--primary-color); }
 
-    /* --- Rich Menu Grid --- */
-    .rich-menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 95px); background-color: #e5e5e5; gap: 1px; max-height: 190px; transition: max-height 0.3s ease-in-out, opacity 0.2s; opacity: 1; overflow: hidden; }
-    .rich-menu-grid.is-hidden { max-height: 0; opacity: 0; }
-    .menu-item { display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #ffffff; text-decoration: none; color: #2c3e50; padding: 5px; text-align: center; cursor: pointer; }
-    .menu-item i { font-size: 22px; margin-bottom: 6px; color: #06c755; }
-    .menu-item span { font-size: 11px; font-weight: bold; line-height: 1.2; }
-  </style>
+        /* Main Content */
+        .main-content { flex: 1; margin-left: var(--sidebar-width); transition: 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
+        .topbar { background-color: var(--card-bg); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--text-dark); cursor: pointer; }
+
+        .dashboard-container { padding: 30px; flex: 1; }
+        .page-title { font-size: 24px; color: #1e293b; margin-bottom: 25px; font-weight: 600; }
+
+        /* Layout: ซ้าย 1 ส่วน (ประกาศ), ขวา 2 ส่วน (ปฏิทิน 2 อัน) */
+        .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start; }
+        .left-column { display: flex; flex-direction: column; gap: 25px; }
+        .right-column { display: flex; flex-direction: column; gap: 25px; }
+
+        /* Cards */
+        .card { background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-color); overflow: hidden; }
+        .card-header { padding: 18px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #f8fafc; }
+        .card-header h3 { font-size: 16px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; }
+        .card-body { padding: 25px; }
+
+        /* Announcements */
+        .announcement-list { display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 5px; }
+        .announcement-item { padding: 15px; border-left: 4px solid var(--primary-color); background-color: #f8fafc; border-radius: 0 8px 8px 0; transition: 0.2s; }
+        .announcement-item:hover { background-color: #f1f5f9; transform: translateX(3px); }
+        .anno-date { font-size: 12px; color: #64748b; margin-bottom: 5px; }
+        .anno-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
+        .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
+        .loading-text { text-align: center; color: #64748b; padding: 20px; font-size: 14px; }
+        .error-text { color: #dc2626; background: #fee2e2; padding: 15px; border-radius: 8px; font-size: 13px; text-align: left; line-height: 1.6; }
+
+        /* FullCalendar Customization (ปฏิทินกิจกรรม) */
+        .fc { font-family: 'Prompt', sans-serif; font-size: 0.75em; }
+        .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; color: #1e293b; }
+        .fc .fc-button { padding: 0.2rem 0.5rem !important; font-size: 0.85em !important; }
+        .fc .fc-button-primary { background-color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
+        .fc .fc-button-primary:hover { background-color: var(--primary-hover) !important; }
+        .fc-daygrid-day-frame { min-height: 45px !important; } 
+        .fc-event { border-radius: 4px; border: none; font-size: 11px; padding: 2px 4px; cursor: pointer; }
+        .fc-h-event .fc-event-main { color: #fff; font-weight: 500; }
+
+        /* Custom CSS Grid สำหรับตารางเรียน (วันแนวตั้ง Y, เวลาแนวนอน X) */
+        .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .schedule-nav button { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 5px; transition: 0.2s; }
+        .schedule-nav button:hover { background: #e2e8f0; }
+        .schedule-week-label { font-size: 14px; font-weight: 600; color: #1e293b; }
+        
+        .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; outline: none; cursor: pointer; background: #fff; }
+        .room-filter:focus { border-color: var(--primary-color); }
+
+        .schedule-grid-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #cbd5e1; }
+        .schedule-grid { 
+            display: grid; 
+            grid-template-columns: 80px repeat(48, 1fr); 
+            grid-template-rows: 40px repeat(7, minmax(55px, auto)); 
+            min-width: 900px; 
+            background: #cbd5e1; 
+            gap: 1px;
+        }
+        .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; }
+        .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .grid-day-date { font-size: 10px; color: #64748b; font-weight: normal; margin-top: 2px; }
+        .grid-cell { background: #ffffff; }
+        .grid-event { 
+            background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; 
+            font-size: 11px; line-height: 1.3; overflow: hidden; margin: 3px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; flex-direction: column; cursor: pointer;
+        }
+        .grid-event-title { font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .grid-event-time { font-size: 10px; opacity: 0.9; }
+
+        @media (max-width: 992px) {
+            .grid-layout { grid-template-columns: 1fr; }
+            .announcement-list { max-height: 400px; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; width: 100%; }
+            .menu-toggle { display: block; }
+            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; }
+            .sidebar-overlay.active { display: block; }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="chat-container" id="chatContainer">
-    <div class="msg-row-bot">
-      <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
-      <div class="bot-bubble">
-        สวัสดีครับ ยินดีต้อนรับสู่ระบบบริการอัตโนมัติ 🤖<br>
-        คุณสามารถกดเลือกหัวข้อที่เมนูด้านล่าง หรือพิมพ์ค้นหาแบบฟอร์ม/คู่มืออุปกรณ์แลป/หรือติดตามสถานะที่ต้องการได้เลยครับ (เช่น พิมพ์ว่า <b>"แบบฟอร์ม" "สแกนนิ้ว" "ติดตาม" "แจ้งซ่อม"</b>) บอตจะคัดกรองลิงก์มาให้ทันทีครับ!
-      </div>
-    </div>
-  </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-  <div class="bottom-controls-wrapper">
-    <div class="input-container">
-      <button class="toggle-menu-btn" onclick="toggleRichMenu()">
-        <i id="toggleIcon" class="fa-solid fa-table-cells-large"></i>
-      </button>
-      <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ชื่อไฟล์ หรือระบุสิ่งที่ต้องการ..." onkeypress="handleKeyPress(event)">
-      <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-    </div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="fa-solid fa-flask-vial"></i></div>
+            <h2>ChE Smart Hub</h2>
+        </div>
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> หน้าหลัก (Dashboard)</a>
+            <a href="knowledge.html" class="nav-item"><i class="fa-solid fa-book-open"></i> คู่มือการใช้งานอุปกรณ์</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-file-signature"></i> แบบฟอร์มคำร้อง</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-microscope"></i> เบิกอุปกรณ์และจองห้อง</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-fingerprint"></i> ขอใช้ห้องเรียน&สแกนนิ้ว</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-wrench"></i> แจ้งซ่อมอุปกรณ์</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-headset"></i> ติดต่อเจ้าหน้าที่</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
+            <a href="#" class="nav-item"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
+        </nav>
+    </aside>
 
-    <div class="rich-menu-grid" id="richMenuGrid">
-      <a href="forms.html" class="menu-item">
-        <i class="fa-regular fa-file-lines" style="color: #007bff;"></i><span style="color: #007bff;">แบบฟอร์ม-คำร้อง</span>
-      </a>
-      <a href="equipments.html" class="menu-item">
-        <i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i><span style="color: #e67e22;">เบิกอุปกรณ์และจองห้องปฏิบัติการ</span>
-      </a>
-      <a href="classrooms.html" class="menu-item">
-        <i class="fa-solid fa-school" style="color: #9b59b6;"></i><span style="color: #9b59b6;">ขอใช้ห้องเรียน&สแกนนิ้ว</span>
-      </a>
-      <a href="knowledge.html" class="menu-item">
-        <i class="fa-solid fa-flask" style="color: #16a085;"></i><span style="color: #16a085;">คู่มือการใช้งานอุปกรณ์</span>
-      </a>
-      <a href="Maintenance.html" class="menu-item">
-        <i class="fa-solid fa-screwdriver-wrench" style="color: #dc3545;"></i><span style="color: #dc3545;">แจ้งซ่อม</span>
-      </a>
-      <a href="staffs.html" class="menu-item">
-        <i class="fa-regular fa-comments" style="color: #3498db;"></i><span style="color: #3498db;">ติดต่อเจ้าหน้าที่</span>
-      </a>
-      <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="menu-item">
-        <i class="fa-solid fa-graduation-cap" style="color: #2c3e50;"></i><span style="color: #2c3e50;">ภาควิชา</span>
-      </a>
-      <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="menu-item">
-        <i class="fa-regular fa-newspaper" style="color: #27ae60;"></i><span style="color: #27ae60;">ข่าวสาร</span>
-      </a>
-    </div>
-  </div>
+    <main class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <div style="flex:1"></div>
+        </header>
 
-  <script>
-    const fileDatabase = [
-      { id: 1, name: "แบบขอลงทะเบียนเรียนแทนรายวิชาที่มีค่าระดับคะแนน ( F )", url: "https://drive.google.com/file/d/127mC_okn_bv6G3bPr-y_mTSs_p9Aceyy/view?usp=sharing", keys: ['f', 'ติดf', 'เรียนแทน'] },
-      { id: 2, name: "แบบคำร้องต่ำกว่าเกณฑ์-เกินกว่าเกณฑ์ และอื่นๆ", url: "https://drive.google.com/file/d/1zcy38LyqMSJ9dZJEM6mR0_6sxHplKFYq/view?usp=sharing", keys: ['ต่ำกว่าเกณฑ์', 'เกินกว่าเกณฑ์'] },
-      { id: 3, name: "แบบเทียบโอน-ยกเว้นรายวิชา", url: "https://drive.google.com/file/d/16SWBJFSQjvTb-b3DCxfL1C6Brpt5OOSD/view?usp=sharing", keys: ['เทียบโอน', 'ยกเว้น'] },
-      { id: 4, name: "แบบเพิ่ม-ถอนรายวิชา", url: "https://drive.google.com/file/d/1CEl7GyqLUXxWRChXlTRoQc1QYRfUVXKU/view?usp=sharing", keys: ['เพิ่ม', 'ถอน', 'เพิ่มถอน', 'ดรอป'] },
-      { id: 5, name: "แบบลาพักการศึกษา-ขอกลับเข้าศึกษา", url: "https://drive.google.com/file/d/1TRi5Lw86U5-v4lxkjkBYwMk9gIksUMtk/view?usp=sharing", keys: ['ลาพัก', 'พักการศึกษา'] },
-      { id: 6, name: "ใบลงทะเบียน", url: "https://drive.google.com/file/d/1UXXdupNoBZvBCVZVcfXE4Xd09QpDO1eJ/view?usp=sharing", keys: ['ใบลงทะเบียน', 'ลงทะเบียน'] },
-      { id: 7, name: "แบบฟอร์มขอใช้ห้องปฏิบัติการ-เครื่องมือ-ครุภัณฑ์", url: "https://drive.google.com/file/d/1el2I5p2JLkAu34FZc5zia03GiWzZnJXA/view?usp=sharing", keys: ['ห้องปฏิบัติการ', 'เครื่องมือ', 'ครุภัณฑ์'] },
-      { id: 8, name: "ใบยืมคืน-อุปกรณ์", url: "https://drive.google.com/file/d/10Kp-HFkjqO3K4sFjFAtMv7UJGmXoQfne/view?usp=sharing", keys: ['ใบยืมคืน', 'ยืมคืน', 'ยืมอุปกรณ์'] },
-      { id: 9, name: "แบบฟอร์มการขอใช้ห้องเรียน", url: "https://drive.google.com/file/d/1wpzWifxSosRpLCD5mybbQRBY8W771_3E/view?usp=sharing", keys: ['ขอใช้ห้องเรียน', 'จองห้องเรียน'] },
-      { id: 10, name: "แบบฟอร์มขอสแกนลายนิ้วมือ ภาควิชาวิศวกรรมเคมีและวัสดุ", url: "https://drive.google.com/file/d/1LeJ3qMAZpR6sfTT93-hZaBnuMNXvBYeS/view?usp=sharing", keys: ['สแกนลายนิ้วมือ', 'ลายนิ้วมือ', 'สแกนนิ้ว'] },
-      { id: 11, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง BET", url: "https://drive.google.com/drive/folders/1G3kO_d_BJwbwWT-rUkIsFnDRtBLR0--o?usp=sharing", keys: ['bet', 'บีอีที', 'surface', 'porosity', 'คู่มือแลป'] },
-      { id: 12, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง CHNS", url: "https://drive.google.com/drive/folders/142tXZu3SYINo5XA2iiVlI9EbxqwkuYSs?usp=sharing", keys: ['chns', 'ซีเอชเอนเอส', 'elemental', 'ธาตุ', 'คู่มือแลป'] },
-      { id: 13, name: "เปิดโฟลเดอร์คู่มือ/รูปภาพเครื่อง FTIR", url: "https://drive.google.com/drive/folders/1mfVc3475iPuCSKPrX7SLYHcY-ljPgcpH?usp=sharing", keys: ['ftir', 'เอฟทีไออาร์', 'infrared', 'spectrometer', 'คู่มือแลป'] },
-      { id: 14, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง TGA", url: "https://drive.google.com/drive/folders/17UAWXmqPyc1CGORYM0QTr9Lfhl9f1Fmt?usp=sharing", keys: ['tga', 'ทีจีเอ', 'thermogravimetric', 'ความร้อน', 'คู่มือแลป'] },
-      
-      /* --- ส่วนที่เพิ่มใหม่ สำหรับการติดตามสถานะและแจ้งซ่อม --- */
-      { id: 15, name: "เบิกอุปกรณ์/จองห้องปฏิบัติการ", url: "equipments.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะอุปกรณ์', 'สถานะห้องแลป', 'เช็คสถานะ', 'จองห้อง', 'เบิก', 'อุปกรณ์'] },
-      { id: 16, name: "ขอใช้ห้องเรียน/สแกนนิ้ว", url: "classrooms.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะห้องเรียน', 'สถานะสแกนนิ้ว', 'เช็คสถานะ', 'จองห้อง', 'สแกน'] },
-      { id: 17, name: "ระบบแจ้งซ่อมและติดตามสถานะงานซ่อม", url: "Maintenance.html", keys: ['ติดตามงานซ่อม', 'สถานะซ่อม', 'แจ้งซ่อม', 'ซ่อม'] }
-    ];
+        <div class="dashboard-container">
+            <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
-    function toggleRichMenu() {
-      const grid = document.getElementById('richMenuGrid');
-      const icon = document.getElementById('toggleIcon');
-      grid.classList.toggle('is-hidden');
-      icon.className = grid.classList.contains('is-hidden') ? "fa-solid fa-table-cells-large" : "fa-regular fa-keyboard";
-      setTimeout(scrollToBottom, 300);
-    }
+            <!-- Layout: ซ้าย (ประกาศ), ขวา (ปฏิทินกิจกรรม + ตารางเรียน) -->
+            <div class="grid-layout">
+                
+                <!-- คอลัมน์ซ้าย: ประกาศ -->
+                <div class="left-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3>
+                        </div>
+                        <div class="card-body" style="padding: 15px;">
+                            <div class="announcement-list" id="announcement-list">
+                                <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    function handleKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
+                <!-- คอลัมน์ขวา: ปฏิทินกิจกรรม (บน) & ตารางเรียน (ล่าง) -->
+                <div class="right-column">
+                    
+                    <!-- 1. ปฏิทินกิจกรรมภาพรวม -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3>
+                        </div>
+                        <div class="card-body" style="padding: 15px;">
+                            <div id="event-calendar"></div>
+                        </div>
+                    </div>
 
-    function sendMessage() {
-      const input = document.getElementById('userInput');
-      const text = input.value.trim();
-      if (text === '') return;
-      appendUserMessage(text);
-      input.value = '';
-      setTimeout(() => { processBotResponse(text); }, 400);
-    }
+                    <!-- 2. ปฏิทินตารางเรียนและการใช้ห้อง (แกน X = เวลา, แกน Y = วัน) -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chalkboard-user" style="color: #3b82f6;"></i> ตารางเรียนและการใช้ห้อง</h3>
+                            <select id="room-filter" class="room-filter" onchange="applyClassFilters()">
+                                <option value="all">ดูทุกห้องรวมกัน</option>
+                                <optgroup label="ห้องเรียน">
+                                    <option value="301" selected>ห้อง 301</option>
+                                    <option value="303">ห้อง 303</option>
+                                    <option value="304">ห้อง 304</option>
+                                    <option value="806">ห้อง 806</option>
+                                    <option value="809">ห้อง 809</option>
+                                </optgroup>
+                                <optgroup label="ห้องปฏิบัติการ">
+                                    <option value="103">ห้องปฏิบัติการ 103</option>
+                                    <option value="108">ห้องปฏิบัติการ 108</option>
+                                    <option value="807">ห้องปฏิบัติการ 807</option>
+                                    <option value="808">ห้องปฏิบัติการ 808</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="card-body" style="padding: 20px;">
+                            
+                            <div class="schedule-toolbar">
+                                <div class="schedule-nav">
+                                    <button onclick="changeWeek(-1)" title="สัปดาห์ก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
+                                    <button onclick="changeWeek(0)">สัปดาห์นี้</button>
+                                    <button onclick="changeWeek(1)" title="สัปดาห์ถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                                <div class="schedule-week-label" id="schedule-week-label">1 พ.ย. - 7 พ.ย. 2026</div>
+                            </div>
 
-    function appendUserMessage(text) {
-      const chatContainer = document.getElementById('chatContainer');
-      const userRow = document.createElement('div');
-      userRow.className = 'msg-row-user';
-      userRow.innerHTML = `<div class="user-bubble">${text}</div>`;
-      chatContainer.appendChild(userRow);
-      scrollToBottom();
-    }
+                            <div class="schedule-grid-wrapper">
+                                <div class="schedule-grid" id="class-schedule-grid"></div>
+                            </div>
 
-    function processBotResponse(userText) {
-      const chatContainer = document.getElementById('chatContainer');
-      let botReplyHtml = "";
-      const cleanedInput = userText.toLowerCase().trim();
+                        </div>
+                    </div>
 
-      let matchedFiles = fileDatabase.filter(file => {
-        return file.name.toLowerCase().includes(cleanedInput) || file.keys.some(k => cleanedInput.includes(k));
-      });
+                </div>
+            </div>
+        </div>
+    </main>
 
-      if (matchedFiles.length > 0) {
-        botReplyHtml = `🔍 <b>พบข้อมูลที่เกี่ยวข้อง (${matchedFiles.length} รายการ):</b><br>คลิกเพื่อเปิดลิงก์ได้เลยครับ`;
-        botReplyHtml += `<div class="form-card-container">`;
-        matchedFiles.forEach(file => {
-          // ตรวจสอบไอคอน หากเป็นลิงก์ Google Drive ใช้ไอคอน Drive หากเป็นหน้า HTML ภายในเว็บใช้ไอคอน Link
-          let iconClass = file.url.includes('drive.google.com') ? 'fa-brands fa-google-drive' : 'fa-solid fa-link';
-          let targetAttr = file.url.includes('drive.google.com') ? 'target="_blank"' : '';
-          
-          botReplyHtml += `<a href="${file.url}" ${targetAttr} class="drive-link"><i class="${iconClass}"></i> ${file.name}</a>`;
+    <script>
+        // ==========================================
+        // 1. ตั้งค่า Google Sheets URLs
+        // ==========================================
+        const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8UrbhY6gpSUqhmb_bdyY_wCO2Rnoiu3rvMGVgAvCRokP5wOF3rXKchWx66c8pARu3X8JdzXLVwUIE/pub?gid=0&single=true&output=csv'; 
+        const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8UrbhY6gpSUqhmb_bdyY_wCO2Rnoiu3rvMGVgAvCRokP5wOF3rXKchWx66c8pARu3X8JdzXLVwUIE/pub?gid=200642625&single=true&output=csv';
+        const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8UrbhY6gpSUqhmb_bdyY_wCO2Rnoiu3rvMGVgAvCRokP5wOF3rXKchWx66c8pARu3X8JdzXLVwUIE/pub?gid=1094295534&single=true&output=csv'; 
+
+        const ERROR_HTML = `<div class="error-text"><b><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถดึงข้อมูลได้</b><br>โปรดตรวจสอบการเผยแพร่ Publish to web (เป็น CSV)</div>`;
+
+        // ==========================================
+        // 2. ฟังก์ชันโหลดประกาศ
+        // ==========================================
+        function loadAnnouncements() {
+            fetch(ANNOUNCEMENT_CSV_URL).then(res => res.text()).then(csvText => {
+                if(csvText.includes('<html')) { document.getElementById('announcement-list').innerHTML = ERROR_HTML; return; }
+                Papa.parse(csvText, { header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
+                    complete: function(results) {
+                        const listEl = document.getElementById('announcement-list');
+                        listEl.innerHTML = ''; 
+                        let hasData = false;
+                        results.data.forEach(item => {
+                            const title = item.Title || item.title || item["หัวข้อ"];
+                            if(!title) return;
+                            hasData = true;
+                            listEl.innerHTML += `
+                                <div class="announcement-item">
+                                    <div class="anno-date"><i class="fa-regular fa-clock"></i> ${item.Date || item.date || item["วันที่"] || ''}</div>
+                                    <div class="anno-title">${title}</div>
+                                    <div class="anno-desc">${item.Description || item.description || item["รายละเอียด"] || ''}</div>
+                                </div>`;
+                        });
+                        if(!hasData) listEl.innerHTML = '<div class="loading-text">ไม่พบข้อมูลประกาศ</div>';
+                    }
+                });
+            }).catch(() => document.getElementById('announcement-list').innerHTML = ERROR_HTML);
+        }
+
+        // ==========================================
+        // 3. ฟังก์ชันโหลดปฏิทินกิจกรรม
+        // ==========================================
+        function initEventCalendar() {
+            var calendarEl = document.getElementById('event-calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'th', 
+                height: 380, 
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
+                eventDisplay: 'block',
+                events: function(info, successCallback, failureCallback) {
+                    fetch(EVENT_CALENDAR_CSV_URL).then(res => res.text()).then(csvText => {
+                        if(csvText.includes('<html')) throw new Error();
+                        Papa.parse(csvText, { header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
+                            complete: function(results) {
+                                var events = [];
+                                results.data.forEach(row => {
+                                    const title = row.Title || row.title;
+                                    const start = row.Start || row.start;
+                                    let end = row.End || row.end;
+                                    if(title && start) {
+                                        if (end) {
+                                            let endDateObj = new Date(end);
+                                            endDateObj.setDate(endDateObj.getDate() + 1);
+                                            end = endDateObj.toISOString().split('T')[0]; 
+                                        }
+                                        events.push({ title: title, start: start, end: end || null, color: row.Color || row.color || '#16a085' });
+                                    }
+                                });
+                                successCallback(events);
+                            }
+                        });
+                    }).catch(err => failureCallback(err));
+                }
+            });
+            calendar.render();
+        }
+
+        // ==========================================
+        // 4. ฟังก์ชันตารางเรียน (วันแกน Y, เวลาแกน X)
+        // ==========================================
+        let allClassEvents = [];
+        let currentWeekStart = new Date(); 
+        
+        function getMonday(d) {
+            d = new Date(d);
+            var day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6:1);
+            return new Date(d.setDate(diff));
+        }
+
+        function initClassSchedule() {
+            currentWeekStart = getMonday(new Date()); 
+            
+            fetch(CLASS_CSV_URL).then(res => res.text()).then(csvText => {
+                if(csvText.includes('<html')) throw new Error();
+                Papa.parse(csvText, { header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
+                    complete: function(results) {
+                        results.data.forEach(row => {
+                            const title = row.Title || row.title;
+                            const start = row.Start || row.start;
+                            const end = row.End || row.end;
+                            const room = row.Room || row.room;
+                            
+                            if(title && start) {
+                                allClassEvents.push({
+                                    title: title,
+                                    start: new Date(start),
+                                    end: end ? new Date(end) : new Date(new Date(start).getTime() + 3600000), 
+                                    room: room ? room.toString().trim() : '',
+                                    color: row.Color || row.color || '#3b82f6'
+                                });
+                            }
+                        });
+                        applyClassFilters();
+                    }
+                });
+            }).catch(err => {
+                document.getElementById('class-schedule-grid').innerHTML = ERROR_HTML;
+            });
+        }
+
+        function changeWeek(offset) {
+            if(offset === 0) {
+                currentWeekStart = getMonday(new Date());
+            } else {
+                currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
+            }
+            applyClassFilters();
+        }
+
+        function applyClassFilters() {
+            const selectedRoom = document.getElementById('room-filter').value;
+            let filtered = allClassEvents;
+            
+            if (selectedRoom !== 'all') {
+                filtered = filtered.filter(ev => ev.room === selectedRoom);
+            }
+            
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            
+            filtered = filtered.filter(ev => ev.start >= currentWeekStart && ev.start < weekEnd);
+            
+            renderClassGrid(filtered);
+            updateWeekLabel();
+        }
+
+        function updateWeekLabel() {
+            const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            const endOfWeek = new Date(currentWeekStart);
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+            
+            const startStr = `${currentWeekStart.getDate()} ${thaiMonths[currentWeekStart.getMonth()]}`;
+            const endStr = `${endOfWeek.getDate()} ${thaiMonths[endOfWeek.getMonth()]} ${endOfWeek.getFullYear() + 543}`;
+            
+            document.getElementById('schedule-week-label').innerText = `${startStr} - ${endStr}`;
+        }
+
+        function renderClassGrid(events) {
+            const gridEl = document.getElementById('class-schedule-grid');
+            let html = '';
+            
+            html += `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
+            
+            for(let h=8; h<20; h++) {
+                let colStart = (h-8)*4 + 2;
+                let colEnd = colStart + 4;
+                html += `<div class="grid-header" style="grid-column: ${colStart} / ${colEnd}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
+            }
+            
+            const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
+            for(let d=0; d<7; d++) {
+                let row = d + 2; 
+                let targetDate = new Date(currentWeekStart);
+                targetDate.setDate(targetDate.getDate() + d);
+                let dateStr = `${targetDate.getDate()}/${targetDate.getMonth()+1}`;
+                
+                html += `<div class="grid-day-label" style="grid-column: 1; grid-row: ${row};">
+                            <span>${days[d]}</span>
+                            <span class="grid-day-date">${dateStr}</span>
+                         </div>`;
+                html += `<div class="grid-cell" style="grid-column: 2 / 50; grid-row: ${row};"></div>`;
+            }
+            
+            events.forEach(ev => {
+                let dayIndex = ev.start.getDay(); 
+                let mappedDay = dayIndex === 0 ? 6 : dayIndex - 1; 
+                let row = mappedDay + 2;
+                
+                let sHour = ev.start.getHours();
+                let sMin = ev.start.getMinutes();
+                let eHour = ev.end.getHours();
+                let eMin = ev.end.getMinutes();
+                
+                let colStart = (sHour - 8) * 4 + Math.floor(sMin / 15) + 2;
+                let colEnd = (eHour - 8) * 4 + Math.floor(eMin / 15) + 2;
+                
+                if(colStart < 2) colStart = 2;
+                if(colEnd > 50) colEnd = 50;
+                if(colStart >= 50 || colEnd <= 2) return;
+                
+                const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')} - ${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
+                const roomStr = ev.room ? `<br>ห้อง ${ev.room}` : '';
+                
+                html += `
+                    <div class="grid-event" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row}; background-color: ${ev.color};" title="${ev.title} (${timeStr})">
+                        <div class="grid-event-title">${ev.title}</div>
+                        <div class="grid-event-time">${timeStr} ${roomStr}</div>
+                    </div>
+                `;
+            });
+            
+            gridEl.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnnouncements();
+            initEventCalendar();
+            initClassSchedule();
         });
-        botReplyHtml += `</div>`;
-      } else {
-        botReplyHtml = `ไม่พบข้อมูลหรือไฟล์ที่เกี่ยวข้องกับ <b>"${userText}"</b> ครับ ลองพิมพ์คีย์เวิร์ดสั้นๆ เช่น "FTIR", "ใบคำร้อง", "ติดตาม", หรือ "แจ้งซ่อม" ดูใหม่อีกครั้งครับ`;
-      }
 
-      const botRow = document.createElement('div');
-      botRow.className = 'msg-row-bot';
-      botRow.innerHTML = `<div class="bot-avatar"><i class="fa-solid fa-robot"></i></div><div class="bot-bubble">${botReplyHtml}</div>`;
-      chatContainer.appendChild(botRow);
-      scrollToBottom();
-    }
-
-    function scrollToBottom() { 
-      const chatContainer = document.getElementById('chatContainer'); 
-      chatContainer.scrollTop = chatContainer.scrollHeight; 
-    }
-    
-    window.onload = scrollToBottom;
-  </script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
