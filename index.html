@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LINE Chatbot UI - Full Menu Integrated</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    
+    /* --- แก้ไขเรื่องความสูงหน้าจอแบบไดนามิก --- */
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      height: 100dvh; 
+    }
+    
+    body { 
+      background-color: #7494c0; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
+
+    /* --- 1. พื้นที่ห้องแชต --- */
+    .chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+    .msg-row-bot { display: flex; align-items: flex-start; gap: 10px; max-width: 85%; }
+    .bot-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #35495e; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+    .bot-bubble { background-color: #ffffff; padding: 10px 14px; border-radius: 15px; border-top-left-radius: 2px; font-size: 15px; color: #333; box-shadow: 0 1px 2px rgba(0,0,0,0.1); line-height: 1.4; }
+    
+    /* สไตล์กล่องผลลัพธ์ปุ่มดาวน์โหลด (Rich Card) */
+    .form-card-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; width: 100%; max-width: 320px; }
+    .drive-link { 
+      display: flex; align-items: center; gap: 10px; padding: 12px 15px; background-color: #ffffff; color: #1e7e34; 
+      text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: bold; border: 1px solid #ced4da;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s;
+    }
+    .drive-link:hover { background-color: #f8f9fa; color: #218838; border-color: #b1bbc4; }
+    .drive-link i.fa-google-drive { color: #ffc107; font-size: 16px; }
+    .drive-link i.fa-link { color: #007bff; font-size: 16px; } /* ไอคอนลิงก์ทั่วไปสำหรับเว็บภายใน */
+
+    .msg-row-user { display: flex; justify-content: flex-end; width: 100%; }
+    .user-bubble { background-color: #8ce28a; padding: 10px 14px; border-radius: 15px; border-top-right-radius: 2px; font-size: 15px; color: #333; max-width: 85%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+    /* --- ส่วนควบคุมด้านล่าง --- */
+    .bottom-controls-wrapper { 
+      background-color: #ffffff; 
+      border-top: 1px solid #ddd; 
+      display: flex; 
+      flex-direction: column; 
+      width: 100%; 
+      padding-bottom: env(safe-area-inset-bottom); 
+    }
+    
+    .input-container { display: flex; align-items: center; padding: 10px; gap: 10px; background-color: #ffffff; }
+    .toggle-menu-btn { background-color: #f4f4f4; color: #555; border: 1px solid #ccc; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .chat-input { flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 20px; font-size: 15px; outline: none; background-color: #f9f9f9; }
+    .chat-input:focus { border-color: #06c755; background-color: #fff; }
+    .send-btn { background-color: #06c755; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* --- Rich Menu Grid --- */
+    .rich-menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 95px); background-color: #e5e5e5; gap: 1px; max-height: 190px; transition: max-height 0.3s ease-in-out, opacity 0.2s; opacity: 1; overflow: hidden; }
+    .rich-menu-grid.is-hidden { max-height: 0; opacity: 0; }
+    .menu-item { display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #ffffff; text-decoration: none; color: #2c3e50; padding: 5px; text-align: center; cursor: pointer; }
+    .menu-item i { font-size: 22px; margin-bottom: 6px; color: #06c755; }
+    .menu-item span { font-size: 11px; font-weight: bold; line-height: 1.2; }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container" id="chatContainer">
+    <div class="msg-row-bot">
+      <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+      <div class="bot-bubble">
+        สวัสดีครับ ยินดีต้อนรับสู่ระบบบริการอัตโนมัติ 🤖<br>
+        คุณสามารถกดเลือกหัวข้อที่เมนูด้านล่าง หรือพิมพ์ค้นหาแบบฟอร์ม/คู่มืออุปกรณ์แลป/หรือติดตามสถานะที่ต้องการได้เลยครับ (เช่น พิมพ์ว่า <b>"แบบฟอร์ม" "สแกนนิ้ว" "ติดตาม" "แจ้งซ่อม"</b>) บอตจะคัดกรองลิงก์มาให้ทันทีครับ!
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-controls-wrapper">
+    <div class="input-container">
+      <button class="toggle-menu-btn" onclick="toggleRichMenu()">
+        <i id="toggleIcon" class="fa-solid fa-table-cells-large"></i>
+      </button>
+      <input type="text" class="chat-input" id="userInput" placeholder="พิมพ์ชื่อไฟล์ หรือระบุสิ่งที่ต้องการ..." onkeypress="handleKeyPress(event)">
+      <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+
+    <div class="rich-menu-grid" id="richMenuGrid">
+      <a href="forms.html" class="menu-item">
+        <i class="fa-regular fa-file-lines" style="color: #007bff;"></i><span style="color: #007bff;">แบบฟอร์ม-คำร้อง</span>
+      </a>
+      <a href="equipments.html" class="menu-item">
+        <i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i><span style="color: #e67e22;">เบิกอุปกรณ์และจองห้องปฏิบัติการ</span>
+      </a>
+      <a href="classrooms.html" class="menu-item">
+        <i class="fa-solid fa-school" style="color: #9b59b6;"></i><span style="color: #9b59b6;">ขอใช้ห้องเรียน&สแกนนิ้ว</span>
+      </a>
+      <a href="knowledge.html" class="menu-item">
+        <i class="fa-solid fa-flask" style="color: #16a085;"></i><span style="color: #16a085;">คู่มือการใช้งานอุปกรณ์</span>
+      </a>
+      <a href="Maintenance.html" class="menu-item">
+        <i class="fa-solid fa-screwdriver-wrench" style="color: #dc3545;"></i><span style="color: #dc3545;">แจ้งซ่อม</span>
+      </a>
+      <a href="staffs.html" class="menu-item">
+        <i class="fa-regular fa-comments" style="color: #3498db;"></i><span style="color: #3498db;">ติดต่อเจ้าหน้าที่</span>
+      </a>
+      <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="menu-item">
+        <i class="fa-solid fa-graduation-cap" style="color: #2c3e50;"></i><span style="color: #2c3e50;">ภาควิชา</span>
+      </a>
+      <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="menu-item">
+        <i class="fa-regular fa-newspaper" style="color: #27ae60;"></i><span style="color: #27ae60;">ข่าวสาร</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const fileDatabase = [
+      { id: 1, name: "แบบขอลงทะเบียนเรียนแทนรายวิชาที่มีค่าระดับคะแนน ( F )", url: "https://drive.google.com/file/d/127mC_okn_bv6G3bPr-y_mTSs_p9Aceyy/view?usp=sharing", keys: ['f', 'ติดf', 'เรียนแทน'] },
+      { id: 2, name: "แบบคำร้องต่ำกว่าเกณฑ์-เกินกว่าเกณฑ์ และอื่นๆ", url: "https://drive.google.com/file/d/1zcy38LyqMSJ9dZJEM6mR0_6sxHplKFYq/view?usp=sharing", keys: ['ต่ำกว่าเกณฑ์', 'เกินกว่าเกณฑ์'] },
+      { id: 3, name: "แบบเทียบโอน-ยกเว้นรายวิชา", url: "https://drive.google.com/file/d/16SWBJFSQjvTb-b3DCxfL1C6Brpt5OOSD/view?usp=sharing", keys: ['เทียบโอน', 'ยกเว้น'] },
+      { id: 4, name: "แบบเพิ่ม-ถอนรายวิชา", url: "https://drive.google.com/file/d/1CEl7GyqLUXxWRChXlTRoQc1QYRfUVXKU/view?usp=sharing", keys: ['เพิ่ม', 'ถอน', 'เพิ่มถอน', 'ดรอป'] },
+      { id: 5, name: "แบบลาพักการศึกษา-ขอกลับเข้าศึกษา", url: "https://drive.google.com/file/d/1TRi5Lw86U5-v4lxkjkBYwMk9gIksUMtk/view?usp=sharing", keys: ['ลาพัก', 'พักการศึกษา'] },
+      { id: 6, name: "ใบลงทะเบียน", url: "https://drive.google.com/file/d/1UXXdupNoBZvBCVZVcfXE4Xd09QpDO1eJ/view?usp=sharing", keys: ['ใบลงทะเบียน', 'ลงทะเบียน'] },
+      { id: 7, name: "แบบฟอร์มขอใช้ห้องปฏิบัติการ-เครื่องมือ-ครุภัณฑ์", url: "https://drive.google.com/file/d/1el2I5p2JLkAu34FZc5zia03GiWzZnJXA/view?usp=sharing", keys: ['ห้องปฏิบัติการ', 'เครื่องมือ', 'ครุภัณฑ์'] },
+      { id: 8, name: "ใบยืมคืน-อุปกรณ์", url: "https://drive.google.com/file/d/10Kp-HFkjqO3K4sFjFAtMv7UJGmXoQfne/view?usp=sharing", keys: ['ใบยืมคืน', 'ยืมคืน', 'ยืมอุปกรณ์'] },
+      { id: 9, name: "แบบฟอร์มการขอใช้ห้องเรียน", url: "https://drive.google.com/file/d/1wpzWifxSosRpLCD5mybbQRBY8W771_3E/view?usp=sharing", keys: ['ขอใช้ห้องเรียน', 'จองห้องเรียน'] },
+      { id: 10, name: "แบบฟอร์มขอสแกนลายนิ้วมือ ภาควิชาวิศวกรรมเคมีและวัสดุ", url: "https://drive.google.com/file/d/1LeJ3qMAZpR6sfTT93-hZaBnuMNXvBYeS/view?usp=sharing", keys: ['สแกนลายนิ้วมือ', 'ลายนิ้วมือ', 'สแกนนิ้ว'] },
+      { id: 11, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง BET", url: "https://drive.google.com/drive/folders/1G3kO_d_BJwbwWT-rUkIsFnDRtBLR0--o?usp=sharing", keys: ['bet', 'บีอีที', 'surface', 'porosity', 'คู่มือแลป'] },
+      { id: 12, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง CHNS", url: "https://drive.google.com/drive/folders/142tXZu3SYINo5XA2iiVlI9EbxqwkuYSs?usp=sharing", keys: ['chns', 'ซีเอชเอนเอส', 'elemental', 'ธาตุ', 'คู่มือแลป'] },
+      { id: 13, name: "เปิดโฟลเดอร์คู่มือ/รูปภาพเครื่อง FTIR", url: "https://drive.google.com/drive/folders/1mfVc3475iPuCSKPrX7SLYHcY-ljPgcpH?usp=sharing", keys: ['ftir', 'เอฟทีไออาร์', 'infrared', 'spectrometer', 'คู่มือแลป'] },
+      { id: 14, name: "เปิดโฟลเดอร์คู่มือ/วิดีโอเครื่อง TGA", url: "https://drive.google.com/drive/folders/17UAWXmqPyc1CGORYM0QTr9Lfhl9f1Fmt?usp=sharing", keys: ['tga', 'ทีจีเอ', 'thermogravimetric', 'ความร้อน', 'คู่มือแลป'] },
+      
+      /* --- ส่วนที่เพิ่มใหม่ สำหรับการติดตามสถานะและแจ้งซ่อม --- */
+      { id: 15, name: "เบิกอุปกรณ์/จองห้องปฏิบัติการ", url: "equipments.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะอุปกรณ์', 'สถานะห้องแลป', 'เช็คสถานะ', 'จองห้อง', 'เบิก', 'อุปกรณ์'] },
+      { id: 16, name: "ขอใช้ห้องเรียน/สแกนนิ้ว", url: "classrooms.html", keys: ['ติดตาม', 'สถานะ', 'ติดตามคำร้อง', 'สถานะห้องเรียน', 'สถานะสแกนนิ้ว', 'เช็คสถานะ', 'จองห้อง', 'สแกน'] },
+      { id: 17, name: "ระบบแจ้งซ่อมและติดตามสถานะงานซ่อม", url: "Maintenance.html", keys: ['ติดตามงานซ่อม', 'สถานะซ่อม', 'แจ้งซ่อม', 'ซ่อม'] }
+    ];
+
+    function toggleRichMenu() {
+      const grid = document.getElementById('richMenuGrid');
+      const icon = document.getElementById('toggleIcon');
+      grid.classList.toggle('is-hidden');
+      icon.className = grid.classList.contains('is-hidden') ? "fa-solid fa-table-cells-large" : "fa-regular fa-keyboard";
+      setTimeout(scrollToBottom, 300);
+    }
+
+    function handleKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
+
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (text === '') return;
+      appendUserMessage(text);
+      input.value = '';
+      setTimeout(() => { processBotResponse(text); }, 400);
+    }
+
+    function appendUserMessage(text) {
+      const chatContainer = document.getElementById('chatContainer');
+      const userRow = document.createElement('div');
+      userRow.className = 'msg-row-user';
+      userRow.innerHTML = `<div class="user-bubble">${text}</div>`;
+      chatContainer.appendChild(userRow);
+      scrollToBottom();
+    }
+
+    function processBotResponse(userText) {
+      const chatContainer = document.getElementById('chatContainer');
+      let botReplyHtml = "";
+      const cleanedInput = userText.toLowerCase().trim();
+
+      let matchedFiles = fileDatabase.filter(file => {
+        return file.name.toLowerCase().includes(cleanedInput) || file.keys.some(k => cleanedInput.includes(k));
+      });
+
+      if (matchedFiles.length > 0) {
+        botReplyHtml = `🔍 <b>พบข้อมูลที่เกี่ยวข้อง (${matchedFiles.length} รายการ):</b><br>คลิกเพื่อเปิดลิงก์ได้เลยครับ`;
+        botReplyHtml += `<div class="form-card-container">`;
+        matchedFiles.forEach(file => {
+          // ตรวจสอบไอคอน หากเป็นลิงก์ Google Drive ใช้ไอคอน Drive หากเป็นหน้า HTML ภายในเว็บใช้ไอคอน Link
+          let iconClass = file.url.includes('drive.google.com') ? 'fa-brands fa-google-drive' : 'fa-solid fa-link';
+          let targetAttr = file.url.includes('drive.google.com') ? 'target="_blank"' : '';
+          
+          botReplyHtml += `<a href="${file.url}" ${targetAttr} class="drive-link"><i class="${iconClass}"></i> ${file.name}</a>`;
+        });
+        botReplyHtml += `</div>`;
+      } else {
+        botReplyHtml = `ไม่พบข้อมูลหรือไฟล์ที่เกี่ยวข้องกับ <b>"${userText}"</b> ครับ ลองพิมพ์คีย์เวิร์ดสั้นๆ เช่น "FTIR", "ใบคำร้อง", "ติดตาม", หรือ "แจ้งซ่อม" ดูใหม่อีกครั้งครับ`;
+      }
+
+      const botRow = document.createElement('div');
+      botRow.className = 'msg-row-bot';
+      botRow.innerHTML = `<div class="bot-avatar"><i class="fa-solid fa-robot"></i></div><div class="bot-bubble">${botReplyHtml}</div>`;
+      chatContainer.appendChild(botRow);
+      scrollToBottom();
+    }
+
+    function scrollToBottom() { 
+      const chatContainer = document.getElementById('chatContainer'); 
+      chatContainer.scrollTop = chatContainer.scrollHeight; 
+    }
+    
+    window.onload = scrollToBottom;
+  </script>
+</body>
+</html>

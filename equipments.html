@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ระบบบริการเบิก-ยืมคืนอุปกรณ์และห้องปฏิบัติการ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    html, body { margin: 0; padding: 0; height: 100%; height: 100dvh; }
+    body { background-color: #f4f6f9; padding: 30px 20px; color: #333; overflow-y: auto; }
+    
+    .container { max-width: 850px; margin: 0 auto; background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; }
+    .header h1 { font-size: 24px; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff; background-color: #7494c0; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; cursor: pointer; }
+    
+    .file-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .file-card { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .file-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.04); border-color: #cbd5e1; }
+    .file-info { display: flex; align-items: center; gap: 15px; }
+    .action-icon { font-size: 32px; }
+    .icon-borrow { color: #e67e22; }
+    .icon-lab { color: #9b59b6; }
+    .icon-tool { color: #3498db; }
+    .icon-track { color: #007bff; }
+    .icon-calendar { color: #28a745; }
+    .icon-pdf { color: #e74c3c; }
+    .file-name { font-weight: bold; font-size: 16px; color: #1a202c; line-height: 1.4; }
+    .file-tag { display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: 600; }
+    .download-btn { background: #1e7e34; color: white; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+    .modal-box { background: #fff; padding: 25px; border-radius: 12px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; position: sticky; top: 0; background: white; z-index: 10; }
+    .close-modal { background: none; border: none; font-size: 20px; cursor: pointer; color: #a0aec0; }
+    .hidden { display: none !important; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-weight: bold; font-size: 13px; color: #4a5568; margin-bottom: 5px; }
+    .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group input[type="datetime-local"], .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+    .form-group input[type="file"] { padding: 8px; background: #f8fafc; width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; }
+    
+    .equip-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+    .equip-name { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; }
+    .qty-btn { width: 35px; height: 35px; border: none; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .qty-display { width: 30px; text-align: center; font-weight: bold; color: #2d3748; }
+    .remove-btn { color: #dc3545; background: none; border: none; cursor: pointer; font-size: 18px; padding: 0 5px; }
+    .add-equip-btn { background: #e2e8f0; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
+
+    .btn-main { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; color: white; cursor: pointer; margin-top: 20px; }
+    .btn-search { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .search-section { display: flex; gap: 10px; margin-bottom: 20px; }
+    .search-input { flex: 1; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+    
+    .detail-row { margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
+    .detail-label { font-weight: bold; color: #4a5568; display: inline-block; width: 130px; }
+    .pdf-list { display: flex; flex-direction: column; gap: 10px; }
+    .pdf-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+
+    /* =======================================
+       Calendar Styles (Unified PC & Mobile)
+       ======================================= */
+    .calendar-container { max-width: 100%; overflow-x: hidden; }
+    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .calendar-controls button { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    
+    /* โครงสร้างตารางปฏิทิน */
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-header { font-weight: bold; text-align: center; background: #e2e8f0; padding: 8px 0; font-size: 13px; border-radius: 4px; }
+    .cal-day { min-height: 70px; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; background: #fff; display: flex; flex-direction: column; }
+    .cal-date { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; margin-bottom: 4px; background: #f1f5f9; border-radius: 4px; padding: 2px 0; }
+    
+    /* จุดแต้มสีแทนข้อมูลการจอง */
+    .cal-event-dot-wrapper { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 4px; }
+    .cal-event { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    
+    /* ตรรกะสีของจุดปฏิทิน */
+    .event-full { background-color: #3b82f6; border: 1px solid #2563eb; }
+    .event-outside { background-color: #22c55e; border: 1px solid #16a34a; }
+    .event-morning { background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb; }
+    .event-afternoon { background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb; }
+
+    /* แถบการ์ดข้อมูลการจองด้านล่างปฏิทิน */
+    .event-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
+    .event-card { padding: 15px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+
+    /* ปรับปฏิทินให้พอดีหน้าจอมือถือแนวตั้ง (ย่อขนาดตาราง) */
+    @media (max-width: 600px) {
+      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .back-btn { padding: 6px 12px; font-size: 12px; align-self: flex-start; }
+      .pdf-item { flex-direction: column; gap: 10px; align-items: flex-start; }
+      .download-btn { width: 100%; justify-content: center; }
+      
+      .calendar-grid { gap: 2px; }
+      .cal-header { font-size: 10px; padding: 4px 0; }
+      .cal-day { min-height: 45px; padding: 2px; }
+      .cal-date { font-size: 11px; padding: 2px; }
+      .cal-event { width: 8px; height: 8px; margin: 1px; }
+      .cal-event-dot-wrapper { gap: 2px; padding-top: 2px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1><i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i> บริการเบิกอุปกรณ์และจองห้องปฏิบัติการ</h1>
+      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
+    </div>
+
+    <div class="file-grid">
+      <!-- 1. ปฏิทิน -->
+      <div class="file-card" onclick="openCalendarModal()">
+        <div class="file-info">
+          <i class="fa-solid fa-calendar-alt action-icon icon-calendar"></i>
+          <div><div class="file-name">ปฏิทินการจองเครื่องมือ-ครุภัณฑ์</div><span class="file-tag">ตรวจสอบคิวการใช้งานล่วงหน้า</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 2. ยืมอุปกรณ์ -->
+      <div class="file-card" onclick="openModal('borrowModal')">
+        <div class="file-info">
+          <i class="fa-solid fa-box-open action-icon icon-borrow"></i>
+          <div><div class="file-name">ยืม-คืนอุปกรณ์ (BW)</div><span class="file-tag">แบบฟอร์มเพื่อขอยืมอุปกรณ์</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 3. ขอใช้เครื่องมือ-ครุภัณฑ์ -->
+      <div class="file-card" onclick="openModal('toolModal')">
+        <div class="file-info">
+          <i class="fa-solid fa-microscope action-icon icon-tool"></i>
+          <div><div class="file-name">ขอใช้เครื่องมือ-ครุภัณฑ์ (TOOL)</div><span class="file-tag">แบบฟอร์มขอใช้เครื่องมือใหญ่และเครื่องมือวิเคราะห์</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 4. ขอใช้ห้องปฏิบัติการ -->
+      <div class="file-card" onclick="openModal('labModal')">
+        <div class="file-info">
+          <i class="fa-solid fa-flask action-icon icon-lab"></i>
+          <div><div class="file-name">ขอใช้ห้องปฏิบัติการ (LAB)</div><span class="file-tag">แบบฟอร์มจองห้องห้องปฏิบัติการ</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 5. ติดตามสถานะ -->
+      <div class="file-card" onclick="openTrackingModal()">
+        <div class="file-info">
+          <i class="fa-solid fa-magnifying-glass-chart action-icon icon-track"></i>
+          <div><div class="file-name">ติดตามสถานะคำร้อง</div><span class="file-tag">ตรวจสอบสถานะการอนุมัติทั้งหมด</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+
+      <!-- 6. PDF -->
+      <div class="file-card" onclick="openModal('pdfModal')">
+        <div class="file-info">
+          <i class="fa-solid fa-file-pdf action-icon icon-pdf"></i>
+          <div><div class="file-name">เอกสารและแบบฟอร์ม (PDF)</div><span class="file-tag">ดาวน์โหลดไฟล์เอกสารเพื่อพิมพ์</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Popup ปฏิทิน ================= -->
+  <div class="modal-overlay" id="calendarModal">
+    <div class="modal-box" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calendar-alt"></i> ปฏิทินการจองเครื่องมือ-ครุภัณฑ์</h3>
+        <button class="close-modal" onclick="closeModal('calendarModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="calendar-container">
+        <div class="calendar-controls">
+          <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+          <div style="text-align: center;">
+            <h4 id="monthYearDisplay" style="margin: 0 0 5px 0;"></h4>
+            <!-- ตัวกรองปฏิทิน: แสดงเฉพาะเครื่องมือ -->
+            <select id="calendarFilter" onchange="renderCalendar()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; cursor: pointer; max-width: 200px;">
+              <option value="all">แสดงทั้งหมด</option>
+              <option value="ตู้อบลมร้อน ยี่ห้อ Memmert รุ่น UF260">ตู้อบลมร้อน Memmert</option>
+              <option value="เตาอบความจุ 115 ลิตร ยี่ห้อ WTB-BINDER รุ่น FD115">เตาอบ 115 ลิตร BINDER</option>
+              <option value="เตาอบความจุไม่น้อยกว่า 4 ลิตร อุณหภูมิไม่น้อย กว่า1200 C">เตาอบ 1200C</option>
+              <option value="เตาเผาอุณหภูมิสูง ยี่ห้อ CARBOLITE รุ่น MTF 12/38/250/3216P1">เตาเผาอุณหภูมิสูง CARBOLITE</option>
+              <option value="เครื่องให้ความร้อนแบบหลุม (HEATING MANTLE)">Heating Mantle</option>
+              <option value="เครื่องวัดค่าการนำไฟฟ้าของสารละลาย ยี่ห้อ EUTECH รุ่น PH700">วัดค่าการนำไฟฟ้า EUTECH</option>
+              <option value="เครื่องวัดค่าความเป็นกรด-ด่างของสารละลาย ยี่ห้อ EUTECH">pH Meter EUTECH</option>
+              <option value="ชุดวิเคราะห์และแยกสารด้วยวิธีโครมาโตกราฟี ยี่ห้อ PERKIN ELMER">โครมาโตกราฟี PERKIN ELMER</option>
+              <option value="เครื่องวิเคราะห์องค์ประกอบของสาร ยี่ห้อ GC-2014 รุ่น Shimadzu">GC-2014 Shimadzu</option>
+              <option value="เครื่องวิเคราะห์ปริมาณอิออนของโลหะ AA 220FS">AA 220FS</option>
+              <option value="ยูวี/วิสิเบิล สเปคโตรโฟโตมิเตอร์ ยี่ห้อ JASCO รุ่น V-530">UV/Vis JASCO</option>
+              <option value="เครื่องผสมสารเคมี ยี่ห้อ GERMANY รุ่น VRW 480">ผสมสารเคมี VRW 480</option>
+              <option value="เครื่องระเหยแบบหมุน (ROTAVAPOR)">Rotavapor</option>
+              <option value="เครื่องชั่งอิเล็กทรอนิกส์ 2 ตำแหน่ง">เครื่องชั่ง 2 ตำแหน่ง</option>
+              <option value="เครื่องชั่งอิเล็กทรอนิกส์ 4 ตำแหน่ง">เครื่องชั่ง 4 ตำแหน่ง</option>
+              <option value="เครื่องวัดความหนืด ยี่ห้อ RION รุ่น VT-06">วัดความหนืด RION</option>
+              <option value="อ่างน้ำควบคุมอุณหภูมิ (WATER BATH)">Water Bath</option>
+              <option value="เครื่องทดสอบหาค่าความร้อนของเชื้อเพลิง ยี่ห้อ DDS รุ่น 3K-1">หาค่าความร้อนเชื้อเพลิง DDS</option>
+            </select>
+          </div>
+          <button onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
+        
+        <!-- ตารางปฏิทิน (แสดงผลจุดสี) -->
+        <div id="calendarGrid" class="calendar-grid hidden"></div>
+        
+        <!-- คำอธิบายสี -->
+        <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #3b82f6;"></div> เต็มวัน</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb;"></div> ครึ่งเช้า</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb;"></div> ครึ่งบ่าย</span>
+          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #22c55e;"></div> นอกเวลา</span>
+        </div>
+        
+        <!-- แถบการ์ดรายละเอียดด้านล่าง -->
+        <div id="eventListContainer" class="event-list-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 1. Popup ยืมอุปกรณ์ ================= -->
+  <div class="modal-overlay" id="borrowModal">
+    <div class="modal-box">
+      <div class="modal-header"><h3>แบบฟอร์มยืมอุปกรณ์</h3><button class="close-modal" onclick="closeModal('borrowModal')"><i class="fa-solid fa-xmark"></i></button></div>
+      <form id="borrowForm" onsubmit="submitBorrowForm(event)">
+        <div class="form-group"><label>ชื่อ-สกุล *</label><input type="text" id="b_name" required></div>
+        <div class="form-group"><label>สถานะผู้แจ้ง *</label><select id="b_userType" onchange="toggleUserFields('b')" required><option value="">-- เลือกสถานะ --</option><option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option><option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option><option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option><option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option><option value="เจ้าหน้าที่">เจ้าหน้าที่</option><option value="อาจารย์">อาจารย์</option><option value="อื่นๆ">อื่นๆ</option></select></div>
+        <div id="b_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;"><div class="form-group" style="flex: 1; min-width: 140px;"><label>รหัสนักศึกษา</label><input type="text" id="b_studentId"></div><div class="form-group" style="width: 80px;"><label>ชั้นปีที่</label><select id="b_year"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div><div class="form-group" style="width: 80px;"><label>Section</label><select id="b_section"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option></select></div></div>
+        <div id="b_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="b_otherUser"></div>
+        <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="b_phone" required></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="b_email" required></div>
+        <div class="form-group"><label>ขอยืมอุปกรณ์ใช้เพื่อ *</label><input type="text" id="b_purpose" required></div>
+        <div class="form-group"><label>ในวิชา / โปรเจค *</label><input type="text" id="b_subject" required></div>
+        <div class="form-group"><label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label><select id="b_advisor" onchange="toggleAdvisor('b')" required><option value="">-- เลือกอาจารย์ --</option><option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option><option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option><option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option><option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option><option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option><option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option><option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option><option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option><option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option><option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option><option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option><option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option><option value="อื่นๆ">อื่นๆ</option></select></div>
+        <div id="b_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="b_otherAdvisor"></div>
+        <div class="form-group">
+          <label>รายการอุปกรณ์ (ระบุจำนวน) *</label>
+          <div id="equipContainer">
+            <div class="equip-row"><input type="text" class="equip-name" placeholder="ระบุชื่ออุปกรณ์" required><button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button><span class="qty-display">1</span><button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button><button type="button" class="remove-btn" style="visibility: hidden;"><i class="fa-solid fa-trash"></i></button></div>
+          </div>
+          <button type="button" class="add-equip-btn" onclick="addEquipmentRow()"><i class="fa-solid fa-plus"></i> เพิ่มรายการ</button>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="form-group"><label>วันและเวลาที่ยืม *</label><input type="datetime-local" id="b_borrowDate" required></div><div class="form-group"><label>กำหนดคืน (เวลา) *</label><input type="datetime-local" id="b_returnDate" required></div></div>
+        <div id="b_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="b_evidenceFile" accept="image/*"></div>
+        <button type="submit" id="btnSubmitBorrow" class="btn-main" style="background-color: #e67e22;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอยืมอุปกรณ์</button>
+      </form>
+      <div id="borrowSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_BW" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
+    </div>
+  </div>
+
+  <!-- ================= 2. Popup ขอใช้เครื่องมือ-ครุภัณฑ์ ================= -->
+  <div class="modal-overlay" id="toolModal">
+    <div class="modal-box">
+      <div class="modal-header"><h3>แบบฟอร์มขอใช้เครื่องมือ-ครุภัณฑ์</h3><button class="close-modal" onclick="closeModal('toolModal')"><i class="fa-solid fa-xmark"></i></button></div>
+      <form id="toolForm" onsubmit="submitToolForm(event)">
+        <div class="form-group"><label>ชื่อ-สกุล *</label><input type="text" id="t_name" required></div>
+        <div class="form-group"><label>สถานะผู้แจ้ง *</label><select id="t_userType" onchange="toggleUserFields('t')" required><option value="">-- เลือกสถานะ --</option><option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option><option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option><option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option><option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option><option value="เจ้าหน้าที่">เจ้าหน้าที่</option><option value="อาจารย์">อาจารย์</option><option value="อื่นๆ">อื่นๆ</option></select></div>
+        <div id="t_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;"><div class="form-group" style="flex: 1; min-width: 140px;"><label>รหัสนักศึกษา</label><input type="text" id="t_studentId"></div><div class="form-group" style="width: 80px;"><label>ชั้นปีที่</label><select id="t_year"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div><div class="form-group" style="width: 80px;"><label>Section</label><select id="t_section"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option></select></div></div>
+        <div id="t_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="t_otherUser"></div>
+        <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="t_phone" required></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="t_email" required></div>
+        <div class="form-group"><label>ขอยืมอุปกรณ์ใช้เพื่อ *</label><input type="text" id="t_purpose" required></div>
+        <div class="form-group"><label>ในวิชา / โปรเจค *</label><input type="text" id="t_subject" required></div>
+        <div class="form-group"><label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label><select id="t_advisor" onchange="toggleAdvisor('t')" required><option value="">-- เลือกอาจารย์ --</option><option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option><option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option><option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option><option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option><option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option><option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option><option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option><option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option><option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option><option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option><option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option><option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option><option value="อื่นๆ">อื่นๆ</option></select></div>
+        <div id="t_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="t_otherAdvisor"></div>
+        
+        <div class="form-group">
+          <label>รายการเครื่องมือ *</label>
+          <select id="t_toolSelect" onchange="toggleToolSelect()" required>
+            <option value="">-- เลือกเครื่องมือ --</option>
+            <option value="ตู้อบลมร้อน ยี่ห้อ Memmert รุ่น UF260">1. ตู้อบลมร้อน ยี่ห้อ Memmert รุ่น UF260</option>
+            <option value="เตาอบความจุ 115 ลิตร ยี่ห้อ WTB-BINDER รุ่น FD115">2. เตาอบความจุ 115 ลิตร ยี่ห้อ WTB-BINDER รุ่น FD115</option>
+            <option value="เตาอบความจุไม่น้อยกว่า 4 ลิตร อุณหภูมิไม่น้อย กว่า1200 C">3. เตาอบความจุไม่น้อยกว่า 4 ลิตร อุณหภูมิไม่น้อย กว่า1200 C</option>
+            <option value="เตาเผาอุณหภูมิสูง ยี่ห้อ CARBOLITE รุ่น MTF 12/38/250/3216P1">4. เตาเผาอุณหภูมิสูง ยี่ห้อ CARBOLITE รุ่น MTF 12/38/250/3216P1</option>
+            <option value="เครื่องให้ความร้อนแบบหลุม (HEATING MANTLE)">5. เครื่องให้ความร้อนแบบหลุม (HEATING MANTLE)</option>
+            <option value="เครื่องวัดค่าการนำไฟฟ้าของสารละลาย ยี่ห้อ EUTECH รุ่น PH700">6. เครื่องวัดค่าการนำไฟฟ้าของสารละลาย ยี่ห้อ EUTECH รุ่น PH700</option>
+            <option value="เครื่องวัดค่าความเป็นกรด-ด่างของสารละลาย ยี่ห้อ EUTECH">7. เครื่องวัดค่าความเป็นกรด-ด่างของสารละลาย ยี่ห้อ EUTECH</option>
+            <option value="ชุดวิเคราะห์และแยกสารด้วยวิธีโครมาโตกราฟี ยี่ห้อ PERKIN ELMER">8. ชุดวิเคราะห์และแยกสารด้วยวิธีโครมาโตกราฟี ยี่ห้อ PERKIN ELMER</option>
+            <option value="เครื่องวิเคราะห์องค์ประกอบของสาร ยี่ห้อ GC-2014 รุ่น Shimadzu">9. เครื่องวิเคราะห์องค์ประกอบของสาร ยี่ห้อ GC-2014 รุ่น Shimadzu</option>
+            <option value="เครื่องวิเคราะห์ปริมาณอิออนของโลหะ AA 220FS">10. เครื่องวิเคราะห์ปริมาณอิออนของโลหะ AA 220FS</option>
+            <option value="ยูวี/วิสิเบิล สเปคโตรโฟโตมิเตอร์ ยี่ห้อ JASCO รุ่น V-530">11. ยูวี/วิสิเบิล สเปคโตรโฟโตมิเตอร์ ยี่ห้อ JASCO รุ่น V-530</option>
+            <option value="เครื่องผสมสารเคมี ยี่ห้อ GERMANY รุ่น VRW 480">12. เครื่องผสมสารเคมี ยี่ห้อ GERMANY รุ่น VRW 480</option>
+            <option value="เครื่องระเหยแบบหมุน (ROTAVAPOR)">13. เครื่องระเหยแบบหมุน (ROTAVAPOR)</option>
+            <option value="เครื่องชั่งอิเล็กทรอนิกส์ 2 ตำแหน่ง">14. เครื่องชั่งอิเล็กทรอนิกส์ 2 ตำแหน่ง</option>
+            <option value="เครื่องชั่งอิเล็กทรอนิกส์ 4 ตำแหน่ง">15. เครื่องชั่งอิเล็กทรอนิกส์ 4 ตำแหน่ง</option>
+            <option value="เครื่องวัดความหนืด ยี่ห้อ RION รุ่น VT-06">16. เครื่องวัดความหนืด ยี่ห้อ RION รุ่น VT-06</option>
+            <option value="อ่างน้ำควบคุมอุณหภูมิ (WATER BATH)">17. อ่างน้ำควบคุมอุณหภูมิ (WATER BATH)</option>
+            <option value="เครื่องทดสอบหาค่าความร้อนของเชื้อเพลิง ยี่ห้อ DDS รุ่น 3K-1">18. เครื่องทดสอบหาค่าความร้อนของเชื้อเพลิง ยี่ห้อ DDS รุ่น 3K-1</option>
+            <option value="อื่นๆ">19. อื่นๆ</option>
+          </select>
+        </div>
+        <div id="t_other_tool_div" class="form-group hidden"><label>ระบุเครื่องมืออื่นๆ</label><input type="text" id="t_otherTool"></div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="form-group"><label>วันและเวลาที่เริ่มจอง *</label><input type="datetime-local" id="t_borrowDate" required></div><div class="form-group"><label>กำหนดใช้เสร็จ (เวลา) *</label><input type="datetime-local" id="t_returnDate" required></div></div>
+        <div id="t_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="t_evidenceFile" accept="image/*"></div>
+        <button type="submit" id="btnSubmitTool" class="btn-main" style="background-color: #3498db;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอใช้เครื่องมือ</button>
+      </form>
+      <div id="toolSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_TOOL" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
+    </div>
+  </div>
+
+  <!-- ================= 3. Popup ขอใช้ห้องปฏิบัติการ ================= -->
+  <div class="modal-overlay" id="labModal">
+    <div class="modal-box">
+      <div class="modal-header"><h3>แบบฟอร์มขอใช้ห้องปฏิบัติการ</h3><button class="close-modal" onclick="closeModal('labModal')"><i class="fa-solid fa-xmark"></i></button></div>
+      <form id="labForm" onsubmit="submitLabForm(event)">
+        <div class="form-group"><label>ชื่อ-สกุล *</label><input type="text" id="l_name" required></div>
+        <div class="form-group"><label>สถานะผู้แจ้ง *</label><select id="l_userType" onchange="toggleUserFields('l')" required><option value="">-- เลือกสถานะ --</option><option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option><option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option><option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option><option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option><option value="เจ้าหน้าที่">เจ้าหน้าที่</option><option value="อาจารย์">อาจารย์</option><option value="อื่นๆ">อื่นๆ</option></select></div>
+        <div id="l_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;"><div class="form-group" style="flex: 1; min-width: 140px;"><label>รหัสนักศึกษา</label><input type="text" id="l_studentId"></div><div class="form-group" style="width: 80px;"><label>ชั้นปีที่</label><select id="l_year"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div><div class="form-group" style="width: 80px;"><label>Section</label><select id="l_section"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option></select></div></div>
+        <div id="l_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="l_otherUser"></div>
+        <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="l_phone" required></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="l_email" required></div>
+        <div class="form-group"><label>ภาควิชาผู้ขอใช้ห้อง *</label><select id="l_dept" required><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option><option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select></div>
+        <div class="form-group"><label>มีความประสงค์ขอใช้ห้องเพื่อ *</label><input type="text" id="l_purpose" required></div>
+        <div class="form-group"><label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label><select id="l_advisor" onchange="toggleAdvisor('l')" required><option value="">-- เลือกอาจารย์ --</option><option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option><option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option><option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option><option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option><option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option><option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option><option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option><option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option><option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option><option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option><option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option><option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option><option value="อื่นๆ">อื่นๆ</option></select></div>
+        <div id="l_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="l_otherAdvisor"></div>
+        <div class="form-group"><label>ขอใช้ห้อง *</label><select id="l_room" required><option value="">-- เลือกห้อง --</option><option value="ห้องแลป 103">ห้องแลป 103</option><option value="ห้องแลป 107">ห้องแลป 107</option><option value="ห้องแลป 108">ห้องแลป 108</option><option value="ห้องแลป 201">ห้องแลป 201</option><option value="ห้องแลป 202">ห้องแลป 202</option><option value="ห้องแลป 203">ห้องแลป 203</option><option value="ห้องแลป 204">ห้องแลป 204</option><option value="ห้องแลป 205">ห้องแลป 205</option><option value="ห้องแลป 208">ห้องแลป 208</option><option value="ห้องประชุม 304">ห้องประชุม 304</option><option value="ห้องแลป 307">ห้องแลป 307</option><option value="ห้องแลป 807">ห้องแลป 807</option><option value="ห้องแลป 808">ห้องแลป 808</option></select></div>
+        <div class="form-group"><label>เลือกเวลา *</label><select id="l_timeSlot" required><option value="">-- เลือกระยะเวลา --</option><option value="ในเวลาราชการ">ในเวลาราชการ</option><option value="นอกเวลาราชการ">นอกเวลาราชการ</option></select></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="form-group"><label>ในวันที่ ตั้งแต่ *</label><input type="datetime-local" id="l_fromDate" required></div><div class="form-group"><label>ถึงวันที่ *</label><input type="datetime-local" id="l_toDate" required></div></div>
+        <div id="l_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="l_evidenceFile" accept="image/*"></div>
+        <button type="submit" id="btnSubmitLab" class="btn-main" style="background-color: #9b59b6;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง</button>
+      </form>
+      <div id="labSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_LAB" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
+    </div>
+  </div>
+
+  <!-- ================= Popup PDF & ติดตามสถานะ ================= -->
+  <div class="modal-overlay" id="pdfModal">
+    <div class="modal-box">
+      <div class="modal-header"><h3>ไฟล์เอกสารและแบบฟอร์ม (PDF)</h3><button class="close-modal" onclick="closeModal('pdfModal')"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="pdf-list">
+        <div class="pdf-item"><div><i class="fa-brands fa-google-drive" style="color: #ffc107; font-size: 20px; margin-right: 10px;"></i><b>ขอใช้ห้องปฏิบัติการ-เครื่องมือ-ครุภัณฑ์</b></div><a href="https://drive.google.com/file/d/1el2I5p2JLkAu34FZc5zia03GiWzZnJXA/view" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์</a></div>
+        <div class="pdf-item"><div><i class="fa-brands fa-google-drive" style="color: #ffc107; font-size: 20px; margin-right: 10px;"></i><b>ใบยืมคืน-อุปกรณ์</b></div><a href="https://drive.google.com/file/d/10Kp-HFkjqO3K4sFjFAtMv7UJGmXoQfne/view" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="trackingModal">
+    <div class="modal-box">
+      <div class="modal-header"><h3>ติดตามสถานะคำร้อง</h3><button class="close-modal" onclick="closeModal('trackingModal')"><i class="fa-solid fa-xmark"></i></button></div>
+      <div id="searchView">
+        <div class="search-section"><input type="text" id="ticketInput" class="search-input" placeholder="กรอก Ticket ID (BW-, LAB-, TOOL-)"><button class="btn-search" onclick="fetchTicketData()"><i class="fa-solid fa-search"></i> ค้นหา</button></div>
+      </div>
+      
+      <div id="borrowDetailView" class="hidden">
+        <h4 style="margin-bottom: 15px; color: #e67e22;"><i class="fa-solid fa-box-open"></i> ข้อมูลการยืมอุปกรณ์</h4>
+        <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vb_id"></span></div>
+        <div class="detail-row"><span class="detail-label">ผู้ยืม:</span> <span id="vb_name"></span></div>
+        <div class="detail-row"><span class="detail-label">วิชา/โปรเจค:</span> <span id="vb_subject"></span></div>
+        <div class="detail-row"><span class="detail-label">รายการ:</span><br><span id="vb_equipments" style="white-space: pre-wrap; display: block; background: #f8f9fa; padding: 10px; border-radius: 6px; margin-top: 5px;"></span></div>
+        <div class="detail-row"><span class="detail-label">เวลาที่ยืม:</span> <span id="vb_borrow"></span></div>
+        <div class="detail-row"><span class="detail-label">กำหนดคืน:</span> <span id="vb_return"></span></div>
+        <div class="detail-row" id="vb_evidence_row" style="margin-top: 15px;"></div>
+        <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vb_advisor_status" class="status-badge"></span></div>
+        <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vb_admin_status" class="status-badge"></span></div>
+      </div>
+      
+      <div id="toolDetailView" class="hidden">
+        <h4 style="margin-bottom: 15px; color: #3498db;"><i class="fa-solid fa-microscope"></i> ข้อมูลการขอใช้เครื่องมือ</h4>
+        <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vt_id"></span></div>
+        <div class="detail-row"><span class="detail-label">ผู้ยืม:</span> <span id="vt_name"></span></div>
+        <div class="detail-row"><span class="detail-label">วิชา/โปรเจค:</span> <span id="vt_subject"></span></div>
+        <div class="detail-row"><span class="detail-label">เครื่องมือ:</span> <span id="vt_equipments"></span></div>
+        <div class="detail-row"><span class="detail-label">เวลาที่เริ่ม:</span> <span id="vt_borrow"></span></div>
+        <div class="detail-row"><span class="detail-label">กำหนดเสร็จ:</span> <span id="vt_return"></span></div>
+        <div class="detail-row" id="vt_evidence_row" style="margin-top: 15px;"></div>
+        <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vt_advisor_status" class="status-badge"></span></div>
+        <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vt_admin_status" class="status-badge"></span></div>
+      </div>
+
+      <div id="labDetailView" class="hidden">
+        <h4 style="margin-bottom: 15px; color: #9b59b6;"><i class="fa-solid fa-flask"></i> ข้อมูลการขอใช้ห้อง</h4>
+        <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vl_id"></span></div>
+        <div class="detail-row"><span class="detail-label">ผู้จอง:</span> <span id="vl_name"></span></div>
+        <div class="detail-row"><span class="detail-label">ห้องที่ขอใช้:</span> <span id="vl_room"></span></div>
+        <div class="detail-row"><span class="detail-label">ความประสงค์:</span> <span id="vl_purpose"></span></div>
+        <div class="detail-row"><span class="detail-label">เวลาจอง:</span> <span id="vl_slot"></span></div>
+        <div class="detail-row"><span class="detail-label">ตั้งแต่:</span> <span id="vl_from"></span></div>
+        <div class="detail-row"><span class="detail-label">ถึง:</span> <span id="vl_to"></span></div>
+        <div class="detail-row" id="vl_evidence_row" style="margin-top: 15px;"></div>
+        <div class="detail-row" style="margin-top: 15px;"><span class="detail-label">การอนุมัติ (อาจารย์):</span><br><span id="vl_advisor_status" class="status-badge"></span></div>
+        <div class="detail-row"><span class="detail-label">สถานะ (แอดมิน):</span><br><span id="vl_admin_status" class="status-badge"></span></div>
+      </div>
+      <button id="closeTrackBtn" class="btn-main hidden" style="background-color: #6c757d;" onclick="closeModal('trackingModal')">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ นำลิงก์ Web App ล่าสุดมาใส่ตรงนี้
+    const API_URL = "https://script.google.com/macros/s/AKfycbx6xXWW9IZpEwtYgSwhqmUfqgMPVBciXFQK0_6o33I6ECgKlFo5vF-hcc8_UWYst2C88g/exec"; 
+
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+      if(id === 'borrowModal') { document.getElementById('borrowForm').reset(); document.getElementById('borrowForm').classList.remove('hidden'); document.getElementById('borrowSuccess').classList.add('hidden'); toggleUserFields('b'); toggleAdvisor('b'); }
+      if(id === 'labModal') { document.getElementById('labForm').reset(); document.getElementById('labForm').classList.remove('hidden'); document.getElementById('labSuccess').classList.add('hidden'); toggleUserFields('l'); toggleAdvisor('l'); }
+      if(id === 'toolModal') { document.getElementById('toolForm').reset(); document.getElementById('toolForm').classList.remove('hidden'); document.getElementById('toolSuccess').classList.add('hidden'); toggleUserFields('t'); toggleAdvisor('t'); toggleToolSelect(); }
+    }
+    function openTrackingModal() {
+      document.getElementById('trackingModal').style.display = 'flex';
+      document.getElementById('searchView').classList.remove('hidden');
+      document.getElementById('borrowDetailView').classList.add('hidden');
+      document.getElementById('labDetailView').classList.add('hidden');
+      document.getElementById('toolDetailView').classList.add('hidden');
+      document.getElementById('closeTrackBtn').classList.add('hidden');
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function toggleUserFields(prefix) { const val = document.getElementById(prefix + '_userType').value; document.getElementById(prefix + '_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); document.getElementById(prefix + '_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
+    function toggleAdvisor(prefix) { const val = document.getElementById(prefix + '_advisor').value; document.getElementById(prefix + '_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); document.getElementById(prefix + '_evidence_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
+    function toggleToolSelect() { const val = document.getElementById('t_toolSelect').value; document.getElementById('t_other_tool_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
+
+    function updateQty(btn, change) { const display = btn.parentElement.querySelector('.qty-display'); let qty = parseInt(display.innerText); qty = Math.max(1, qty + change); display.innerText = qty; }
+    function addEquipmentRow() {
+      const container = document.getElementById('equipContainer');
+      const row = document.createElement('div'); row.className = 'equip-row';
+      row.innerHTML = `<input type="text" class="equip-name" placeholder="ระบุชื่ออุปกรณ์" required><button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button><span class="qty-display">1</span><button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button><button type="button" class="remove-btn" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>`;
+      container.appendChild(row);
+    }
+    
+    function formatDate(raw) { return raw.replace('T', ' เวลา ') + ' น.'; }
+    function getBase64(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result.split(',')[1]); reader.onerror = error => reject(error); }); }
+
+    async function submitBorrowForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitBorrow'); btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
+      const equipmentList = Array.from(document.querySelectorAll('.equip-row')).map(row => { const name = row.querySelector('.equip-name').value.trim(); return name ? `- ${name} (จำนวน ${row.querySelector('.qty-display').innerText})` : ''; }).filter(Boolean);
+      let uType = document.getElementById('b_userType').value; if (uType === 'อื่นๆ') uType = document.getElementById('b_otherUser').value;
+      let adv = document.getElementById('b_advisor').value; if (adv === 'อื่นๆ') adv = document.getElementById('b_otherAdvisor').value;
+
+      let fileBase64 = "", mimeType = "", fileName = "";
+      const fileInput = document.getElementById('b_evidenceFile');
+      if (fileInput.files.length > 0 && !document.getElementById('b_evidence_div').classList.contains('hidden')) { const file = fileInput.files[0]; fileBase64 = await getBase64(file); mimeType = file.type; fileName = file.name; }
+      const formData = { name: document.getElementById('b_name').value, userType: uType, studentId: document.getElementById('b_studentId').value, year: document.getElementById('b_year').value, section: document.getElementById('b_section').value, phone: document.getElementById('b_phone').value, email: document.getElementById('b_email').value, purpose: document.getElementById('b_purpose').value, subject: document.getElementById('b_subject').value, advisor: adv, equipments: equipmentList.join('\n'), borrowDate: formatDate(document.getElementById('b_borrowDate').value), returnDate: formatDate(document.getElementById('b_returnDate').value), fileBase64: fileBase64, mimeType: mimeType, fileName: fileName };
+
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "borrow", data: formData }) });
+        const result = await res.json();
+        if (result.success) { document.getElementById('borrowForm').classList.add('hidden'); document.getElementById('borrowSuccess').classList.remove('hidden'); document.getElementById('showTicketId_BW').innerText = result.ticketId; }
+      } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอยืมอุปกรณ์'; btn.disabled = false; }
+    }
+
+    async function submitLabForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitLab'); btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
+      let uType = document.getElementById('l_userType').value; if (uType === 'อื่นๆ') uType = document.getElementById('l_otherUser').value;
+      let adv = document.getElementById('l_advisor').value; if (adv === 'อื่นๆ') adv = document.getElementById('l_otherAdvisor').value;
+
+      let fileBase64 = "", mimeType = "", fileName = "";
+      const fileInput = document.getElementById('l_evidenceFile');
+      if (fileInput.files.length > 0 && !document.getElementById('l_evidence_div').classList.contains('hidden')) { const file = fileInput.files[0]; fileBase64 = await getBase64(file); mimeType = file.type; fileName = file.name; }
+      const formData = { name: document.getElementById('l_name').value, userType: uType, studentId: document.getElementById('l_studentId').value, year: document.getElementById('l_year').value, section: document.getElementById('l_section').value, phone: document.getElementById('l_phone').value, email: document.getElementById('l_email').value, department: document.getElementById('l_dept').value, purpose: document.getElementById('l_purpose').value, advisor: adv, room: document.getElementById('l_room').value, timeSlot: document.getElementById('l_timeSlot').value, fromDate: formatDate(document.getElementById('l_fromDate').value), toDate: formatDate(document.getElementById('l_toDate').value), fileBase64: fileBase64, mimeType: mimeType, fileName: fileName };
+
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "lab", data: formData }) });
+        const result = await res.json();
+        if (result.success) { document.getElementById('labForm').classList.add('hidden'); document.getElementById('labSuccess').classList.remove('hidden'); document.getElementById('showTicketId_LAB').innerText = result.ticketId; }
+      } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง'; btn.disabled = false; }
+    }
+
+    async function submitToolForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitTool'); btn.innerHTML = 'กำลังส่งข้อมูล...'; btn.disabled = true;
+      let uType = document.getElementById('t_userType').value; if (uType === 'อื่นๆ') uType = document.getElementById('t_otherUser').value;
+      let adv = document.getElementById('t_advisor').value; if (adv === 'อื่นๆ') adv = document.getElementById('t_otherAdvisor').value;
+      let toolSel = document.getElementById('t_toolSelect').value; if (toolSel === 'อื่นๆ') toolSel = document.getElementById('t_otherTool').value;
+
+      let fileBase64 = "", mimeType = "", fileName = "";
+      const fileInput = document.getElementById('t_evidenceFile');
+      if (fileInput.files.length > 0 && !document.getElementById('t_evidence_div').classList.contains('hidden')) { const file = fileInput.files[0]; fileBase64 = await getBase64(file); mimeType = file.type; fileName = file.name; }
+      const formData = { name: document.getElementById('t_name').value, userType: uType, studentId: document.getElementById('t_studentId').value, year: document.getElementById('t_year').value, section: document.getElementById('t_section').value, phone: document.getElementById('t_phone').value, email: document.getElementById('t_email').value, purpose: document.getElementById('t_purpose').value, subject: document.getElementById('t_subject').value, advisor: adv, tool: toolSel, borrowDate: formatDate(document.getElementById('t_borrowDate').value), returnDate: formatDate(document.getElementById('t_returnDate').value), fileBase64: fileBase64, mimeType: mimeType, fileName: fileName };
+
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "tool", data: formData }) });
+        const result = await res.json();
+        if (result.success) { document.getElementById('toolForm').classList.add('hidden'); document.getElementById('toolSuccess').classList.remove('hidden'); document.getElementById('showTicketId_TOOL').innerText = result.ticketId; }
+      } catch (error) { alert("ล้มเหลว กรุณาลองใหม่"); } finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ส่งคำขอใช้เครื่องมือ'; btn.disabled = false; }
+    }
+
+    async function fetchTicketData() {
+      const ticketId = document.getElementById('ticketInput').value.trim().toUpperCase();
+      if(!ticketId) return;
+      const btn = document.querySelector('.btn-search'); btn.innerHTML = 'รอ...'; btn.disabled = true;
+
+      try {
+        const res = await fetch(API_URL + "?id=" + encodeURIComponent(ticketId));
+        const data = await res.json();
+        if (data.error) { alert(data.error); } else {
+          document.getElementById('searchView').classList.add('hidden'); document.getElementById('closeTrackBtn').classList.remove('hidden');
+
+          if (data.formType === "Borrow") {
+            document.getElementById('borrowDetailView').classList.remove('hidden');
+            document.getElementById('vb_id').innerText = data.id; document.getElementById('vb_name').innerText = data.name; document.getElementById('vb_subject').innerText = data.subject; document.getElementById('vb_equipments').innerText = data.equipments; document.getElementById('vb_borrow').innerText = data.borrowDate; document.getElementById('vb_return').innerText = data.returnDate;
+            document.getElementById('vb_evidence_row').innerHTML = data.evidence ? `<span class="detail-label">รูปหลักฐาน:</span> <a href="${data.evidence}" target="_blank" style="color: #007bff; font-weight: bold;"><i class="fa-solid fa-image"></i> คลิกเพื่อดูรูปภาพ</a>` : "";
+            setBadges('vb_advisor_status', data.advisor_status, 'vb_admin_status', data.admin_status, data.return_status);
+          } else if (data.formType === "Lab") {
+            document.getElementById('labDetailView').classList.remove('hidden');
+            document.getElementById('vl_id').innerText = data.id; document.getElementById('vl_name').innerText = data.name; document.getElementById('vl_room').innerText = data.room; document.getElementById('vl_purpose').innerText = data.purpose; document.getElementById('vl_slot').innerText = data.timeSlot; document.getElementById('vl_from').innerText = data.fromDate; document.getElementById('vl_to').innerText = data.toDate;
+            document.getElementById('vl_evidence_row').innerHTML = data.evidence ? `<span class="detail-label">รูปหลักฐาน:</span> <a href="${data.evidence}" target="_blank" style="color: #007bff; font-weight: bold;"><i class="fa-solid fa-image"></i> คลิกเพื่อดูรูปภาพ</a>` : "";
+            setBadges('vl_advisor_status', data.advisor_status, 'vl_admin_status', data.admin_status, null);
+          } else if (data.formType === "Tool") {
+            document.getElementById('toolDetailView').classList.remove('hidden');
+            document.getElementById('vt_id').innerText = data.id; document.getElementById('vt_name').innerText = data.name; document.getElementById('vt_subject').innerText = data.subject; document.getElementById('vt_equipments').innerText = data.equipments; document.getElementById('vt_borrow').innerText = data.borrowDate; document.getElementById('vt_return').innerText = data.returnDate;
+            document.getElementById('vt_evidence_row').innerHTML = data.evidence ? `<span class="detail-label">รูปหลักฐาน:</span> <a href="${data.evidence}" target="_blank" style="color: #007bff; font-weight: bold;"><i class="fa-solid fa-image"></i> คลิกเพื่อดูรูปภาพ</a>` : "";
+            setBadges('vt_advisor_status', data.advisor_status, 'vt_admin_status', data.admin_status, data.return_status);
+          }
+        }
+      } catch (err) { alert("เชื่อมต่อล้มเหลว"); } btn.innerHTML = '<i class="fa-solid fa-search"></i> ค้นหา'; btn.disabled = false;
+    }
+
+    function setBadges(advId, advStatus, adminId, adminStatus, returnStatus) {
+      const advBadge = document.getElementById(advId); const currentAdv = advStatus || "รอตรวจสอบ"; advBadge.innerText = currentAdv;
+      if (currentAdv === "อนุมัติ" || currentAdv === "อนุมัติแล้ว" || currentAdv === "-") { advBadge.style.backgroundColor = "#28a745"; advBadge.style.color = "#ffffff"; } else if (currentAdv === "ไม่อนุมัติ") { advBadge.style.backgroundColor = "#dc3545"; advBadge.style.color = "#ffffff"; } else { advBadge.style.backgroundColor = "#ffc107"; advBadge.style.color = "#212529"; }
+      
+      const adminBadge = document.getElementById(adminId); const currentAdmin = adminStatus || "รอตรวจสอบ"; adminBadge.style.padding = "4px 10px";
+      if (currentAdmin === "รอตรวจสอบ") { adminBadge.innerHTML = "รอตรวจสอบ"; adminBadge.style.backgroundColor = "#ffc107"; adminBadge.style.color = "#212529"; } 
+      else if (currentAdmin === "อนุมัติ") { adminBadge.innerHTML = "อนุมัติ"; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; } 
+      else if (currentAdmin === "ไม่อนุมัติ") { adminBadge.innerHTML = "ไม่อนุมัติ"; adminBadge.style.backgroundColor = "#dc3545"; adminBadge.style.color = "#ffffff"; } 
+      else if (currentAdmin === "รับทราบ/จ่ายของแล้ว" || currentAdmin === "รับทราบ/ดำเนินการแล้ว") {
+        if (returnStatus === "ยังไม่คืน") { adminBadge.innerHTML = '<span style="background-color: #28a745; color: white; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-right: 5px;">'+currentAdmin+'</span><span style="background-color: #dc3545; color: white; padding: 4px 10px; border-radius: 20px; display: inline-block;">ยังไม่คืน</span>'; adminBadge.style.backgroundColor = "transparent"; adminBadge.style.padding = "0"; } 
+        else if (returnStatus) { adminBadge.innerHTML = currentAdmin + " / " + returnStatus; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; } 
+        else { adminBadge.innerHTML = currentAdmin; adminBadge.style.backgroundColor = "#28a745"; adminBadge.style.color = "#ffffff"; }
+      } else { adminBadge.innerHTML = currentAdmin; adminBadge.style.backgroundColor = "#6c757d"; adminBadge.style.color = "#ffffff"; }
+    }
+
+    /* =======================================================
+       ปฏิทินแบบ Custom Grid
+       ======================================================= */
+    let currentDate = new Date();
+    let calendarEvents = [];
+
+    async function openCalendarModal() {
+      document.getElementById('calendarModal').style.display = 'flex';
+      document.getElementById('calendarGrid').classList.add('hidden');
+      document.getElementById('calendarLoading').style.display = 'block';
+      const oldMsg = document.getElementById('emptyCalMsg');
+      if (oldMsg) oldMsg.style.display = 'none';
+
+      try {
+        const res = await fetch(API_URL + "?action=calendar");
+        const data = await res.json();
+        if (data.success) { calendarEvents = data.events; }
+      } catch (e) { console.error("Calendar Error", e); }
+      document.getElementById('calendarLoading').style.display = 'none';
+      document.getElementById('calendarGrid').classList.remove('hidden');
+      renderCalendar();
+    }
+
+    function changeMonth(step) { currentDate.setMonth(currentDate.getMonth() + step); renderCalendar(); }
+    
+    function extractTime(val) { 
+      if(!val) return ''; const str = String(val); 
+      if(str.includes(' เวลา ')) return str.split(' เวลา ')[1].replace(' น.', ''); 
+      if(str.includes('T')) return str.split('T')[1].substring(0,5); 
+      return str; 
+    }
+    
+    function shortDateTime(val) {
+      if(!val) return '';
+      const p = parseTimeStr(val);
+      if(p.dateStr) {
+        const parts = p.dateStr.split('-');
+        if(parts.length === 3) {
+          const y = parseInt(parts[0]) + 543;
+          return `${parts[2]}/${parts[1]}/${y} ${extractTime(val)}`;
+        }
+      }
+      return val;
+    }
+
+    function parseTimeStr(val) {
+      if(!val) return { dateStr: "", hour: 0 };
+      const str = String(val);
+      if(str.includes(' เวลา ')) { const p = str.split(' เวลา '); return { dateStr: p[0], hour: parseFloat(p[1].replace(' น.','').replace(':','.')) }; }
+      if(str.includes('T')) { const p = str.split('T'); const t = p[1].split(':'); return { dateStr: p[0], hour: t.length >= 2 ? parseFloat(t[0]+"."+t[1]) : 0 }; }
+      return { dateStr: str.split(' ')[0], hour: 0 };
+    }
+    
+    function formatDisplayTime(val) {
+      if(!val) return ''; const str = String(val);
+      if(str.includes(' เวลา ')) return str;
+      if(str.includes('T')) { const p = str.split('T'); return p[0] + ' เวลา ' + p[1].substring(0,5) + ' น.'; }
+      return str;
+    }
+    
+    function getEventClass(fromStr, toStr, timeSlot) {
+      if(timeSlot === "นอกเวลาราชการ") return "event-outside";
+      const from = parseTimeStr(fromStr); const to = parseTimeStr(toStr);
+      if(from.hour >= 16.30) return "event-outside";
+      if(to.hour <= 12.30) return "event-morning";
+      if(from.hour >= 12.00) return "event-afternoon";
+      return "event-full";
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+      document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
+      
+      const selectedRoom = document.getElementById('calendarFilter').value;
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '<div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>';
+      
+      let emptyMsg = document.getElementById('emptyCalMsg');
+      if (!emptyMsg) {
+        emptyMsg = document.createElement('div');
+        emptyMsg.id = 'emptyCalMsg';
+        emptyMsg.style.textAlign = 'center';
+        emptyMsg.style.padding = '25px';
+        emptyMsg.style.color = '#64748b';
+        emptyMsg.style.background = '#f8fafc';
+        emptyMsg.style.borderRadius = '8px';
+        emptyMsg.style.border = '1px dashed #cbd5e1';
+        emptyMsg.style.marginTop = '15px';
+        emptyMsg.innerText = 'ไม่มีคิวการจองในเดือนนี้';
+        grid.parentNode.insertBefore(emptyMsg, grid.nextSibling);
+      }
+      emptyMsg.style.display = 'none';
+
+      const eventList = document.getElementById('eventListContainer');
+      eventList.innerHTML = '<h4 style="margin-bottom: 5px; color: #4a5568;"><i class="fa-solid fa-list"></i> รายละเอียดการจองในเดือนนี้</h4>';
+      let hasMonthEvent = false;
+
+      for(let i=0; i<firstDay; i++) { 
+        const e = document.createElement('div'); 
+        e.className='cal-day empty-slot'; 
+        e.style.backgroundColor='#f8fafc'; 
+        grid.appendChild(e); 
+      }
+      
+      for(let day=1; day<=daysInMonth; day++) {
+        const dDiv = document.createElement('div'); dDiv.className='cal-day';
+        const dSpan = document.createElement('div'); dSpan.className='cal-date'; dSpan.innerText=day; dDiv.appendChild(dSpan);
+        const tDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        
+        const dotWrapper = document.createElement('div');
+        dotWrapper.className = 'cal-event-dot-wrapper';
+        dDiv.appendChild(dotWrapper);
+
+        calendarEvents.forEach(ev => {
+          if(selectedRoom !== "all" && ev.room !== selectedRoom) return;
+          const fromParsed = parseTimeStr(ev.from);
+          if(fromParsed.dateStr === tDateStr) {
+            hasMonthEvent = true;
+            const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
+            
+            // ใส่จุดลงในตารางปฏิทิน
+            const evDiv = document.createElement('div'); 
+            evDiv.className=`cal-event ${evClass}`;
+            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nเครื่องมือ: ${ev.room}\nเวลา: ${formatDisplayTime(ev.from)} - ${formatDisplayTime(ev.to)}`;
+            dotWrapper.appendChild(evDiv);
+
+            // ใส่การ์ดลงในรายการด้านล่าง
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            card.innerHTML = `
+              <div style="font-weight: bold; color: #1a202c; font-size: 15px; margin-bottom: 5px; border-left: 4px solid #3498db; padding-left: 8px;">${ev.room}</div>
+              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-solid fa-hashtag"></i> Ticket:</b> ${ev.id}</div>
+              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-regular fa-clock"></i> เริ่มจอง:</b> ${shortDateTime(ev.from)}</div>
+              <div style="font-size: 13px; color: #4a5568;"><b><i class="fa-solid fa-flag-checkered"></i> กำหนดเสร็จ:</b> ${shortDateTime(ev.to)}</div>
+            `;
+            eventList.appendChild(card);
+          }
+        });
+
+        grid.appendChild(dDiv);
+      }
+
+      if (!hasMonthEvent) { 
+        emptyMsg.style.display = 'block'; 
+        eventList.innerHTML += '<div style="font-size: 13px; color: #94a3b8; text-align: center; padding: 20px;">ไม่มีรายการจองในเดือนนี้</div>';
+      }
+    }
+
+    // ==========================================
+    // ระบบอ่าน URL Parameter เพื่อดึงสถานะอัตโนมัติ
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ticketId = urlParams.get('ticket');
+
+      if (ticketId) {
+        openTrackingModal();
+        document.getElementById('ticketInput').value = ticketId;
+        setTimeout(() => { fetchTicketData(); }, 500);
+      }
+    });
+
+  </script>
+</body>
+</html>

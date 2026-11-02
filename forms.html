@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คลังรวมแบบฟอร์มเอกสารคำร้อง</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    body { background-color: #f4f6f9; padding: 30px 20px; color: #333; }
+    .container { max-width: 850px; margin: 0 auto; background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; }
+    .header h1 { font-size: 24px; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff; background-color: #7494c0; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; }
+    .back-btn:hover { background-color: #5d7ca4; }
+    .file-grid { display: flex; flex-direction: column; gap: 12px; }
+    .file-card { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; transition: all 0.2s; }
+    .file-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.04); border-color: #cbd5e1; }
+    .file-info { display: flex; align-items: center; gap: 15px; }
+    .file-info i.fa-google-drive { color: #ffc107; font-size: 28px; }
+    .file-name { font-weight: bold; font-size: 15px; color: #1a202c; line-height: 1.4; }
+    .file-tag { display: inline-block; background-color: #e2e8f0; color: #4a5568; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: 600; }
+    .download-btn { background: #1e7e34; color: white; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .download-btn:hover { background: #155d25; }
+    /* ========================================= */
+    /* โค้ดปรับขนาดสำหรับหน้าจอมือถือ (Responsive) */
+    /* ========================================= */
+    @media (max-width: 500px) {
+      /* ปรับหัวกระดาษและปุ่มกลับห้องแชต */
+      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .header h1 { font-size: 18px; }
+      .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
+      
+      /* ปรับกล่องรายการไฟล์และปุ่มเปิดไฟล์/ดาวน์โหลด */
+      .file-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+      .download-btn, .open-btn { width: 100%; justify-content: center; padding: 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fa-solid fa-folder-open" style="color: #007bff;"></i> ศูนย์รวมแบบฟอร์ม & เอกสารคำร้อง</h1>
+      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
+    </div>
+    <div class="file-grid">
+      <div class="file-card">
+        <div class="file-info">
+          <i class="fa-brands fa-google-drive"></i>
+          <div>
+            <div class="file-name">แบบขอลงทะเบียนเรียนแทนรายวิชาที่มีค่าระดับคะแนน ( F )</div>
+            <span class="file-tag">Google Drive File</span>
+          </div>
+        </div>
+        <a href="https://drive.google.com/file/d/127mC_okn_bv6G3bPr-y_mTSs_p9Aceyy/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+      </div>
+      <div class="file-card">
+        <div class="file-info">
+          <i class="fa-brands fa-google-drive"></i>
+          <div>
+            <div class="file-name">แบบคำร้องต่ำกว่าเกณฑ์-เกินกว่าเกณฑ์ และอื่นๆ</div>
+            <span class="file-tag">Google Drive File</span>
+          </div>
+        </div>
+        <a href="https://drive.google.com/file/d/1zcy38LyqMSJ9dZJEM6mR0_6sxHplKFYq/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+      </div>
+      <div class="file-card">
+        <div class="file-info">
+          <i class="fa-brands fa-google-drive"></i>
+          <div>
+            <div class="file-name">แบบเทียบโอน-ยกเว้นรายวิชา</div>
+            <span class="file-tag">Google Drive File</span>
+          </div>
+        </div>
+        <a href="https://drive.google.com/file/d/16SWBJFSQjvTb-b3DCxfL1C6Brpt5OOSD/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+      </div>
+      <div class="file-card">
+        <div class="file-info">
+          <i class="fa-brands fa-google-drive"></i>
+          <div>
+            <div class="file-name">แบบเพิ่ม-ถอนรายวิชา</div>
+            <span class="file-tag">Google Drive File</span>
+          </div>
+        </div>
+        <a href="https://drive.google.com/file/d/1CEl7GyqLUXxWRChXlTRoQc1QYRfUVXKU/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+      </div>
+      <div class="file-card">
+        <div class="file-info">
+          <i class="fa-brands fa-google-drive"></i>
+          <div>
+            <div class="file-name">แบบลาพักการศึกษา-ขอกลับเข้าศึกษา</div>
+            <span class="file-tag">Google Drive File</span>
+          </div>
+        </div>
+        <a href="https://drive.google.com/file/d/1TRi5Lw86U5-v4lxkjkBYwMk9gIksUMtk/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+      </div>
+      <div class="file-card">
+        <div class="file-info">
+          <i class="fa-brands fa-google-drive"></i>
+          <div>
+            <div class="file-name">ใบลงทะเบียน</div>
+            <span class="file-tag">Google Drive File</span>
+          </div>
+        </div>
+        <a href="https://drive.google.com/file/d/1UXXdupNoBZvBCVZVcfXE4Xd09QpDO1eJ/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

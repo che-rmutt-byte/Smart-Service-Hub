@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>คลังความรู้ - คู่มือการใช้งานอุปกรณ์วิทยาศาสตร์</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- เพิ่ม Library สำหรับวาดกราฟ PID -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- เพิ่ม Library MathJax สำหรับแสดงสมการคณิตศาสตร์ให้สวยงาม -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    body { background-color: #f4f6f9; padding: 30px 20px; color: #333; }
+    .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #edf2f7; padding-bottom: 20px; }
+    .header h1 { font-size: 24px; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff; background-color: #7494c0; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; }
+    .back-btn:hover { background-color: #5d7ca4; }
+    
+    .knowledge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+    .tool-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.01); cursor: pointer; text-decoration: none; color: inherit; }
+    .tool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); border-color: #16a085; }
+    
+    .tool-info { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
+    .tool-icon { width: 50px; height: 50px; border-radius: 10px; background-color: #e8f8f5; color: #16a085; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1px solid #a3e4d7; }
+    .tool-title { font-size: 16px; font-weight: bold; color: #1a202c; margin-bottom: 4px; }
+    .tool-desc { font-size: 13px; color: #718096; line-height: 1.4; }
+    
+    .media-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; border: none; text-decoration: none; }
+    .tag-video { background-color: #feebc8; color: #c05621; }
+    .tag-image { background-color: #ebf8ff; color: #2b6cb0; }
+    .tag-pdf { background-color: #fed7d7; color: #9b2c2c; }
+    .tag-interactive { background-color: #e8f8f5; color: #16a085; border: 1px solid #a3e4d7;} 
+    
+    .open-btn { background: #1e7e34; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s; cursor: pointer; }
+    .open-btn:hover { background: #155d25; }
+
+    /* Modal Styles */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+    .modal-box { background: #fff; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; background: #fff; flex-shrink: 0; z-index: 10; }
+    .modal-header h3 { color: #2d3748; font-size: 18px; display: flex; align-items: center; gap: 10px; margin: 0; }
+    .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #a0aec0; transition: 0.2s; padding: 0 5px; }
+    .close-modal:hover { color: #e53e3e; }
+    
+    .modal-content { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    
+    .video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    
+    .additional-files { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
+
+    /* ========================================================
+       สไตล์สำหรับ PID Simulator Interactive และ Article
+       ======================================================== */
+    .content-article { line-height: 1.6; color: #4a5568; margin-bottom: 25px; font-size: 14px; }
+    .content-article ul { margin-left: 20px; margin-top: 10px; }
+    .content-article li { margin-bottom: 8px; }
+    .content-article h4 { color: #16a085; margin-top: 25px; margin-bottom: 15px; border-bottom: 2px solid #a3e4d7; padding-bottom: 5px; font-size: 18px; }
+    
+    .img-responsive { max-width: 100%; height: auto; border-radius: 8px; margin: 20px auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block; border: 1px solid #e2e8f0; }
+    
+    /* สไตล์สำหรับตารางบทความ */
+    .article-table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; font-size: 14px; }
+    .article-table th { background-color: #16a085; color: white; padding: 12px 15px; text-align: left; border: 1px solid #117a65; }
+    .article-table td { background-color: #ffffff; color: #333; padding: 12px 15px; border: 1px solid #cbd5e1; vertical-align: top; line-height: 1.5; }
+    .article-table tr:nth-child(even) td { background-color: #f8fafc; }
+
+    /* Process Selector */
+    .process-selector { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .process-btn { flex: 1; min-width: 150px; padding: 12px; text-align: center; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; cursor: pointer; font-weight: bold; color: #475569; transition: 0.2s; }
+    .process-btn.active { background: #e8f8f5; border-color: #16a085; color: #16a085; }
+    .process-btn:hover:not(.active) { background: #f1f5f9; border-color: #94a3b8; }
+
+    .process-info { background: #e8f8f5; border-left: 4px solid #16a085; padding: 15px; border-radius: 4px; font-size: 13px; margin-bottom: 20px; color: #0d5f4f; }
+
+    .simulator-box { display: flex; flex-wrap: wrap; gap: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 30px; }
+    .control-panel { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 15px; }
+    .chart-container { flex: 2; min-width: 450px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; height: 400px; position: relative; }
+    
+    .slider-group { display: flex; flex-direction: column; gap: 5px; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
+    .slider-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; color: #1e293b; align-items: center; }
+    
+    /* สไลเดอร์ชุด Ideal (สีม่วง) */
+    .ideal-slider { accent-color: #6366f1; } 
+    .ideal-display { background: #6366f1; color: white; }
+    
+    /* สไลเดอร์ชุด Advanced (สีเขียว) */
+    .adv-slider { accent-color: #16a085; } 
+    .adv-display { background: #16a085; color: white; }
+    
+    input[type=range] { width: 100%; cursor: pointer; } 
+    .value-display { font-family: monospace; font-size: 13px; padding: 2px 8px; border-radius: 12px; min-width: 45px; text-align: center; }
+
+    .btn-reset { padding: 12px; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; transition: background 0.2s; font-size: 14px; }
+    .btn-reset:hover { background: #475569; }
+
+    /* ========================================================
+       สไตล์สำหรับเครื่องคิดเลข (PID Calculator)
+       ======================================================== */
+    .calculator-box { background: #fff; border: 2px solid #16a085; border-radius: 10px; padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(22, 160, 133, 0.1); }
+    .calc-header { color: #0d5f4f; font-size: 18px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #e8f8f5; padding-bottom: 10px; }
+    .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .calc-group label { display: block; font-size: 13px; font-weight: bold; color: #4a5568; margin-bottom: 5px; }
+    .calc-group input, .calc-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; transition: border 0.2s; }
+    .calc-group input:focus, .calc-group select:focus { border-color: #16a085; }
+    .calc-btn { width: 100%; background: #16a085; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; }
+    .calc-btn:hover { background: #117a65; }
+    .calc-results { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 15px; margin-top: 20px; text-align: center; }
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+    .res-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .res-box .res-title { font-size: 13px; color: #64748b; font-weight: bold; margin-bottom: 5px; }
+    .res-box .res-val { font-size: 24px; font-weight: bold; color: #16a085; font-family: monospace; }
+    .res-sub-val { font-size: 12px; color: #94a3b8; margin-top: 5px; }
+
+    @media (max-width: 768px) {
+      body { padding: 15px 10px; }
+      .container { padding: 20px; }
+      .knowledge-grid { grid-template-columns: 1fr; }
+      
+      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .header h1 { font-size: 18px; }
+      .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
+      
+      .modal-overlay { padding: 10px; }
+      .modal-box { max-height: 95vh; border-radius: 10px; }
+      .modal-header { padding: 12px 15px; }
+      .modal-header h3 { font-size: 16px; }
+      .modal-content { padding: 15px; }
+      
+      .additional-files { flex-direction: column; }
+      .tag { justify-content: center; text-align: center; }
+      
+      .chart-container { min-width: 100%; height: 300px; }
+      .article-table th, .article-table td { padding: 8px; font-size: 13px; }
+      .result-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fa-solid fa-book-open" style="color: #16a085;"></i> คลังความรู้ - คู่มือการใช้งานอุปกรณ์</h1>
+      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
+    </div>
+
+    <!-- รายการเครื่องมือ -->
+    <div class="knowledge-grid">
+      
+      <!-- 🌟 การ์ด: PID (บทความแบบโต้ตอบ) -->
+      <div class="tool-card" onclick="openPIDModal()">
+        <div class="tool-info">
+          <div class="tool-icon">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <div class="tool-title">PID Controller</div>
+            <div class="tool-desc">บทความให้ความรู้เรื่องการปรับจูนระบบควบคุม PID และแบบจำลองคณิตศาสตร์แบบเรียลไทม์</div>
+            <div class="media-tags">
+              <span class="tag tag-interactive"><i class="fa-solid fa-laptop-code"></i> บทความ Interactive</span>
+            </div>
+          </div>
+        </div>
+        <button class="open-btn"><i class="fa-solid fa-arrow-pointer"></i> เปิดดูบทความและ Simulator</button>
+      </div>
+
+      <!-- Card: BET -->
+      <div class="tool-card" onclick="openMediaModal('BET', '', '', '')">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-chart-area"></i></div>
+          <div>
+            <div class="tool-title">BET</div>
+            <div class="tool-desc">เครื่องวิเคราะห์หาพื้นที่ผิว และการกระจายขนาดรูพรุนของสาร</div>
+            <div class="media-tags">
+              <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
+              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
+            </div>
+          </div>
+        </div>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
+      </div>
+
+      <!-- Card: CHNS -->
+      <div class="tool-card" onclick="openMediaModal('CHNS', '', '', '')">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-dna"></i></div>
+          <div>
+            <div class="tool-title">CHNS</div>
+            <div class="tool-desc">เครื่องวิเคราะห์หาปริมาณธาตุองค์ประกอบ คาร์บอน ไฮโดรเจน ไนโตรเจน และซัลเฟอร์</div>
+            <div class="media-tags">
+              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
+            </div>
+          </div>
+        </div>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
+      </div>
+
+      <!-- Card: FTIR -->
+      <div class="tool-card" onclick="openMediaModal('FTIR', '', '', '')">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-wave-square"></i></div>
+          <div>
+            <div class="tool-title">FTIR</div>
+            <div class="tool-desc">เครื่องฟูเรียร์ทรานสฟอร์มอินฟราเรดสเปกโทรมิเตอร์</div>
+            <div class="media-tags">
+              <span class="tag tag-pdf"><i class="fa-regular fa-file-pdf"></i> คู่มือ PDF</span>
+            </div>
+          </div>
+        </div>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
+      </div>
+
+      <!-- Card: TGA -->
+      <div class="tool-card" onclick="openMediaModal('TGA', '', '', '')">
+        <div class="tool-info">
+          <div class="tool-icon"><i class="fa-solid fa-temperature-high"></i></div>
+          <div>
+            <div class="tool-title">TGA</div>
+            <div class="tool-desc">เครื่องวิเคราะห์การเปลี่ยนแปลงน้ำหนักของสารโดยอาศัยความร้อน</div>
+            <div class="media-tags">
+              <span class="tag tag-video"><i class="fa-solid fa-video"></i> มีไฟล์วิดีโอ</span>
+              <span class="tag tag-image"><i class="fa-solid fa-image"></i> รูปภาพ</span>
+            </div>
+          </div>
+        </div>
+        <button class="open-btn"><i class="fa-regular fa-circle-play"></i> เปิดดูคู่มือการใช้งาน</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==============================================
+       Modal 1: สำหรับแสดงวิดีโอและไฟล์ปกติ 
+       ============================================== -->
+  <div class="modal-overlay" id="mediaModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle"><i class="fa-solid fa-circle-info" style="color: #16a085;"></i> คู่มือการใช้งาน</h3>
+        <button class="close-modal" onclick="closeMediaModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="modal-content">
+        <div id="videoZone" class="video-container" style="display: none;"></div>
+        
+        <div id="noVideoMsg" style="display: none; text-align: center; color: #718096; padding: 30px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 15px;">
+          <i class="fa-solid fa-video-slash" style="font-size: 30px; margin-bottom: 10px; color: #cbd5e1;"></i><br>ไม่มีไฟล์วิดีโอสำหรับเครื่องมือนี้
+        </div>
+
+        <div id="extraFilesZone" class="additional-files">
+          <span style="font-size: 13px; font-weight: bold; color: #4a5568; width: 100%; margin-bottom: 5px;">เอกสารเพิ่มเติม:</span>
+          <a id="btnPdf" href="#" target="_blank" class="tag tag-pdf" style="display: none; font-size: 14px; padding: 10px 15px;"><i class="fa-regular fa-file-pdf"></i> เปิดอ่านคู่มือ PDF</a>
+          <a id="btnImg" href="#" target="_blank" class="tag tag-image" style="display: none; font-size: 14px; padding: 10px 15px;"><i class="fa-solid fa-image"></i> ดูรูปภาพคู่มือ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       Modal 2: สำหรับแสดงบทความความรู้แบบ Interactive (PID) 
+       ============================================== -->
+  <div class="modal-overlay" id="pidModal">
+    <div class="modal-box" style="max-width: 1000px;"> 
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-laptop-code" style="color: #16a085;"></i> บทความความรู้: การจูนระบบควบคุม PID</h3>
+        <button class="close-modal" onclick="closePIDModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="modal-content">
+        
+        <!-- 🟢 ส่วนทฤษฎีพื้นฐานของ PID -->
+        <div class="content-article">
+          <h4>ระบบควบคุม PID คืออะไร? ทำไมถึงสำคัญในกระบวนการวิศวกรรมเคมี</h4>
+          <p><b>PID</b> คือ อุปกรณ์หรืออัลกอริทึมที่ใช้ควบคุมค่าในกระบวนการผลิตให้อยู่ในระดับที่ต้องการโดยอัตโนมัติ ทำหน้าที่เสมือน "สมอง" ที่คอยปรับแต่งการทำงานของอุปกรณ์ในระบบ (เช่น ปรับการเปิด-ปิดวาล์ว) เพื่อรักษาค่าต่าง ๆ เช่น อุณหภูมิ ความดัน หรืออัตราการไหล ให้เสถียรที่สุด</p>
+          <ul></ul>
+          <p>ระบบควบคุม PID เป็น <b>ตัวควบคุมแบบฟีดแบ็ก (Feedback Controller)</b> ที่ใช้หลักการคำนวณค่าความผิดพลาด (Error) ระหว่างค่าที่ต้องการ (Setpoint Value = SV) กับค่าที่วัดได้ (Process Value = PV) แล้วสั่งการกลับไปยังระบบให้ปรับตัวเองให้เข้าใกล้เป้าหมายมากที่สุด ในการควบคุมอัตโนมัติ ระบบ PID Control มีตัวแปรหลัก 3 ตัวแปรที่ทำงานร่วมกันเป็นวงจร (Loop) คือ SV, PV และ MV เพื่อรักษาเสถียรภาพของระบบ โดยมีความเกี่ยวข้องและการทำงานสัมพันธ์กันดังนี้</p>
+          <ul></ul>
+          <b>SV (Set Variable / Setpoint)</b> = "ค่าที่เราตั้งเป้าไว้" คือ ค่าของระบบที่ต้องการให้เป็น<br>
+          <b>PV (Process Variable)</b> = "ค่าที่วัดได้จริง ณ ขณะนั้น" คือ สถานะปัจจุบันของระบบที่อ่านได้จากเซนเซอร์<br>
+          <b>MV (Manipulated Variable)</b> = "สิ่งที่เราต้องปรับ" คือ ค่าสัญญาณที่ตัวควบคุม (Controller) ส่งไปสั่งการอุปกรณ์เอาต์พุตเพื่อเปลี่ยนสถานะระบบ</p>
+
+          <img src="Feedback.png" alt="Feedback Control System" class="img-responsive">
+          
+          <div class="content-article">
+          <h4>PID คืออะไร</h4>
+          
+          <b>P (Proportional)</b> = (สัดส่วน) สัดส่วนของความคลาดเคลื่อน<br>
+            <ul>
+              <li>ทำหน้าที่ตอบสนองต่อ ความผิดพลาดในปัจจุบัน (Current Error) ระหว่างค่าที่ตั้งไว้กับค่าจริง<br>
+              <li>ยิ่งค่าความผิดพลาดมาก แรงในการควบคุมหรือการแก้ไขจะยิ่งมากตามสัดส่วน<br>
+              <li>หากมีค่าสูงเกินไปอาจทำให้ระบบเกิดการแกว่ง (Overshoot) แต่ถ้าต่ำเกินไปจะตอบสนองช้า<br>
+            </ul>
+
+          <b>I (Integral)</b> = (ปริพันธ์) ผลรวมของความคลาดเคลื่อน<br>
+            <ul>
+              <li>ทำหน้าที่สะสมและแก้ไข ความผิดพลาดในอดีตที่ผ่านมา (Accumulated Error)<br>
+              <li>ช่วยกำจัดค่าความผิดพลาดเหลือค้าง (Steady-state Error) ให้เป็นศูนย์เมื่อระบบทำงานไปเรื่อย ๆ<br>
+              <li>หากค่ามากเกินไปอาจทำให้ระบบตอบสนองช้าและเกิดการ Overshoot มากขึ้นเช่นกัน<br>
+            </ul>
+
+          <b>D (Derivative)</b> = (อนุพันธ์) ความเปลี่ยนแปลงของความคลาดเคลื่อน</p>
+            <ul>
+              <li>ทำหน้าที่ประเมินและคาดการณ์ ความผิดพลาดในอนาคต (Future Error) จากอัตราการเปลี่ยนแปลงของความผิดพลาดเทียบกับเวลา<br>
+              <li>ทำตัวเสมือนระบบเบรก ช่วยลดการแกว่งและการกระชาก ทำให้ระบบเข้าสู่ความเสถียรหรือนิ่งได้เร็วขึ้น<br>
+              <li>มีความไวต่อสัญญาณรบกวน (Noise) สูง หากปรับค่าสูงเกินไปอาจทำให้ระบบสั่น<br>
+            </ul>
+
+          <img src="PID.png" alt="PID Controller" class="img-responsive">
+
+        </div>
+
+        <!-- เนื้อหาเชิงทฤษฎี (การจูน PID) -->
+        <div class="content-article">
+          <h4>การจูนระบบควบคุม PID</h4>
+          <p><b>PID Controller</b> คือระบบควบคุมแบบป้อนกลับ (Feedback Control) ที่ใช้กันอย่างแพร่หลายในอุตสาหกรรมเคมี โดยแต่ละพารามิเตอร์ทำหน้าที่ดังนี้:</p>
+          <ul>
+            <li><b>Proportional \( K_p \) - ตัวออกแรงหลัก:</b> ออกแรงแก้ไขตามขนาดของ Error (เป้าหมาย - ค่าปัจจุบัน) 
+              <br><span style="color:#e74c3c;">⚠️ หากปรับน้อยไป:</span> ระบบจะ "อืด" ตอบสนองต่อการเปลี่ยนแปลงช้ามาก และมักจะเกิด Steady-state Error (Offset) คือกราฟ PV จะไปหยุดนิ่งอยู่ใต้ SV และไม่ยอมวิ่งไปแตะเป้าหมาย
+              <br><span style="color:#e74c3c;">⚠️ หากปรับมากไป:</span> ระบบจะวิ่งเข้าหาเป้าหมายไวมาก แต่มันจะเบรกไม่อยู่ ทำให้กราฟพุ่งทะลุเป้าหมาย (Overshoot) ถ้ายิ่งปรับมากไปอีก กราฟจะเกิดการแกว่งขึ้นลงสลับกัน (Oscillation) และอาจทำให้ระบบเสียเสถียรภาพ (พัง) ในที่สุด
+            </li>
+            <li><b>Integral \( K_i \) - ตัวเก็บตกอดีต:</b> กำจัด Error ที่สะสมในอดีต (ช่วยลด Offset)
+              <br><span style="color:#e74c3c;">⚠️ หากปรับน้อยไป:</span> ระบบจะใช้เวลานานมากในการค่อยๆ ขยับกราฟ PV ให้ไปทับเส้นเป้าหมาย SV (กำจัดค่า Error ได้ช้า)
+              <br><span style="color:#e74c3c;">⚠️ หากปรับมากไป:</span> แม้จะดึงกราฟเข้าหาเป้าหมายได้เร็ว แต่จะทำให้เกิด Overshoot รุนแรง แกว่งไปมา และหากมีข้อจำกัดของวาล์วจะทำให้เกิดอาการที่เรียกว่า Integral Windup (ระบบสั่งการค้างเติ่ง)
+            </li>
+            <li><b>Derivative \( K_d \) - ตัวเบรกลดความแรง:</b> คาดการณ์ Error ในอนาคต
+              <br><span style="color:#e74c3c;">⚠️ หากปรับน้อยไป (หรือ 0):</span> ระบบจะไม่มีตัวช่วยหน่วงเบรก (ใช้ได้ดีถ้าระบบนั้นนิ่งและไม่มี Noise)
+              <br><span style="color:#e74c3c;">⚠️ หากปรับมากไป:</span> กราฟจะดูตอบสนองช้าลง (เพราะพยายามเบรกตลอดเวลา) และระบบจะไวต่อ "สัญญาณรบกวน" (Noise) จากเซ็นเซอร์ ทำให้วาล์วควบคุมกระตุกเปิดๆ ปิดๆ อย่างรุนแรงจนอุปกรณ์เสียหาย
+            </li>
+          </ul>
+
+          <h4>ทำความเข้าใจพฤติกรรมพื้นฐาน (Ideal Process)</h4>
+          <p>ทดลองปรับค่าด้านล่างเพื่อดูผลกระทบของ P, I, D ในกระบวนการทางอุดมคติที่ไม่มีสัญญาณรบกวน (Noise) และไม่มีเวลาหน่วง (Dead time)</p>
+        </div>
+
+        <!-- 🌟 ส่วนที่ 1: Ideal Interactive Simulator -->
+        <div class="simulator-box" style="border-left: 4px solid #6366f1;">
+          <div class="control-panel">
+            <div class="slider-group">
+              <div class="slider-header"><span>🎯 Setpoint (SV)</span> <span id="ideal_val_sp" class="value-display ideal-display">80</span></div>
+              <input type="range" id="ideal_slider_sp" class="ideal-slider" min="0" max="100" step="5" value="80">
+            </div>
+            <div class="slider-group">
+              <div class="slider-header"><span>🔴 Proportional \( K_p \)</span> <span id="ideal_val_kp" class="value-display ideal-display">5.0</span></div>
+              <input type="range" id="ideal_slider_kp" class="ideal-slider" min="0.1" max="10" step="0.1" value="5.0">
+            </div>
+            <div class="slider-group">
+              <div class="slider-header"><span>🟢 Integral \( K_i \)</span> <span id="ideal_val_ki" class="value-display ideal-display">0.25</span></div>
+              <input type="range" id="ideal_slider_ki" class="ideal-slider" min="0" max="1" step="0.01" value="0.25">
+            </div>
+            <div class="slider-group">
+              <div class="slider-header"><span>🔵 Derivative \( K_d \)</span> <span id="ideal_val_kd" class="value-display ideal-display">0.0</span></div>
+              <input type="range" id="ideal_slider_kd" class="ideal-slider" min="0" max="10" step="0.1" value="0.0">
+            </div>
+            <button class="btn-reset" style="background-color: #6366f1;" onclick="resetIdealPID()">
+              <i class="fa-solid fa-rotate-right"></i> รีเซ็ตค่าเข้าหาเป้าไวและนิ่งที่สุด
+            </button>
+          </div>
+          <div class="chart-container">
+            <canvas id="idealPidChart"></canvas>
+          </div>
+        </div>
+
+        <div class="content-article">
+          <h4>ทำไมเราไม่ใช้ค่าเดียวแบบในอุดมคติไปเลย?</h4>
+          <p>ในแบบจำลองด้านบน ค่า <i>\( K_p \)=5.0, \( K_i \)=0.25, \( K_d \)=0.0</i> ทำให้กราฟวิ่งเข้าหาเป้าอย่างรวดเร็วและนิ่งที่สุด แต่ในชีวิตจริง <b>พฤติกรรมกระบวนการ (Process Dynamics) แตกต่างกัน</b> อุณหภูมิตอบสนองช้าและมีเวลาหน่วง (Dead Time) หากใส่ค่า \( K_p \) มาก ระบบให้ความร้อนจะเปิดสุดจนระบบแกว่งและอันตราย หรือระบบการไหลที่มี Noise สูงก็ห้ามใช้ \( K_d \) เป็นอันขาด ลองเลือกกระบวนการจำลองเสมือนจริงด้านล่างเพื่อทดสอบพฤติกรรม:</p>
+        </div>
+
+        <!-- ปุ่มเลือกกระบวนการ -->
+        <div class="process-selector">
+          <div class="process-btn active" onclick="changeProcess('temperature')" id="btn_temperature">🌡️ ระบบอุณหภูมิ</div>
+          <div class="process-btn" onclick="changeProcess('flow')" id="btn_flow">🌊 ระบบอัตราการไหล</div>
+          <div class="process-btn" onclick="changeProcess('pressure')" id="btn_pressure">💨 ระบบแรงดัน</div>
+          <div class="process-btn" onclick="changeProcess('level')" id="btn_level">🛢️ ระบบระดับของเหลว</div>
+        </div>
+
+        <div class="process-info" id="process_desc">
+          <b>อุณหภูมิ (Temperature):</b> เป็นกระบวนการที่ตอบสนองช้า (Slow dynamic) และมีเวลาหน่วง (Dead time) สูง กว่าความร้อนจะเดินทางไปถึงเซ็นเซอร์ การใช้ \( K_p \) หรือ \( K_i \) ที่สูงเกินไปจะทำให้ระบบแกว่งรุนแรง มักจำเป็นต้องใช้ \( K_d \) มาช่วยคาดการณ์ล่วงหน้า
+        </div>
+
+        <!-- 🌟 ส่วนที่ 2: Advanced Interactive Simulator -->
+        <div class="simulator-box" style="border-left: 4px solid #16a085;">
+          <div class="control-panel">
+            <div class="slider-group">
+              <div class="slider-header"><span>🎯 Setpoint (SV)</span> <span id="adv_val_sp" class="value-display adv-display">60</span></div>
+              <input type="range" id="adv_slider_sp" class="adv-slider" min="0" max="100" step="5" value="60">
+            </div>
+            <div class="slider-group">
+              <div class="slider-header"><span>🔴 Proportional \( K_p \)</span> <span id="adv_val_kp" class="value-display adv-display">1.5</span></div>
+              <input type="range" id="adv_slider_kp" class="adv-slider" min="0.1" max="10" step="0.1" value="1.5">
+            </div>
+            <div class="slider-group">
+              <div class="slider-header"><span>🟢 Integral \( K_i \)</span> <span id="adv_val_ki" class="value-display adv-display">0.05</span></div>
+              <input type="range" id="adv_slider_ki" class="adv-slider" min="0" max="2" step="0.01" value="0.05">
+            </div>
+            <div class="slider-group">
+              <div class="slider-header"><span>🔵 Derivative \( K_d \)</span> <span id="adv_val_kd" class="value-display adv-display">2.0</span></div>
+              <input type="range" id="adv_slider_kd" class="adv-slider" min="0" max="10" step="0.1" value="2.0">
+            </div>
+            <button class="btn-reset" onclick="resetAdvancedPID()">
+              <i class="fa-solid fa-rotate-right"></i> รีเซ็ตค่าแนะนำสำหรับระบบนี้
+            </button>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="advPidChart"></canvas>
+          </div>
+          
+          <!-- หมายเหตุเพิ่มเติมเกี่ยวกับข้อจำกัดของ Simulator -->
+          <div style="width: 100%; font-size: 12px; color: #64748b; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 12px; line-height: 1.5;">
+            <b>* หมายเหตุ:</b> การตอบสนองของกราฟเกิดจากแบบจำลอง FOPDT เบื้องต้น ในโรงงานจริงไม่สามารถนำค่าจากการจำลองนี้ไปใช้ตรงๆ ได้ เนื่องจากมีปัจจัย Mismatch เช่น พฤติกรรมแบบ Non-linear ของวาล์ว, การเปลี่ยนแปลงของ Load กะทันหัน, และข้อจำกัดทางกายภาพ (Actuator limits)
+          </div>
+        </div>
+
+        <!-- 📘 ส่วนบทความวิชาการ: วิทยาศาสตร์เบื้องหลังการจูน PID -->
+        <div class="content-article">
+          <h4>การปรับจูนพารามิเตอร์ PID </h4>
+          <p>ในอดีต การปรับจูนค่าพารามิเตอร์ระบบควบคุม (PID Tuning) มักอาศัยการสุ่มเดา (Trial & Error) ซึ่งนอกจากจะใช้เวลานานแล้ว ยังเสี่ยงทำให้เครื่องจักรเสียหาย วิศวกรรมควบคุมกระบวนการ (Process Control) ยุคใหม่จึงเปลี่ยนมาใช้วิธีการหา <b>"แบบจำลองทางคณิตศาสตร์"</b> ของเครื่องจักรนั้นๆ ก่อน แล้วจึงนำไปเข้าสมการเพื่อคำนวณหาค่า PID ที่เหมาะสมที่สุด</p>
+
+          <p><b>1. การถอดรหัสพฤติกรรมของกระบวนการด้วยโมเดล FOPDT (First-Order Plus Dead Time)</b><br>
+          กว่า 80-90% ของกระบวนการในอุตสาหกรรมเคมี สามารถอธิบายพฤติกรรมได้ด้วยโมเดล <b>FOPDT</b> โมเดลนี้จะสรุปพฤติกรรมของระบบออกมาเป็นตัวเลข 3 ตัว (เปรียบเสมือน ข้อมูลจำเพาะทางของเครื่องจักร) ได้แก่:</p>
+          <ul>
+            <li><b>\( K \) (Process Gain) - "อัตราขยายของกระบวนการ"</b><br>
+            คือ การตอบสนองของตัวระบบ หรือ อัตราส่วนระหว่าง ผลลัพธ์ที่เปลี่ยนไป (PV) ต่อ สิ่งที่เราสั่งการลงไป (MV) 
+            <br><i>สมการ:</i> \( K = \frac{\Delta PV}{\Delta MV} \)</li>
+            <li><b>\( \theta \) (Dead Time) - "ระบบนี้ช่วงเวลาความล่าช้านานแค่ไหน?"</b><br>
+            คือ เวลาที่สูญเสียไปตั้งแต่เริ่มสั่งการ จนกระทั่งเซนเซอร์เริ่มตรวจจับการเปลี่ยนแปลงได้ (หน่วยเป็นวินาที)</li>
+            <li><b>\( \tau \) (Time Constant) - "ระบบนี้มีความเฉื่อยแค่ไหน?"</b><br>
+            คือ เวลาที่ระบบใช้ในการวิ่งจากจุดเริ่มต้น ไปจนถึง <b>63.2%</b> ของการเปลี่ยนแปลงทั้งหมด (มาจากสมการ \( 1 - e^{-1} \approx 0.632 \))</li>
+          </ul>
+
+          <p><b>2. วิธีการคำนวณหาพารามิเตอร์ PID (Tuning Rules)</b><br>
+          เมื่อได้ค่า \( K \), \( \theta \), \( \tau \) จากการทำ Step Test แล้ว เราจะนำมาเข้าสมการคณิตศาสตร์ที่มีชื่อเสียง 2 ระเบียบวิธี:</p>
+
+          <p><u>วิธีที่ 1: สมการ Ziegler-Nichols (Z-N) Open-Loop Method</u><br>
+          ค้นพบจากการทดลองทางสถิติ เน้นผลลัพธ์การตอบสนองที่ <b>รวดเร็วที่สุด</b> โดยยอมให้ระบบเกิดการแกว่งแบบ <i>Quarter Amplitude Decay</i></p>
+          <ul>
+            <li><b>PI Controller (มักใช้กับ Flow, Pressure):</b><br>
+            \( K_p = \frac{0.9 \cdot \tau}{K \cdot \theta} \), &nbsp;&nbsp;&nbsp; \( T_i = 3.3 \cdot \theta \)</li>
+            <li><b>PID Controller (มักใช้กับ Temperature):</b><br>
+            \( K_p = \frac{1.2 \cdot \tau}{K \cdot \theta} \), &nbsp;&nbsp;&nbsp; \( T_i = 2.0 \cdot \theta \), &nbsp;&nbsp;&nbsp; \( T_d = 0.5 \cdot \theta \)</li>
+          </ul>
+
+          <p><u>วิธีที่ 2: วิธี IMC (Internal Model Control) หรือ Lambda (\( \lambda \)) Tuning</u><br>
+          ข้อเสียของ Z-N คือระบบมักจะกระชาก อุตสาหกรรมยุคใหม่จึงนิยมใช้ Lambda Tuning ซึ่งเน้น <b>"ความเสถียรและความนุ่มนวล"</b> โดยผู้ใช้ต้องกำหนดตัวแปร \( \lambda \) ขึ้นมาเอง <i>(ค่า \( \lambda \) คือ ความเร็วในการเข้าเป้าหมายที่ต้องการ ยิ่งค่าน้อยระบบยิ่งดุดัน ยิ่งค่ามากระบบยิ่งนุ่มนวลและปลอดภัย)</i></p>
+          <ul>
+            <li><b>สมการ IMC สำหรับ PI / PID:</b><br>
+            \( K_p = \frac{\tau}{K \cdot (\lambda + \theta)} \), &nbsp;&nbsp;&nbsp; \( T_i = \tau \), &nbsp;&nbsp;&nbsp; \( T_d = \frac{\theta}{2} \) (กรณี PID)</li>
+          </ul>
+          <p><i>* หมายเหตุ: ค่า \( K_i \) คำนวณได้จาก \( K_i = \frac{K_p}{T_i} \) และค่า \( K_d \) คำนวณได้จาก \( K_d = K_p \cdot T_d \)</i></p>
+        </div>
+
+        <!-- 🧮 เครื่องคิดเลขคำนวณ PID -->
+        <div class="calculator-box">
+          <div class="calc-header"><i class="fa-solid fa-calculator"></i> เครื่องคิดเลขหาค่า PID (Tuning Calculator)</div>
+          <p style="font-size:13px; color:#64748b; margin-bottom:15px;">กรอกพารามิเตอร์ DNA ของกระบวนการที่ได้จากการทำ Step Test เพื่อคำนวณหาสมการที่เหมาะสมที่สุด</p>
+          
+          <div class="calc-grid">
+            <div class="calc-group">
+              <label>Process Gain (\( K \))</label>
+              <input type="number" id="calc_K" step="0.1" placeholder="เช่น 2.0">
+            </div>
+            <div class="calc-group">
+              <label>Time Constant (\( \tau \)) [s]</label>
+              <input type="number" id="calc_tau" step="0.1" placeholder="เช่น 20">
+            </div>
+            <div class="calc-group">
+              <label>Dead Time (\( \theta \)) [s]</label>
+              <input type="number" id="calc_theta" step="0.1" placeholder="เช่น 5">
+            </div>
+          </div>
+
+          <div class="calc-grid">
+            <div class="calc-group">
+              <label>วิธีคำนวณ (Tuning Rule)</label>
+              <select id="calc_method" onchange="toggleLambdaInput()">
+                <option value="zn">Ziegler-Nichols (Z-N)</option>
+                <option value="imc">IMC / Lambda Tuning</option>
+              </select>
+            </div>
+            <div class="calc-group">
+              <label>ประเภทตัวควบคุม</label>
+              <select id="calc_type">
+                <option value="P">P อย่างเดียว</option>
+                <option value="PI" selected>PI Controller</option>
+                <option value="PID">PID Controller</option>
+              </select>
+            </div>
+            <div class="calc-group" id="lambda_group" style="display: none;">
+              <label>ค่า Lambda (\( \lambda \))</label>
+              <input type="number" id="calc_lambda" step="0.1" value="20" placeholder="แนะนำให้เท่ากับ τ">
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calculatePID()">คำนวณพารามิเตอร์</button>
+
+          <div class="calc-results" id="calc_results" style="display: none;">
+            <p style="font-weight:bold; color:#0d5f4f;">ค่าที่เหมาะสมสำหรับ Controller ของคุณคือ:</p>
+            <div class="result-grid">
+              <div class="res-box">
+                <div class="res-title">Proportional (\( K_p \))</div>
+                <div class="res-val" id="res_kp">0.000</div>
+              </div>
+              <div class="res-box">
+                <div class="res-title">Integral (\( K_i \))</div>
+                <div class="res-val" id="res_ki">0.000</div>
+                <div class="res-sub-val">Ti = <span id="res_ti">0.000</span> s</div>
+              </div>
+              <div class="res-box">
+                <div class="res-title">Derivative (\( K_d \))</div>
+                <div class="res-val" id="res_kd">0.000</div>
+                <div class="res-sub-val">Td = <span id="res_td">0.000</span> s</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🟢 ส่วนเดิม: ความสำคัญ และตัวอย่างการใช้งาน -->
+        <div class="content-article">
+          <h4>ทำไม PID ถึงสำคัญในกระบวนการวิศวกรรมเคมี?</h4>
+          <p>ในโรงงานอุตสาหกรรมเคมี ระบบควบคุม PID มีความสำคัญอย่างยิ่งด้วยเหตุผลหลัก ๆ ดังนี้:</p>
+          
+          <table class="article-table">
+            <thead>
+              <tr>
+                <th>เหตุผลความสำคัญ</th>
+                <th>รายละเอียดในกระบวนการเคมี</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>1. การรักษาความปลอดภัย (Safety)</b></td>
+                <td>ปฏิกิริยาเคมีหลายชนิดมีความไวต่ออุณหภูมิและความดันสูง หากระบบไม่คงที่อาจเกิดการระเบิดหรือสารเคมีรั่วไหลได้ PID จะคอยคุมไม่ให้ค่าเหล่านี้เกินขีดจำกัดอันตราย</td>
+              </tr>
+              <tr>
+                <td><b>2. ความเสถียรของปฏิกิริยาเคมี (Reaction Stability)</b></td>
+                <td>ตัวเร่งปฏิกิริยา (Catalysts) และปฏิกิริยาเคมีส่วนใหญ่ต้องการสภาวะที่นิ่งมาก PID ช่วยควบคุมอัตราการป้อนสารและอุณหภูมิในหอผลิตให้คงที่ เพื่อให้ได้สารเคมีตามสูตร</td>
+              </tr>
+              <tr>
+                <td><b>3. ควบคุมคุณภาพสารเคมี (Quality Control)</b></td>
+                <td>การเปลี่ยนแปลงของอุณหภูมิเพียงเล็กน้อยในหอกลั่นอาจทำให้ความบริสุทธิ์ของผลิตภัณฑ์เคมีลดลง PID ช่วยรักษามาตรฐานความบริสุทธิ์ให้คงที่ตลอด 24 ชั่วโมง</td>
+              </tr>
+              <tr>
+                <td><b>4. ความคุ้มค่าทางพลังงาน (Energy Efficiency)</b></td>
+                <td>กระบวนการเคมีใช้พลังงานสูงมาก (เช่น การต้มน้ำยา หรือการทำความเย็น) การควบคุมที่แม่นยำของ PID ช่วยลดการสูญเสียพลังงานจากการปรับวาล์วหรือฮีตเตอร์ที่เกินความจำเป็น</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>ตัวอย่างการนำระบบควบคุม PID ไปใช้ในงานควบคุมกระบวนการของวิศวกรรมเคมี</h4>
+          
+          <p><b>1. การใช้ PID ในหอกลั่น (Distillation Column)</b><br>
+          หอกลั่นทำหน้าที่แยกสารผสมด้วยจุดเดือดที่ต่างกัน การควบคุมจึงต้องเน้นเรื่องความบริสุทธิ์ของสาร (Purity) และความสมดุลของมวลและพลังงาน โดยลูป PID ที่สำคัญมีดังนี้:</p>
+          <ul>
+            <li><b>ลูปควบคุมอุณหภูมิที่ฐานหอ (Bottom Temperature Control):</b>
+              <ul>
+                <li><b>ตัวแปรที่วัด (PV):</b> อุณหภูมิสารที่ก้นหอกลั่น</li>
+                <li><b>ตัวแปรที่ควบคุม (MV):</b> อัตราการไหลของไอน้ำ (Steam) ที่ป้อนเข้าชุดต้มกลับ (Reboiler)</li>
+                <li><b>การทำงานของ PID:</b> ถ้าอุณหภูมิต่ำเกินไป สารที่จุดเดือดต่ำจะแยกออกไม่หมด PID จะสั่งเปิดวาล์วไอน้ำเพิ่มเพื่อให้ความร้อนสูงขึ้นอย่างแม่นยำ</li>
+              </ul>
+            </li>
+            <li><b>ลูปควบคุมระดับของเหลวที่ถังรองรับส่วนยอด (Reflux Drum Level Control):</b>
+              <ul>
+                <li><b>ตัวแปรที่วัด (PV):</b> ระดับของเหลว (Level) ในถัง Reflux Drum</li>
+                <li><b>ตัวแปรที่ควบคุม (MV):</b> วาล์วปล่อยผลิตภัณฑ์ส่วนยอด (Distillate Product Valve)</li>
+                <li><b>การทำงานของ PID:</b> เพื่อไม่ให้ของเหลวล้นหรือแห้งจนปั๊มพัง PID จะคอยคำนวณการเปิด-ปิดวาล์วระบายสารออกให้สัมพันธ์กับอัตราการควบแน่นของไอสารเคมี</li>
+              </ul>
+            </li>
+            <li><b>ลูปควบคุมอัตราส่วนการป้อนกลับ (Reflux Flow Control):</b>
+              <ul>
+                <li><b>ตัวแปรที่วัด (PV):</b> อัตราการไหล (Flow rate) ของสารเคมีที่ปั๊มกลับเข้าหอกลั่น</li>
+                <li><b>ตัวแปรที่ควบคุม (MV):</b> ควบคุมวาล์วบนเส้นท่อ Reflux</li>
+                <li><b>การทำงานของ PID:</b> ช่วยรักษาอัตราส่วนการป้อนกลับสารเคมีเหลวให้คงที่ เพื่อคุมโปรไฟล์อุณหภูมิและความบริสุทธิ์ของผลิตภัณฑ์บนยอดหอให้ได้มาตรฐาน</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p><b>2. การใช้ PID ในหม้อปฏิกรณ์เคมี (Chemical Reactor)</b><br>
+          หม้อปฏิกรณ์เคมี (โดยเฉพาะประเภทกวนผสมต่อเนื่อง หรือ CSTR) มักเกิดปฏิกิริยาคายความร้อน (Exothermic Reaction) ซึ่งหากคุมไม่อยู่ อุณหภูมิจะพุ่งสูงขึ้นเรื่อย ๆ จนเกิดการระเบิด (Thermal Runaway)</p>
+          <ul>
+            <li><b>ลูปควบคุมอุณหภูมิในหม้อปฏิกรณ์ (Reactor Temperature Control):</b>
+              <ul>
+                <li><b>ตัวแปรที่วัด (PV):</b> อุณหภูมิของสารเคมีภายในหม้อปฏิกรณ์</li>
+                <li><b>ตัวแปรที่ควบคุม (MV):</b> อัตราการไหลของน้ำหล่อเย็น (Cooling Water) ที่วิ่งผ่านปลอกหุ้มถัง (Jacket)</li>
+                <li><b>การทำงานของ PID:</b> นี่คือลูปที่ท้าทายที่สุด ส่วน "D" (Derivative) จะสำคัญมากที่นี่ เพราะต้องคอยคาดการณ์การพุ่งขึ้นของอุณหภูมิอย่างรวดเร็ว เมื่อปฏิกิริยาเริ่มคายความร้อน PID จะรีบเร่งเปิดวาล์วน้ำหล่อเย็นล่วงหน้าเพื่อสกัดความร้อน ไม่ให้ระบบหลุดการควบคุม</li>
+              </ul>
+            </li>
+            <li><b>ลูปควบคุมอัตราส่วนสารตั้งต้น (Feed Ratio Control):</b>
+              <ul>
+                <li><b>ตัวแปรที่วัด (PV):</b> อัตราการไหลของสารตั้งต้นชนิดที่ 2 (เช่น สาร B)</li>
+                <li><b>ตัวแปรที่ควบคุม (MV):</b> วาล์วจ่ายสาร B</li>
+                <li><b>การทำงานของ PID:</b> ทำงานแบบ Cascade หรือ Ratio Control โดยวัดอัตราการไหลของสาร A เป็นหลัก แล้วส่งค่ามาให้ PID ปรับวาล์วสาร B ให้จ่ายเข้าถังในสัดส่วนที่พอดีกันเป๊ะ ๆ เพื่อให้ปฏิกิริยาเคมีเกิดได้สมบูรณ์ที่สุดและลดสารเหลือทิ้ง</li>
+              </ul>
+            </li>
+            <li><b>ลูปควบคุมความดัน (Reactor Pressure Control):</b>
+              <ul>
+                <li><b>ตัวแปรที่วัด (PV):</b> ความดันภายในถังปฏิกรณ์</li>
+                <li><b>ตัวแปรที่ควบคุม (MV):</b> วาล์วระบายแก๊ส (Vent Valve) ที่อยู่ด้านบน</li>
+                <li><b>การทำงานของ PID:</b> ในปฏิกิริยาที่เกิดแก๊ส หากความดันสูงเกินเกณฑ์ความปลอดภัย PID จะสั่งเปิดวาล์วระบายแก๊สออกไปยังระบบบำบัดอย่างรวดเร็วและนุ่มนวล เพื่อรักษาความดันให้เสถียร</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h4>เจาะลึก: ลูปควบคุมอุณหภูมิของหม้อปฏิกรณ์เคมี (Reactor Temperature Control)</h4>
+          <p>ความท้าทายที่สุดของหม้อปฏิกรณ์เคมี (โดยเฉพาะแบบ Exothermic หรือปฏิกิริยาคายความร้อน) คือ <b>"ความหน่วงของระบบ (Process Dead Time)"</b> และ <b>"ความเสี่ยงในการเกิด Thermal Runaway"</b> (อุณหภูมิพุ่งสูงขึ้นอย่างรวดเร็วจนคุมไม่ได้และระเบิด)</p>
+          
+          <p><b>🌡️ ปัญหาที่พบบ่อย: ความร้อนส่งผ่านช้า (Thermal Lag)</b><br>
+          สมมติว่าเซนเซอร์วัดได้ว่าสารเคมีในถังเริ่มร้อนเกินไป PID จะสั่งเปิดน้ำหล่อเย็นเข้าปลอกหุ้มถัง (Jacket) แต่กว่าความเย็นจากน้ำจะนำผ่านผนังเหล็กของถังเข้าไปถึงสารเคมีข้างใน ต้องใช้เวลา (เรียกว่า Dead Time) ในระหว่างที่รอนั้น ปฏิกิริยาเคมีก็ยังคายความร้อนไม่หยุด ทำให้อุณหภูมิยิ่งพุ่งสูงขึ้นไปอีก</p>
+          
+          <p><b>⚙️ การทำงานของ P, I, D ในลูป</b><br>
+          เพื่อแก้ปัญหานี้ การตั้งค่า PID จะต้องถูกออกแบบมาอย่างระมัดระวัง:<br>
+          <b>P (Proportional) - ปรับพอดี ๆ :</b> ถ้าตั้งค่า P ให้ตอบสนองรุนแรงเกินไป (Gain สูง) วาล์วน้ำหล่อเย็นจะเปิดกระชากสุดและปิดสุดสลับไปมา ทำให้เกิดการแกว่ง (Oscillation) ของอุณหภูมิ ซึ่งอันตรายมาก<br>
+          <b>I (Integral) - ตั้งค่าให้ช้าลง (High Integral Time):</b> ค่า I มีหน้าที่ลบความผิดพลาดสะสม แต่ในหม้อปฏิกรณ์เคมี ถ้าให้ค่า I ทำงานไวเกินไป มันจะสั่งเปิดน้ำหล่อเย็นค้างไว้นานเกินในจังหวะที่ระบบหน่วง ส่งผลให้อุณหภูมิ "เย็นเกินไป (Undershoot)" เมื่อความเย็นมาถึงจริง ๆ<br>
+          <b>D (Derivative) - พารามิเตอร์สำคัญของลูปนี้ (High Derivative Action):</b> เนื่องจากระบบมีความหน่วง ค่า D จะเข้ามาทำหน้าที่ "คาดการณ์อนาคต" โดยวัดจาก "ความชันหรืออัตราการพุ่งขึ้นของอุณหภูมิ"<br>
+          <i>ตัวอย่าง:</i> แม้ตอนนี้อุณหภูมิจะอยู่ที่ 65°C (ยังไม่ถึงเป้าหมายที่ 70°C) แต่ถ้าอุณหภูมิมันพุ่งจาก 60°C มา 65°C ภายในเวลาแค่ 2 วินาที ค่า D จะคำนวณทันทีว่า "อนาคตอันใกล้พุ่งทะลุเป้าแน่!" และจะสั่งเปิดน้ำหล่อเย็นล่วงหน้าทันทีโดยไม่ต้องรอให้อุณหภูมิถึง 70°C ช่วยเบรกความร้อนได้อย่างทันท่วงที</p>
+
+          <h4>เจาะลึก: หลักการทำงานของ Cascade Control (PID ซ้อน PID)</h4>
+          <p>ในระบบควบคุมทั่วไป (Single Loop) เราใช้ PID ตัวเดียวคุมวาล์ว แต่ในวิศวกรรมเคมี มักจะมี <b>"สิ่งรบกวน (Disturbance)"</b> ภายนอกเข้ามาทำให้ระบบรวน เช่น ความดันน้ำหล่อเย็นในโรงงานต้นทางไม่นิ่ง ทำให้น้ำไหลเข้า Jacket เดี๋ยวแรงเดี๋ยวเบา</p>
+          <p>เพื่อแก้ปัญหานี้ เราจึงนำ PID สองตัวมาเชื่อมต่อกัน เรียกว่า <b>Cascade Control</b></p>
+          
+          <p><b>🔄 โครงสร้างของ Cascade Control</b><br>
+          ระบบนี้จะแบ่ง PID ออกเป็น 2 ระดับ ทำงานประสานกันเหมือน "ผู้จัดการ" และ "หัวหน้าคนงาน"<br>
+          <b>1. Primary (Master) Controller - "ผู้จัดการ":</b>
+          <ul>
+            <li><b>หน้าที่:</b> ดูภาพรวมของกระบวนการหลัก (เช่น ดูอุณหภูมิของสารเคมีในหม้อปฏิกรณ์ หรือ อุณหภูมิบนหอกลั่น)</li>
+            <li><b>การทำงาน:</b> วัดอุณหภูมิกระบวนการเทียบกับเป้าหมาย (Set Point หลัก) แล้วคำนวณออกมาว่า "ควรจะใช้อัตราการไหลของน้ำหล่อเย็น/ไอน้ำ เท่าไหร่ดี" จากนั้นจะส่งค่านั้นไปเป็นเป้าหมาย (Set Point) ให้กับ PID ตัวลูก</li>
+          </ul>
+          <b>2. Secondary (Slave) Controller - "หัวหน้าคนงาน":</b>
+          <ul>
+            <li><b>หน้าที่:</b> คุมสิ่งรบกวนระยะสั้น (เช่น อัตราการไหลของน้ำหล่อเย็น หรือ ความดันไอน้ำ) ให้ได้ตามสั่ง</li>
+            <li><b>การทำงาน:</b> รับคำสั่ง (Set Point) มาจากตัว Master แล้วไปวัดอัตราการไหลจริงที่ท่อ จากนั้นคำนวณเพื่อสั่งเปิด-ปิดวาล์วโดยตรง</li>
+          </ul>
+          </p>
+
+          <h4>ตารางเปรียบเทียบการทำงาน: ควบคุมอุณหภูมิหอกลั่น (Distillation Reboiler)</h4>
+          <table class="article-table">
+            <thead>
+              <tr>
+                <th>ขั้นตอนการตอบสนอง</th>
+                <th>แบบ Single Loop (PID ตัวเดียว)</th>
+                <th>แบบ Cascade Control (PID ซ้อน PID)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>โครงสร้างระบบ</b></td>
+                <td>PID วัดอุณหภูมิหอกลั่น ➔ สั่งเปิดวาล์วไอน้ำโดยตรง</td>
+                <td>Master PID วัดอุณหภูมิหอกลั่น ➔ สั่ง Slave PID ➔ สั่งเปิดวาล์วไอน้ำ</td>
+              </tr>
+              <tr>
+                <td><b>เมื่อความดันไอน้ำตก</b></td>
+                <td>ไอน้ำไหลเข้าลดลง แต่ PID ยังไม่รู้ เพราะต้องรอให้หอกลั่นเริ่ม "เย็นลง" ก่อน ซึ่งใช้เวลานาน (Delayed)</td>
+                <td>ไอน้ำไหลเข้าลดลง Slave PID (ตัวลูก) ที่เฝ้าวัดอัตราการไหลอยู่ที่ท่อจะรู้ทันที!</td>
+              </tr>
+              <tr>
+                <td><b>การแก้ไขปัญหา</b></td>
+                <td>กว่าอุณหภูมิหอกลั่นจะตกจน PID รู้ตัว สารเคมีในหอกลั่นก็รวนไปแล้ว ระบบต้องใช้เวลานานมากในการปรับอุณหภูมิกลับมา</td>
+                <td>Slave PID จัดการเปิดวาล์วเพิ่มให้ทันทีเพื่อดึงอัตราการไหลกลับมาเท่าเดิม โดยที่ความเย็นยังไม่ทันส่งผลไปถึงหอกลั่นด้วยซ้ำ</td>
+              </tr>
+              <tr>
+                <td><b>ผลลัพธ์ต่อกระบวนการ</b></td>
+                <td>อุณหภูมิแกว่งรุนแรง คุณภาพสารเคมีเสียหาย</td>
+                <td>อุณหภูมิหอกลั่นนิ่งสนิท เพราะสิ่งรบกวนถูกกำจัดไปตั้งแต่ที่ลูปท่อไอน้ำ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================
+       ฟังก์ชันสำหรับแสดงผลหน้าเครื่องคิดเลข PID
+       ===================================== */
+    function toggleLambdaInput() {
+      const method = document.getElementById('calc_method').value;
+      document.getElementById('lambda_group').style.display = (method === 'imc') ? 'block' : 'none';
+    }
+
+    function calculatePID() {
+      const K = parseFloat(document.getElementById('calc_K').value);
+      const tau = parseFloat(document.getElementById('calc_tau').value);
+      const theta = parseFloat(document.getElementById('calc_theta').value);
+      const method = document.getElementById('calc_method').value;
+      const type = document.getElementById('calc_type').value;
+      const lambda = parseFloat(document.getElementById('calc_lambda').value);
+
+      if(isNaN(K) || isNaN(tau) || isNaN(theta) || K === 0 || theta === 0) {
+        alert("กรุณากรอกค่า K, τ, θ ให้ถูกต้องครบถ้วน (ห้ามเป็นศูนย์)");
+        return;
+      }
+
+      let Kp = 0, Ti = 0, Td = 0;
+
+      // คำนวณวิธี Ziegler-Nichols
+      if(method === 'zn') {
+        if(type === 'P') {
+          Kp = tau / (K * theta);
+        } else if(type === 'PI') {
+          Kp = (0.9 * tau) / (K * theta);
+          Ti = 3.3 * theta;
+        } else if(type === 'PID') {
+          Kp = (1.2 * tau) / (K * theta);
+          Ti = 2.0 * theta;
+          Td = 0.5 * theta;
+        }
+      } 
+      // คำนวณวิธี IMC / Lambda Tuning
+      else if(method === 'imc') {
+        if(isNaN(lambda)) { alert("กรุณากรอกค่า Lambda"); return; }
+        
+        if(type === 'P') {
+           Kp = tau / (K * (lambda + theta));
+        } else if(type === 'PI') {
+           Kp = tau / (K * (lambda + theta));
+           Ti = tau;
+        } else if(type === 'PID') {
+           Kp = tau / (K * (lambda + theta));
+           Ti = tau;
+           Td = theta / 2;
+        }
+      }
+
+      // คำนวณแปลงค่ากลับเป็น Ki และ Kd (ถ้าไม่มีค่านั้นให้เป็น 0)
+      let Ki = (Ti === 0) ? 0 : Kp / Ti;
+      let Kd = Kp * Td;
+
+      // นำผลลัพธ์ไปแสดงหน้าเว็บ
+      document.getElementById('res_kp').innerText = Kp.toFixed(3);
+      document.getElementById('res_ki').innerText = Ki.toFixed(3);
+      document.getElementById('res_kd').innerText = Kd.toFixed(3);
+      
+      document.getElementById('res_ti').innerText = (Ti === 0) ? "-" : Ti.toFixed(3);
+      document.getElementById('res_td').innerText = (Td === 0) ? "-" : Td.toFixed(3);
+
+      document.getElementById('calc_results').style.display = 'block';
+    }
+
+
+    /* =====================================
+       ฟังก์ชันสำหรับ Modal วิดีโอ/เอกสารปกติ
+       ===================================== */
+    function openMediaModal(title, videoId, pdfId, imageId) {
+      document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-microscope" style="color: #16a085;"></i> คู่มือการใช้งาน: ${title}`;
+      const videoZone = document.getElementById('videoZone');
+      const noVideoMsg = document.getElementById('noVideoMsg');
+
+      if (videoId && videoId.trim() !== "") {
+        videoZone.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        videoZone.style.display = 'block';
+        noVideoMsg.style.display = 'none';
+      } else {
+        videoZone.innerHTML = '';
+        videoZone.style.display = 'none';
+        noVideoMsg.style.display = 'block';
+      }
+
+      const btnPdf = document.getElementById('btnPdf');
+      if (pdfId && pdfId.trim() !== "") {
+        btnPdf.href = `https://drive.google.com/file/d/${pdfId}/view`;
+        btnPdf.style.display = 'inline-flex';
+      } else { btnPdf.style.display = 'none'; }
+
+      const btnImg = document.getElementById('btnImg');
+      if (imageId && imageId.trim() !== "") {
+        btnImg.href = `https://drive.google.com/file/d/${imageId}/view`;
+        btnImg.style.display = 'inline-flex';
+      } else { btnImg.style.display = 'none'; }
+
+      const extraZone = document.getElementById('extraFilesZone');
+      if (!pdfId && !imageId) { extraZone.style.display = 'none'; } 
+      else { extraZone.style.display = 'flex'; }
+
+      document.getElementById('mediaModal').style.display = 'flex';
+    }
+
+    function closeMediaModal() {
+      document.getElementById('mediaModal').style.display = 'none';
+      document.getElementById('videoZone').innerHTML = ''; 
+    }
+
+    /* =====================================
+       ฟังก์ชันสำหรับ Modal PID Interactive & Simulator
+       ===================================== */
+    let idealChartInst = null; 
+    let advChartInst = null; 
+
+    const processModels = {
+      temperature: {
+        name: "อุณหภูมิ (Temperature)",
+        desc: "<b>อุณหภูมิ (Temperature):</b> เป็นกระบวนการที่ตอบสนองช้ามาก (Large Time Constant) และมีเวลาหน่วง (Dead time) สูง การใช้ K_p สูงเกินไปจะทำให้ระบบแกว่ง มักจำเป็นต้องใช้ K_d มาช่วยหน่วงระบบไม่ให้ Overshoot",
+        type: 'fopdt', K: 1.2, tau: 40.0, deadTime: 12.0, noise: 0.1, 
+        default: { sp: 60, kp: 1.5, ki: 0.05, kd: 2.0 }
+      },
+      flow: {
+        name: "อัตราการไหล (Flow)",
+        desc: "<b>อัตราการไหล (Flow):</b> ตอบสนองไวมาก (Fast dynamic) แทบไม่มีเวลาหน่วง แต่มีสัญญาณรบกวน (Noise) สูงมากจากความปั่นป่วนของของเหลว <b>ข้อควรระวัง: ห้ามใช้ K_d เด็ดขาด</b> เพราะ K_d จะขยายสัญญาณรบกวนจนวาล์วกระตุกพัง",
+        type: 'fopdt', K: 0.9, tau: 1.5, deadTime: 0.0, noise: 3.5, 
+        default: { sp: 60, kp: 0.8, ki: 0.5, kd: 0.0 }
+      },
+      pressure: {
+        name: "แรงดัน (Pressure)",
+        desc: "<b>แรงดัน (Pressure):</b> สำหรับระบบของเหลวจะตอบสนองไวปานกลางถึงเร็ว (ยกเว้นระบบแก๊สขนาดใหญ่) มักจะจูนคล้ายระบบ Flow แต่สัญญาณรบกวนน้อยกว่า มักใช้ PI Controller ก็เพียงพอ",
+        type: 'fopdt', K: 1.0, tau: 5.0, deadTime: 1.0, noise: 0.5, 
+        default: { sp: 60, kp: 2.0, ki: 0.4, kd: 0.0 }
+      },
+      level: {
+        name: "ระดับของเหลว (Level)",
+        desc: "<b>ระดับของเหลว (Level):</b> เป็นระบบสะสม (Integrating Process) หากของไหลเข้ามากกว่าออก ระดับจะเพิ่มขึ้นเรื่อยๆ การจูนมักใช้เพียงแค่ P อย่างเดียว (Proportional only) เพื่อรักษาความนิ่งของวาล์ว หรือใช้ PI ที่มีค่า K_i ต่ำมากๆ",
+        type: 'integrating', K: 0.08, noise: 0.2, 
+        default: { sp: 60, kp: 3.0, ki: 0.0, kd: 0.0 }
+      }
+    };
+
+    let currentProcess = 'temperature'; 
+
+    function openPIDModal() {
+      document.getElementById('pidModal').style.display = 'flex';
+      if (!idealChartInst || !advChartInst) {
+        initPIDCharts();
+      }
+      simulateIdealPID(); 
+      simulateAdvancedPID(); 
+    }
+
+    function closePIDModal() {
+      document.getElementById('pidModal').style.display = 'none';
+    }
+
+    function initPIDCharts() {
+      const ctxIdeal = document.getElementById('idealPidChart').getContext('2d');
+      idealChartInst = new Chart(ctxIdeal, {
+        type: 'line',
+        data: { labels: [], datasets: [
+            { label: 'Process Variable (PV)', borderColor: '#e74c3c', backgroundColor: 'rgba(231, 76, 60, 0.1)', data: [], fill: true, pointRadius: 0, tension: 0.1, borderWidth: 2 },
+            { label: 'Setpoint (SV)', borderColor: '#2c3e50', data: [], borderDash: [5, 5], pointRadius: 0, borderWidth: 2 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 0 }, 
+          scales: { x: { title: { display: true, text: 'Time (s)' }, ticks: { maxTicksLimit: 12 } }, y: { min: 0, max: 120, title: { display: true, text: 'Value (%)' } } },
+          plugins: { legend: { position: 'top' } }
+        }
+      });
+
+      const ctxAdv = document.getElementById('advPidChart').getContext('2d');
+      advChartInst = new Chart(ctxAdv, {
+        type: 'line',
+        data: { labels: [], datasets: [
+            { label: 'Process Variable (PV)', borderColor: '#16a085', backgroundColor: 'rgba(22, 160, 133, 0.1)', data: [], fill: true, pointRadius: 0, tension: 0.1, borderWidth: 2 },
+            { label: 'Setpoint (SV)', borderColor: '#2c3e50', data: [], borderDash: [5, 5], pointRadius: 0, borderWidth: 2 },
+            { label: 'Control Output (CO %)', borderColor: '#94a3b8', data: [], borderDash: [2, 2], pointRadius: 0, borderWidth: 1, hidden: true }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 0 }, 
+          scales: { x: { title: { display: true, text: 'Time (s)' }, ticks: { maxTicksLimit: 12 } }, y: { min: 0, max: 120, title: { display: true, text: 'Value (%)' } } },
+          plugins: { legend: { position: 'top' } }
+        }
+      });
+
+      ['sp', 'kp', 'ki', 'kd'].forEach(id => {
+        document.getElementById('ideal_slider_' + id).addEventListener('input', () => updateIdealDisplay(id));
+        document.getElementById('adv_slider_' + id).addEventListener('input', () => updateAdvancedDisplay(id));
+      });
+    }
+
+    function simulateIdealPID() {
+      if (!idealChartInst) return;
+      const sp = parseFloat(document.getElementById('ideal_slider_sp').value);
+      const kp = parseFloat(document.getElementById('ideal_slider_kp').value);
+      const ki = parseFloat(document.getElementById('ideal_slider_ki').value);
+      const kd = parseFloat(document.getElementById('ideal_slider_kd').value);
+
+      let labels = [], dataPV = [], dataSP = [];
+      let pv = 20; 
+      let integral = 0;
+      let prevError = 0;
+      const dt = 0.5; 
+
+      for (let t = 0; t <= 100; t += dt) {
+        let error = sp - pv;
+        integral += error * dt;
+        
+        if (integral > 100) integral = 100;
+        if (integral < -100) integral = -100;
+
+        let derivative = (error - prevError) / dt;
+        let output = (kp * error) + (ki * integral) + (kd * derivative);
+        output = Math.max(0, Math.min(100, output)); 
+        
+        pv += (output * 0.2 - pv * 0.1) * dt; 
+
+        labels.push(t.toFixed(1));
+        dataPV.push(pv);
+        dataSP.push(sp);
+        prevError = error;
+      }
+
+      idealChartInst.data.labels = labels;
+      idealChartInst.data.datasets[0].data = dataPV;
+      idealChartInst.data.datasets[1].data = dataSP;
+      idealChartInst.update();
+    }
+
+    function simulateAdvancedPID() {
+      if (!advChartInst) return;
+      const sp = parseFloat(document.getElementById('adv_slider_sp').value);
+      const kp = parseFloat(document.getElementById('adv_slider_kp').value);
+      const ki = parseFloat(document.getElementById('adv_slider_ki').value);
+      const kd = parseFloat(document.getElementById('adv_slider_kd').value);
+
+      const pModel = processModels[currentProcess];
+      
+      let labels = [], dataPV = [], dataSP = [], dataCO = [];
+      let pv = 20; 
+      let integral = 0;
+      let prevError = 0;
+      let outputHistory = []; 
+      
+      const dt = 0.5; 
+      const totalTime = 120; 
+      const deadTimeSteps = Math.floor((pModel.deadTime || 0) / dt);
+
+      for (let t = 0; t <= totalTime; t += dt) {
+        let error = sp - pv;
+        integral += error * dt;
+        
+        if (integral > 100) integral = 100;
+        if (integral < -100) integral = -100;
+
+        let derivative = (error - prevError) / dt;
+        let output = (kp * error) + (ki * integral) + (kd * derivative);
+        output = Math.max(0, Math.min(100, output)); 
+        outputHistory.push(output);
+
+        let delayedOutput = outputHistory.length > deadTimeSteps ? outputHistory[outputHistory.length - 1 - deadTimeSteps] : 0;
+        let noise = (Math.random() - 0.5) * pModel.noise;
+
+        if (pModel.type === 'integrating') {
+          pv += (delayedOutput - 50) * pModel.K * dt + noise;
+        } else {
+          let dPv = (pModel.K * delayedOutput - pv) / pModel.tau;
+          pv += dPv * dt + noise;
+        }
+
+        pv = Math.max(0, Math.min(120, pv));
+
+        labels.push(t.toFixed(1));
+        dataPV.push(pv);
+        dataSP.push(sp);
+        dataCO.push(output); 
+        prevError = error;
+      }
+
+      advChartInst.data.labels = labels;
+      advChartInst.data.datasets[0].data = dataPV;
+      advChartInst.data.datasets[1].data = dataSP;
+      advChartInst.data.datasets[2].data = dataCO;
+      advChartInst.update();
+    }
+
+    function updateIdealDisplay(id) {
+      let val = document.getElementById('ideal_slider_' + id).value;
+      if(id === 'ki') val = parseFloat(val).toFixed(2);
+      else if(id !== 'sp') val = parseFloat(val).toFixed(1);
+      document.getElementById('ideal_val_' + id).innerText = val;
+      simulateIdealPID();
+    }
+
+    function updateAdvancedDisplay(id) {
+      let val = document.getElementById('adv_slider_' + id).value;
+      if(id === 'ki') val = parseFloat(val).toFixed(2);
+      else if(id !== 'sp') val = parseFloat(val).toFixed(1);
+      document.getElementById('adv_val_' + id).innerText = val;
+      simulateAdvancedPID();
+    }
+
+    function changeProcess(type) {
+      currentProcess = type;
+      document.querySelectorAll('.process-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('btn_' + type).classList.add('active');
+      document.getElementById('process_desc').innerHTML = processModels[type].desc;
+      resetAdvancedPID();
+    }
+
+    function resetIdealPID() {
+      document.getElementById('ideal_slider_sp').value = 80;
+      document.getElementById('ideal_slider_kp').value = 5.0;
+      document.getElementById('ideal_slider_ki').value = 0.25;
+      document.getElementById('ideal_slider_kd').value = 0.0;
+      ['sp', 'kp', 'ki', 'kd'].forEach(id => updateIdealDisplay(id));
+    }
+
+    function resetAdvancedPID() {
+      const def = processModels[currentProcess].default;
+      document.getElementById('adv_slider_sp').value = def.sp;
+      document.getElementById('adv_slider_kp').value = def.kp;
+      document.getElementById('adv_slider_ki').value = def.ki;
+      document.getElementById('adv_slider_kd').value = def.kd;
+      ['sp', 'kp', 'ki', 'kd'].forEach(id => updateAdvancedDisplay(id));
+    }
+  </script>
+</body>
+</html>
