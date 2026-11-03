@@ -33,8 +33,6 @@
         .sidebar-header .logo-icon { width: 40px; height: 40px; background-color: var(--primary-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
         .sidebar-header h2 { font-size: 18px; font-weight: 600; }
         .nav-menu { padding: 20px 0; overflow-y: auto; flex: 1; }
-        .nav-menu::-webkit-scrollbar { width: 5px; }
-        .nav-menu::-webkit-scrollbar-thumb { background: #475569; border-radius: 5px; }
         .nav-item { display: flex; align-items: center; padding: 12px 25px; color: var(--sidebar-text); text-decoration: none; font-size: 15px; transition: 0.2s; margin-bottom: 5px; border-left: 4px solid transparent; }
         .nav-item i { width: 25px; font-size: 18px; margin-right: 12px; text-align: center; }
         .nav-item:hover, .nav-item.active { background-color: var(--sidebar-hover); color: white; border-left-color: var(--primary-color); }
@@ -53,79 +51,42 @@
         .card { background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-color); overflow: hidden; }
         .card-header { padding: 18px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #f8fafc; }
         .card-header h3 { font-size: 16px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; }
-        .card-body { padding: 25px; }
-
+        
         .announcement-list { display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 5px; }
-        .announcement-item { padding: 15px; border-left: 4px solid var(--primary-color); background-color: #f8fafc; border-radius: 0 8px 8px 0; transition: 0.2s; }
-        .announcement-item:hover { background-color: #f1f5f9; transform: translateX(3px); }
+        .announcement-item { padding: 15px; border-left: 4px solid var(--primary-color); background-color: #f8fafc; border-radius: 0 8px 8px 0; }
         .anno-date { font-size: 12px; color: #64748b; margin-bottom: 5px; }
         .anno-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
-        .loading-text { text-align: center; color: #64748b; padding: 20px; font-size: 14px; }
-        .error-text { color: #dc2626; background: #fee2e2; padding: 15px; border-radius: 8px; font-size: 13px; text-align: left; line-height: 1.6; }
-
+        
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.75em; }
-        .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; color: #1e293b; }
-        .fc .fc-button { padding: 0.2rem 0.5rem !important; font-size: 0.85em !important; }
-        .fc .fc-button-primary { background-color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
-        .fc .fc-button-primary:hover { background-color: var(--primary-hover) !important; }
-        .fc-daygrid-day-frame { min-height: 45px !important; } 
-        .fc-event { border-radius: 4px; border: none; font-size: 11px; padding: 2px 4px; cursor: pointer; }
-        .fc-h-event .fc-event-main { color: #fff; font-weight: 500; }
-
+        .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; }
+        .fc-event { cursor: pointer; border: none; font-size: 11px; }
+        
         .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .schedule-nav button { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 5px; transition: 0.2s; }
-        .schedule-nav button:hover { background: #e2e8f0; }
-        .schedule-week-label { font-size: 14px; font-weight: 600; color: #1e293b; }
+        .schedule-nav button { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 5px; }
+        .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; }
         
-        .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; outline: none; cursor: pointer; background: #fff; }
-        .room-filter:focus { border-color: var(--primary-color); }
-
         .schedule-grid-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #cbd5e1; }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 40px repeat(7, minmax(55px, auto)); min-width: 900px; background: #e2e8f0; gap: 1px; }
         
-        /* 🌟 ปรับ Grid ให้มี 1 คอลัมน์หัวข้อวัน + 12 คอลัมน์ชั่วโมงหลัก (08:00 ถึง 20:00) */
-        .schedule-grid { 
-            display: grid; 
-            grid-template-columns: 80px repeat(12, 1fr); 
-            grid-template-rows: 40px repeat(7, minmax(55px, auto)); 
-            min-width: 900px; 
-            background: #cbd5e1; 
-            gap: 1px;
-        }
-        .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; }
-        .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .grid-day-date { font-size: 10px; color: #64748b; font-weight: normal; margin-top: 2px; }
-        .grid-cell { background: #ffffff; border-right: 1px solid #e2e8f0; }
-        .grid-event-container { position: relative; background: #ffffff; }
+        .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
+        .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
         
-        /* 🌟 จัดตำแหน่งและข้อความให้อยู่กึ่งกลางแถบสี */
-        .grid-event { 
-            position: absolute; top: 3px; bottom: 3px; 
-            background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; 
-            font-size: 11px; line-height: 1.3; overflow: hidden; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); z-index: 10; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; 
-        }
-        .grid-event-title { font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .grid-event-time { font-size: 10px; opacity: 0.9; }
-
-        @media (max-width: 992px) {
-            .grid-layout { grid-template-columns: 1fr; }
-            .announcement-list { max-height: 400px; }
-        }
-
+        .grid-cell-hour { background: #ffffff; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #cbd5e1; }
+        
+        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #cbd5e1; min-height: 55px; }
+        .grid-event { position: absolute; top: 3px; bottom: 3px; background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); z-index: 10; }
+        
+        @media (max-width: 992px) { .grid-layout { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
-            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; }
-            .sidebar-overlay.active { display: block; }
         }
     </style>
 </head>
 <body>
-
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <aside class="sidebar" id="sidebar">
@@ -149,43 +110,33 @@
     <main class="main-content">
         <header class="topbar">
             <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-            <div style="flex:1"></div>
         </header>
 
         <div class="dashboard-container">
             <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
-            <!-- Layout: ซ้าย (ประกาศ), ขวา (ปฏิทินกิจกรรม + ตารางเรียน) -->
             <div class="grid-layout">
-                
-                <!-- คอลัมน์ซ้าย: ประกาศ -->
                 <div class="left-column">
                     <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3>
-                        </div>
+                        <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
                         <div class="card-body" style="padding: 15px;">
-                            <div class="announcement-list" id="announcement-list">
-                                <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
-                            </div>
+                            <div class="announcement-list" id="announcement-list"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- คอลัมน์ขวา: ปฏิทินกิจกรรม (บน) & ตารางเรียน (ล่าง) -->
                 <div class="right-column">
-                    
-                    <!-- 1. ปฏิทินกิจกรรมภาพรวม -->
                     <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3>
-                        </div>
+                        <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
                         <div class="card-body" style="padding: 15px;">
                             <div id="event-calendar"></div>
+                            <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                                <h4 style="font-size: 14px; margin-bottom: 10px; color: #1e293b;"><i class="fa-solid fa-list"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
+                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 2. ปฏิทินตารางเรียนและการใช้ห้อง (แกน X = เวลา, แกน Y = วัน) -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fa-solid fa-chalkboard-user" style="color: #3b82f6;"></i> ตารางเรียนและการใช้ห้อง</h3>
@@ -207,110 +158,131 @@
                             </select>
                         </div>
                         <div class="card-body" style="padding: 20px;">
-                            
                             <div class="schedule-toolbar">
                                 <div class="schedule-nav">
-                                    <button onclick="changeWeek(-1)" title="สัปดาห์ก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
+                                    <button onclick="changeWeek(-1)"><i class="fa-solid fa-chevron-left"></i></button>
                                     <button onclick="changeWeek(0)">สัปดาห์นี้</button>
-                                    <button onclick="changeWeek(1)" title="สัปดาห์ถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
+                                    <button onclick="changeWeek(1)"><i class="fa-solid fa-chevron-right"></i></button>
                                 </div>
-                                <div class="schedule-week-label" id="schedule-week-label">1 พ.ย. - 7 พ.ย. 2026</div>
+                                <div class="schedule-week-label" id="schedule-week-label" style="font-weight: 600;"></div>
                             </div>
-
                             <div class="schedule-grid-wrapper">
-                                <div class="schedule-grid" id="class-schedule-grid"></div>
+                                <div class="schedule-grid" id="class-schedule-grid">
+                                </div>
                             </div>
-
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // ==========================================
-        // 1. ตั้งค่า Google Sheets URLs
-        // ==========================================
-        const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8UrbhY6gpSUqhmb_bdyY_wCO2Rnoiu3rvMGVgAvCRokP5wOF3rXKchWx66c8pARu3X8JdzXLVwUIE/pub?gid=0&single=true&output=csv'; 
-        const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8UrbhY6gpSUqhmb_bdyY_wCO2Rnoiu3rvMGVgAvCRokP5wOF3rXKchWx66c8pARu3X8JdzXLVwUIE/pub?gid=200642625&single=true&output=csv';
+        // ลิงก์ CSV ที่เผยแพร่จาก Google Sheets (นำมาใส่เหมือนเดิม)
+        const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
+        const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
 
-        const ERROR_HTML = `<div class="error-text"><b><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถดึงข้อมูลได้</b><br>โปรดตรวจสอบการเผยแพร่ Publish to web (เป็น CSV)</div>`;
-
-        // ==========================================
-        // 2. ฟังก์ชันโหลดประกาศ
-        // ==========================================
-        function loadAnnouncements() {
-            fetch(ANNOUNCEMENT_CSV_URL).then(res => res.text()).then(csvText => {
-                if(csvText.includes('<html')) { document.getElementById('announcement-list').innerHTML = ERROR_HTML; return; }
-                Papa.parse(csvText, { header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-                    complete: function(results) {
-                        const listEl = document.getElementById('announcement-list');
-                        listEl.innerHTML = ''; 
-                        let hasData = false;
-                        results.data.forEach(item => {
-                            const title = item.Title || item.title || item["หัวข้อ"];
-                            if(!title) return;
-                            hasData = true;
-                            listEl.innerHTML += `
-                                <div class="announcement-item">
-                                    <div class="anno-date"><i class="fa-regular fa-clock"></i> ${item.Date || item.date || item["วันที่"] || ''}</div>
-                                    <div class="anno-title">${title}</div>
-                                    <div class="anno-desc">${item.Description || item.description || item["รายละเอียด"] || ''}</div>
-                                </div>`;
-                        });
-                        if(!hasData) listEl.innerHTML = '<div class="loading-text">ไม่พบข้อมูลประกาศ</div>';
-                    }
-                });
-            }).catch(() => document.getElementById('announcement-list').innerHTML = ERROR_HTML);
+        // ป้องกัน Browser Caching
+        function getNoCacheUrl(url) {
+            if (!url) return "";
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}t=${new Date().getTime()}`;
         }
 
         // ==========================================
-        // 3. ฟังก์ชันโหลดปฏิทินกิจกรรม
+        // 1. ประกาศ (ดึงผ่าน CSV ปกติ)
         // ==========================================
+        function loadAnnouncements() {
+            fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
+                Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
+                    const listEl = document.getElementById('announcement-list');
+                    listEl.innerHTML = ''; 
+                    results.data.forEach(item => {
+                        const title = item.Title || item.title;
+                        if(title) {
+                            listEl.innerHTML += `
+                                <div class="announcement-item">
+                                    <div class="anno-date"><i class="fa-regular fa-clock"></i> ${item.Date || ''}</div>
+                                    <div class="anno-title">${title}</div>
+                                    <div class="anno-desc">${item.Description || ''}</div>
+                                </div>`;
+                        }
+                    });
+                }});
+            });
+        }
+
+        // ==========================================
+        // 2. ปฏิทินกิจกรรมภาควิชา (ดึงผ่าน CSV ปกติ)
+        // ==========================================
+        let allCalendarEvents = [];
         function initEventCalendar() {
             var calendarEl = document.getElementById('event-calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'th', 
                 height: 380, 
-                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
-                eventDisplay: 'block',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
+                datesSet: function(info) { renderEventDetails(info.view.currentStart, info.view.currentEnd); },
                 events: function(info, successCallback, failureCallback) {
-                    fetch(EVENT_CALENDAR_CSV_URL).then(res => res.text()).then(csvText => {
-                        if(csvText.includes('<html')) throw new Error();
-                        Papa.parse(csvText, { header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-                            complete: function(results) {
-                                var events = [];
-                                results.data.forEach(row => {
-                                    const title = row.Title || row.title;
-                                    const start = row.Start || row.start;
-                                    let end = row.End || row.end;
-                                    if(title && start) {
-                                        if (end) {
-                                            let endDateObj = new Date(end);
-                                            endDateObj.setDate(endDateObj.getDate() + 1);
-                                            end = endDateObj.toISOString().split('T')[0]; 
-                                        }
-                                        events.push({ title: title, start: start, end: end || null, color: row.Color || row.color || '#16a085' });
+                    fetch(getNoCacheUrl(EVENT_CALENDAR_CSV_URL)).then(res => res.text()).then(csvText => {
+                        Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
+                            allCalendarEvents = [];
+                            var events = [];
+                            results.data.forEach(row => {
+                                const title = row.Title || row.title;
+                                const start = row.Start || row.start;
+                                let end = row.End || row.end;
+                                if(title && start) {
+                                    let actualEnd = end;
+                                    if (end && !end.includes('T')) {
+                                        let endDateObj = new Date(end);
+                                        endDateObj.setDate(endDateObj.getDate() + 1);
+                                        end = endDateObj.toISOString().split('T')[0]; 
                                     }
-                                });
-                                successCallback(events);
-                            }
-                        });
-                    }).catch(err => failureCallback(err));
+                                    let ev = { title: title, start: start, end: end || null, actualEnd: actualEnd, color: row.Color || '#16a085' };
+                                    events.push(ev);
+                                    allCalendarEvents.push(ev);
+                                }
+                            });
+                            successCallback(events);
+                            renderEventDetails(calendar.view.currentStart, calendar.view.currentEnd);
+                        }});
+                    });
                 }
             });
             calendar.render();
         }
 
+        function renderEventDetails(viewStart, viewEnd) {
+            const listEl = document.getElementById('event-details-list');
+            listEl.innerHTML = '';
+            let hasEvent = false;
+            
+            allCalendarEvents.forEach(ev => {
+                let evStart = new Date(ev.start);
+                if (evStart >= viewStart && evStart < viewEnd) {
+                    hasEvent = true;
+                    let dateStr = ev.start.split('T')[0];
+                    if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
+                    
+                    listEl.innerHTML += `
+                        <div style="padding: 10px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 4px; font-size: 13px;">
+                            <b style="color: #1e293b;">${ev.title}</b><br>
+                            <span style="color: #64748b; font-size: 11px;"><i class="fa-regular fa-calendar"></i> ${dateStr}</span>
+                        </div>
+                    `;
+                }
+            });
+            if (!hasEvent) listEl.innerHTML = '<div style="color: #64748b; font-size: 13px;">ไม่มีกิจกรรมในเดือนนี้</div>';
+        }
+
         // ==========================================
-        // 4. ฟังก์ชันตารางเรียน (วันแกน Y, เวลาแกน X)
+        // 3. ตารางเรียนและการใช้ห้อง (ดึงผ่าน CSV + แยกคอลัมน์แล้ว)
         // ==========================================
         let allClassEvents = [];
-        let currentWeekStart = new Date(); 
+        let currentWeekStart = getMonday(new Date()); 
         
         function getMonday(d) {
             d = new Date(d);
@@ -318,109 +290,121 @@
             return new Date(d.setDate(diff));
         }
 
-        function initClassSchedule() {
-            currentWeekStart = getMonday(new Date()); 
+        // ฟังก์ชันช่วยแปลงวันที่จากรูปแบบ "DD/MM/YYYY" (เช่น 03/11/2026) หรือ YYYY-MM-DD
+        function convertToValidDateString(dateStr, timeStr) {
+            if(!dateStr || !timeStr) return null;
+            let formattedDate = dateStr.trim();
             
-            fetch(CLASS_CSV_URL).then(res => res.text()).then(csvText => {
-                if(csvText.includes('<html')) throw new Error();
-                Papa.parse(csvText, { header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-                    complete: function(results) {
-                        results.data.forEach(row => {
-                            const title = row.Title || row.title;
-                            const start = row.Start || row.start;
-                            const end = row.End || row.end;
-                            const room = row.Room || row.room;
+            // กรณีเป็นแบบวัน/เดือน/ปี (เช่น 03/11/2026) ให้สลับเป็น ปี-เดือน-วัน เพื่อให้ JavaScript อ่านออก
+            if (formattedDate.includes('/')) {
+                let parts = formattedDate.split('/');
+                if(parts.length === 3) {
+                    let day = parts[0].padStart(2, '0');
+                    let month = parts[1].padStart(2, '0');
+                    let year = parts[2];
+                    formattedDate = `${year}-${month}-${day}`;
+                }
+            }
+
+            // จัดเวลาให้มี 0 นำหน้าเสมอ
+            let formattedTime = timeStr.trim();
+            if(formattedTime.length === 4) formattedTime = '0' + formattedTime; // 9:00 -> 09:00
+            
+            // รวมร่างเป็น ISO String
+            return `${formattedDate}T${formattedTime}:00`;
+        }
+
+        function initClassSchedule() {
+            const gridEl = document.getElementById('class-schedule-grid');
+            gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียน...</div>';
+
+            fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
+                Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
+                    allClassEvents = []; // ล้างค่าเก่าเสมอ
+                    
+                    results.data.forEach(row => {
+                        // ดึงข้อมูลตามชื่อคอลัมน์ใหม่ (แยก Date, StartTime, EndTime)
+                        const title = row.Title || row.title || "";
+                        const dateVal = row.Date || row.date || "";
+                        const startTimeVal = row.StartTime || row.starttime || "";
+                        const endTimeVal = row.EndTime || row.endtime || "";
+                        const room = row.Room || row.room || "";
+                        const color = row.Color || row.color || "#3b82f6";
+                        
+                        if (title && dateVal && startTimeVal) {
+                            let startIso = convertToValidDateString(dateVal, startTimeVal);
+                            let endIso = convertToValidDateString(dateVal, endTimeVal);
                             
-                            if(title && start) {
+                            let startObj = startIso ? new Date(startIso) : null;
+                            let endObj = endIso ? new Date(endIso) : null;
+
+                            // ตรวจสอบว่าวันที่แปลงได้สำเร็จและถูกต้อง
+                            if (startObj && !isNaN(startObj.getTime())) {
                                 allClassEvents.push({
                                     title: title,
-                                    start: new Date(start),
-                                    end: end ? new Date(end) : new Date(new Date(start).getTime() + 3600000), 
-                                    room: room ? room.toString().trim() : '',
-                                    color: row.Color || row.color || '#3b82f6'
+                                    start: startObj,
+                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000), // ถ้าไม่มี EndTime ให้บวก 1 ชม.
+                                    room: String(room).trim(),
+                                    color: color
                                 });
                             }
-                        });
-                        applyClassFilters();
-                    }
-                });
+                        }
+                    });
+                    applyClassFilters();
+                }});
             }).catch(err => {
-                document.getElementById('class-schedule-grid').innerHTML = ERROR_HTML;
+                console.error("Error fetching class schedule CSV: ", err);
+                gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #dc3545; font-size: 14px;">การเชื่อมต่อล้มเหลว โปรดตรวจสอบลิงก์ CSV</div>';
             });
         }
 
         function changeWeek(offset) {
-            if(offset === 0) {
-                currentWeekStart = getMonday(new Date());
-            } else {
-                currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
-            }
+            if(offset === 0) currentWeekStart = getMonday(new Date());
+            else currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
             applyClassFilters();
         }
 
         function applyClassFilters() {
             const selectedRoom = document.getElementById('room-filter').value;
-            let filtered = allClassEvents;
-            
-            if (selectedRoom !== 'all') {
-                filtered = filtered.filter(ev => ev.room === selectedRoom);
-            }
-            
             const weekEnd = new Date(currentWeekStart);
             weekEnd.setDate(weekEnd.getDate() + 7);
             
-            filtered = filtered.filter(ev => ev.start >= currentWeekStart && ev.start < weekEnd);
+            let filtered = allClassEvents.filter(ev => ev.start >= currentWeekStart && ev.start < weekEnd);
+            if (selectedRoom !== 'all') filtered = filtered.filter(ev => ev.room === selectedRoom);
             
             renderClassGrid(filtered);
-            updateWeekLabel();
-        }
-
-        function updateWeekLabel() {
+            
             const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             const endOfWeek = new Date(currentWeekStart);
             endOfWeek.setDate(endOfWeek.getDate() + 6);
-            
-            const startStr = `${currentWeekStart.getDate()} ${thaiMonths[currentWeekStart.getMonth()]}`;
-            const endStr = `${endOfWeek.getDate()} ${thaiMonths[endOfWeek.getMonth()]} ${endOfWeek.getFullYear() + 543}`;
-            
-            document.getElementById('schedule-week-label').innerText = `${startStr} - ${endStr}`;
+            document.getElementById('schedule-week-label').innerText = `${currentWeekStart.getDate()} ${thaiMonths[currentWeekStart.getMonth()]} - ${endOfWeek.getDate()} ${thaiMonths[endOfWeek.getMonth()]} ${endOfWeek.getFullYear() + 543}`;
         }
 
         function renderClassGrid(events) {
             const gridEl = document.getElementById('class-schedule-grid');
-            let html = '';
+            let html = `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
             
-            // 1. หัวมุมตาราง
-            html += `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
-            
-            // 2. หัวคอลัมน์เวลาหลัก (08:00 ถึง 20:00 น. รวม 12 ชั่วโมง)
             for(let h=8; h<20; h++) {
                 let colIndex = h - 8 + 2; 
                 html += `<div class="grid-header" style="grid-column: ${colIndex}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
             }
             
-            // 3. แถวระบุวัน (จันทร์ - อาทิตย์)
             const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
             for(let d=0; d<7; d++) {
                 let row = d + 2; 
                 let targetDate = new Date(currentWeekStart);
                 targetDate.setDate(targetDate.getDate() + d);
-                let dateStr = `${targetDate.getDate()}/${targetDate.getMonth()+1}`;
-                
                 html += `<div class="grid-day-label" style="grid-column: 1; grid-row: ${row};">
                             <span>${days[d]}</span>
-                            <span class="grid-day-date">${dateStr}</span>
+                            <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
                          </div>`;
-                         
-                // วาดเส้นแบ่งช่องพื้นหลังรายชั่วโมง (12 ช่อง)
-                for(let col = 0; col < 12; col++) {
-                    let colIndex = col + 2;
-                    html += `<div class="grid-cell" style="grid-column: ${colIndex}; grid-row: ${row};"></div>`;
-                }
-
-                // คอนเทนเนอร์สำหรับวางแถบสีวิชาเรียน
+                
                 html += `<div class="grid-event-container" style="grid-column: 2 / 14; grid-row: ${row};">`;
-
+                
+                for(let col = 0; col < 12; col++) {
+                    html += `<div class="grid-cell-hour" style="position: absolute; left: ${(col/12)*100}%; width: ${(1/12)*100}%; height: 100%;"></div>`;
+                }
+                
                 let dayEvents = events.filter(ev => {
                     let mappedDay = ev.start.getDay() === 0 ? 6 : ev.start.getDay() - 1;
                     return mappedDay === d;
@@ -430,7 +414,7 @@
                     let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
                     let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
                     
-                    let totalWorkingMinutes = 12 * 60; // 08:00 - 20:00 (720 นาที)
+                    let totalWorkingMinutes = 12 * 60; 
                     let startMinutes = (sHour - 8) * 60 + sMin;
                     let endMinutes = (eHour - 8) * 60 + eMin;
                     
@@ -438,21 +422,19 @@
                     if(endMinutes > totalWorkingMinutes) endMinutes = totalWorkingMinutes;
                     if(startMinutes >= totalWorkingMinutes || endMinutes <= 0) return;
                     
-                    // คำนวณตำแหน่งและความกว้างเป็นสัดส่วนเปอร์เซ็นต์
                     let leftPercent = (startMinutes / totalWorkingMinutes) * 100;
                     let widthPercent = ((endMinutes - startMinutes) / totalWorkingMinutes) * 100;
                     
-                    const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')} - ${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
-                    const roomStr = ev.room ? `ห้อง ${ev.room}` : '';
+                    const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
                     
                     html += `
-                        <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};" title="${ev.title} (${timeStr})">
-                            <div class="grid-event-title">${ev.title}</div>
-                            <div class="grid-event-time">${timeStr} ${roomStr}</div>
+                        <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ev.title}</div>
+                            <div style="font-size: 10px; opacity: 0.9;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
                         </div>`;
                 });
 
-                html += `</div>`;
+                html += `</div>`; 
             }
             
             gridEl.innerHTML = html;
