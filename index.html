@@ -178,20 +178,22 @@
     </main>
 
     <script>
+        // ลิงก์ CSV ที่เผยแพร่จาก Google Sheets (นำมาใส่เหมือนเดิม)
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
+        const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
 
-        // ⚠️ เอา Web App URL จาก Google Apps Script (ที่ดึงข้อมูล "ตาราง3") มาใส่ตรงนี้ครับ
-        const CLASS_API_URL = 'https://script.google.com/macros/s/AKfycbzM6GjT_iE2x8rYJUJ2A_gVBO3z5eDHbIVfj66SmUZRoYAcbfBAoiY7SgyJSqSqMfzt1w/exec'; 
-
+        // ป้องกัน Browser Caching
         function getNoCacheUrl(url) {
             if (!url) return "";
             const separator = url.includes('?') ? '&' : '?';
             return `${url}${separator}t=${new Date().getTime()}`;
         }
 
+        // ==========================================
+        // 1. ประกาศ (ดึงผ่าน CSV ปกติ)
+        // ==========================================
         function loadAnnouncements() {
-            if(!ANNOUNCEMENT_CSV_URL.includes('http')) return;
             fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                     const listEl = document.getElementById('announcement-list');
@@ -208,9 +210,12 @@
                         }
                     });
                 }});
-            }).catch(err => console.log('Announcement error:', err));
+            });
         }
 
+        // ==========================================
+        // 2. ปฏิทินกิจกรรมภาควิชา (ดึงผ่าน CSV ปกติ)
+        // ==========================================
         let allCalendarEvents = [];
         function initEventCalendar() {
             var calendarEl = document.getElementById('event-calendar');
@@ -221,7 +226,6 @@
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
                 datesSet: function(info) { renderEventDetails(info.view.currentStart, info.view.currentEnd); },
                 events: function(info, successCallback, failureCallback) {
-                    if(!EVENT_CALENDAR_CSV_URL.includes('http')) return successCallback([]);
                     fetch(getNoCacheUrl(EVENT_CALENDAR_CSV_URL)).then(res => res.text()).then(csvText => {
                         Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                             allCalendarEvents = [];
@@ -274,6 +278,9 @@
             if (!hasEvent) listEl.innerHTML = '<div style="color: #64748b; font-size: 13px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
+        // ==========================================
+        // 3. ตารางเรียนและการใช้ห้อง (ดึงผ่าน CSV + แยกคอลัมน์แล้ว)
+        // ==========================================
         let allClassEvents = [];
         let currentWeekStart = getMonday(new Date()); 
         
@@ -283,50 +290,72 @@
             return new Date(d.setDate(diff));
         }
 
-        function initClassSchedule() {
-            const gridEl = document.getElementById('class-schedule-grid');
+        // ฟังก์ชันช่วยแปลงวันที่จากรูปแบบ "DD/MM/YYYY" (เช่น 03/11/2026) หรือ YYYY-MM-DD
+        function convertToValidDateString(dateStr, timeStr) {
+            if(!dateStr || !timeStr) return null;
+            let formattedDate = dateStr.trim();
             
-            if(!CLASS_API_URL.includes('http')) {
-                gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 20px; text-align: center; color: #dc3545;">กรุณาใส่ลิงก์ Web App (CLASS_API_URL) ก่อนใช้งาน</div>';
-                return;
+            // กรณีเป็นแบบวัน/เดือน/ปี (เช่น 03/11/2026) ให้สลับเป็น ปี-เดือน-วัน เพื่อให้ JavaScript อ่านออก
+            if (formattedDate.includes('/')) {
+                let parts = formattedDate.split('/');
+                if(parts.length === 3) {
+                    let day = parts[0].padStart(2, '0');
+                    let month = parts[1].padStart(2, '0');
+                    let year = parts[2];
+                    formattedDate = `${year}-${month}-${day}`;
+                }
             }
 
+            // จัดเวลาให้มี 0 นำหน้าเสมอ
+            let formattedTime = timeStr.trim();
+            if(formattedTime.length === 4) formattedTime = '0' + formattedTime; // 9:00 -> 09:00
+            
+            // รวมร่างเป็น ISO String
+            return `${formattedDate}T${formattedTime}:00`;
+        }
+
+        function initClassSchedule() {
+            const gridEl = document.getElementById('class-schedule-grid');
             gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียน...</div>';
 
-            fetch(getNoCacheUrl(CLASS_API_URL))
-                .then(res => res.json())
-                .then(data => {
-                    if(data.success) {
-                        allClassEvents = [];
-                        data.events.forEach(ev => {
-                            let evTitle = ev.title || ev.Title || "";
-                            let evStart = ev.start || ev.Start || null;
-                            let evEnd = ev.end || ev.End || null;
-                            let evRoom = ev.room || ev.Room || "";
-                            let evColor = ev.color || ev.Color || "#3b82f6";
+            fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
+                Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
+                    allClassEvents = []; // ล้างค่าเก่าเสมอ
+                    
+                    results.data.forEach(row => {
+                        // ดึงข้อมูลตามชื่อคอลัมน์ใหม่ (แยก Date, StartTime, EndTime)
+                        const title = row.Title || row.title || "";
+                        const dateVal = row.Date || row.date || "";
+                        const startTimeVal = row.StartTime || row.starttime || "";
+                        const endTimeVal = row.EndTime || row.endtime || "";
+                        const room = row.Room || row.room || "";
+                        const color = row.Color || row.color || "#3b82f6";
+                        
+                        if (title && dateVal && startTimeVal) {
+                            let startIso = convertToValidDateString(dateVal, startTimeVal);
+                            let endIso = convertToValidDateString(dateVal, endTimeVal);
+                            
+                            let startObj = startIso ? new Date(startIso) : null;
+                            let endObj = endIso ? new Date(endIso) : null;
 
-                            if (evTitle && evStart) {
-                                let startObj = new Date(evStart);
-                                if (!isNaN(startObj.getTime())) {
-                                    allClassEvents.push({
-                                        title: evTitle,
-                                        start: startObj,
-                                        end: evEnd ? new Date(evEnd) : new Date(startObj.getTime() + 3600000), 
-                                        room: String(evRoom).trim(),
-                                        color: evColor
-                                    });
-                                }
+                            // ตรวจสอบว่าวันที่แปลงได้สำเร็จและถูกต้อง
+                            if (startObj && !isNaN(startObj.getTime())) {
+                                allClassEvents.push({
+                                    title: title,
+                                    start: startObj,
+                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000), // ถ้าไม่มี EndTime ให้บวก 1 ชม.
+                                    room: String(room).trim(),
+                                    color: color
+                                });
                             }
-                        });
-                        applyClassFilters();
-                    } else {
-                        gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #dc3545; font-size: 14px;">พบปัญหา: ' + (data.error || 'ไม่สามารถโหลดข้อมูลได้') + '</div>';
-                    }
-                })
-                .catch(err => {
-                    console.error("Error fetching class schedule: ", err);
-                    gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #dc3545; font-size: 14px;">การเชื่อมต่อล้มเหลว โปรดตรวจสอบ URL ของ API หรือสิทธิ์การเข้าถึง</div>';
-                });
+                        }
+                    });
+                    applyClassFilters();
+                }});
+            }).catch(err => {
+                console.error("Error fetching class schedule CSV: ", err);
+                gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #dc3545; font-size: 14px;">การเชื่อมต่อล้มเหลว โปรดตรวจสอบลิงก์ CSV</div>';
+            });
         }
 
         function changeWeek(offset) {
