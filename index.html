@@ -282,36 +282,42 @@
             return new Date(d.setDate(diff));
         }
 
-        // ฟังก์ชันอ่านวันที่ครอบคลุมกรณี "DD/MM/YYYY, HH:MM:SS" (อ้างอิงจากภาพของคุณ)
+        // ฟังก์ชันอ่านวันที่แบบยืดหยุ่น รองรับทั้งมีคอมม่า, T, หรือช่องว่าง
         function parseSheetDate(dateString) {
             if (!dateString) return null;
-            let str = dateString.trim();
+            let str = String(dateString).trim();
             
+            // กรณีรูปแบบมีลูกน้ำคั่น เช่น "03/11/2026, 9:00:00"
             if (str.includes(',')) {
                 let parts = str.split(',');
                 let datePart = parts[0].trim(); 
                 let timePart = parts[1].trim(); 
 
+                // จัดการส่วนวันที่ (DD/MM/YYYY)
                 let dateSplit = datePart.split('/');
                 if (dateSplit.length === 3) {
                     let day = dateSplit[0].padStart(2, '0');
                     let month = dateSplit[1].padStart(2, '0');
                     let year = dateSplit[2];
                     
+                    // จัดการส่วนเวลา (HH:MM:SS) 
                     let timeSplit = timePart.split(':');
                     if(timeSplit[0].length === 1) {
-                         timePart = '0' + timePart;
+                         timePart = '0' + timePart; // เติม 0 ให้ชั่วโมงถ้าเป็นเลขหลักเดียว
                     }
 
+                    // ประกอบเป็น ISO String เพื่อให้ Date() อ่านได้
                     let isoString = `${year}-${month}-${day}T${timePart}`;
                     return new Date(isoString);
                 }
             }
             
+            // กรณีรูปแบบใช้ช่องว่างแทนตัว T (เช่น "2026-11-03 09:00:00")
             if (str.includes(' ') && !str.includes('T') && str.includes('-')) {
                 str = str.replace(' ', 'T');
             }
             
+            // ปล่อยให้ระบบ Date จัดการรูปแบบที่เหลือ
             let resultDate = new Date(str);
             if (!isNaN(resultDate.getTime())) {
                 return resultDate;
