@@ -58,12 +58,10 @@
         .anno-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        /* ปฏิทินกิจกรรม */
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.75em; }
         .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; }
         .fc-event { cursor: pointer; border: none; font-size: 11px; }
         
-        /* ตารางเรียน */
         .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .schedule-nav button { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 5px; }
         .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; }
@@ -170,7 +168,6 @@
                             </div>
                             <div class="schedule-grid-wrapper">
                                 <div class="schedule-grid" id="class-schedule-grid">
-                                    <!-- ตารางจะถูกสร้างที่นี่ผ่าน JavaScript -->
                                 </div>
                             </div>
                         </div>
@@ -181,23 +178,18 @@
     </main>
 
     <script>
-        // ลิงก์ CSV สำหรับประกาศและปฏิทินกิจกรรม
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
 
-        // ⚠️ เอา Web App URL จาก Google Apps Script มาใส่ตรงนี้ครับ
+        // ⚠️ เอา Web App URL จาก Google Apps Script (ที่ดึงข้อมูล "ตาราง3") มาใส่ตรงนี้ครับ
         const CLASS_API_URL = 'https://script.google.com/macros/s/AKfycbzM6GjT_iE2x8rYJUJ2A_gVBO3z5eDHbIVfj66SmUZRoYAcbfBAoiY7SgyJSqSqMfzt1w/exec'; 
 
-        // ป้องกัน Browser Caching
         function getNoCacheUrl(url) {
             if (!url) return "";
             const separator = url.includes('?') ? '&' : '?';
             return `${url}${separator}t=${new Date().getTime()}`;
         }
 
-        // ==========================================
-        // ส่วนของ ประกาศ และ ปฏิทินกิจกรรม
-        // ==========================================
         function loadAnnouncements() {
             if(!ANNOUNCEMENT_CSV_URL.includes('http')) return;
             fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
@@ -282,9 +274,6 @@
             if (!hasEvent) listEl.innerHTML = '<div style="color: #64748b; font-size: 13px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
-        // ==========================================
-        // ส่วนของ ตารางเรียน (โหลดจาก JSON API)
-        // ==========================================
         let allClassEvents = [];
         let currentWeekStart = getMonday(new Date()); 
         
@@ -302,7 +291,6 @@
                 return;
             }
 
-            // แสดงสถานะกำลังโหลด
             gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียน...</div>';
 
             fetch(getNoCacheUrl(CLASS_API_URL))
@@ -311,7 +299,6 @@
                     if(data.success) {
                         allClassEvents = [];
                         data.events.forEach(ev => {
-                            // รองรับทั้งชื่อตัวแปรพิมพ์เล็กและพิมพ์ใหญ่
                             let evTitle = ev.title || ev.Title || "";
                             let evStart = ev.start || ev.Start || null;
                             let evEnd = ev.end || ev.End || null;
@@ -320,7 +307,6 @@
 
                             if (evTitle && evStart) {
                                 let startObj = new Date(evStart);
-                                // ป้องกัน Error หากแปลง Date ไม่ได้
                                 if (!isNaN(startObj.getTime())) {
                                     allClassEvents.push({
                                         title: evTitle,
