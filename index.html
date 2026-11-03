@@ -28,7 +28,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        /* แถบเมนูด้านซ้าย */
         .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
         .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header .logo-icon { width: 40px; height: 40px; background-color: var(--primary-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
@@ -70,18 +69,19 @@
         .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; }
         
         .schedule-grid-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #cbd5e1; }
-        /* ปรับปรุงโครงสร้างตารางและเส้นแบ่ง */
-        .schedule-grid { display: grid; grid-template-columns: 80px repeat(48, 1fr); grid-template-rows: 40px repeat(7, minmax(55px, auto)); min-width: 1000px; background: #e2e8f0; gap: 1px; }
+        /* ปรับ grid column: แต่ละคอลัมน์คือ 1 ชั่วโมง (รวม 12 คอลัมน์ ไม่ใช่ 48 แล้ว) */
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 40px repeat(7, minmax(55px, auto)); min-width: 900px; background: #e2e8f0; gap: 1px; }
         
-        /* เส้นแบ่งแนวนอน-แนวตั้ง ในหัวตารางและช่องว่าง */
-        .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #e2e8f0; }
+        /* เส้นแบ่งหัวตาราง และ ป้ายวัน */
+        .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
         .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
         
-        /* สร้างเส้นแบ่งคอลัมน์ (ขีดเส้นแนวตั้ง) */
-        .grid-cell-hour { background: #ffffff; border-right: 1px dashed #cbd5e1; border-bottom: 1px solid #cbd5e1; }
-        .grid-cell-15m { background: #ffffff; border-right: 1px dotted #e2e8f0; border-bottom: 1px solid #cbd5e1; }
+        /* เส้นแบ่งคอลัมน์ (รายชั่วโมง) */
+        .grid-cell-hour { background: #ffffff; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #cbd5e1; }
         
-        .grid-event { background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; font-size: 11px; line-height: 1.3; overflow: hidden; margin: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); z-index: 10; }
+        /* กล่องเหตุการณ์: ปรับให้วางตำแหน่งอิสระได้เพื่อให้วาดแบบละเอียดระดับนาทีได้ */
+        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #cbd5e1; }
+        .grid-event { position: absolute; top: 3px; bottom: 3px; background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); z-index: 10; }
         
         @media (max-width: 992px) { .grid-layout { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
@@ -100,7 +100,6 @@
             <div class="logo-icon"><i class="fa-solid fa-flask-vial"></i></div>
             <h2>ChE Smart Hub</h2>
         </div>
-        <!-- เพิ่มเมนูกลับมาให้ครบ -->
         <nav class="nav-menu">
             <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> หน้าหลัก (Dashboard)</a>
             <a href="knowledge.html" class="nav-item"><i class="fa-solid fa-book-open"></i> คู่มือการใช้งานอุปกรณ์</a>
@@ -281,6 +280,27 @@
             return new Date(d.setDate(diff));
         }
 
+        // ฟังก์ชันช่วยแปลงวันที่ที่ Google Sheet อาจส่งมาแปลกๆ ให้อ่านได้
+        function parseSheetDate(dateString) {
+            if (!dateString) return null;
+            let str = dateString.trim();
+            // ถ้ามาเป็นรูปแบบ DD/MM/YYYY, HH:MM:SS
+            if (str.includes(',') && str.includes('/')) {
+                let parts = str.split(',');
+                let dateParts = parts[0].trim().split('/');
+                let timeStr = parts[1].trim();
+                if (dateParts.length === 3) {
+                    // สร้างเป็น Date object จากรูปแบบ YYYY-MM-DDTHH:MM:SS
+                    return new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeStr}`);
+                }
+            }
+            // ถ้าเป็นรูปแบบมีช่องว่าง เช่น YYYY-MM-DD HH:MM:SS
+            if (str.includes(' ') && !str.includes('T')) {
+                str = str.replace(' ', 'T');
+            }
+            return new Date(str);
+        }
+
         function initClassSchedule() {
             if(!CLASS_CSV_URL.includes('http')) return;
             fetch(CLASS_CSV_URL).then(res => res.text()).then(csvText => {
@@ -291,28 +311,8 @@
                         const end = row.End || row.end;
                         const room = row.Room || row.room;
                         
-                        let parsedStart, parsedEnd;
-                        // รองรับกรณี Date ถูกแปลงเป็น 26/10/2026, 9:00:00 (ถ้ามีคอมม่า)
-                        if (start && start.includes(',')) {
-                            let parts = start.split(',');
-                            let dateParts = parts[0].trim().split('/');
-                            let timeStr = parts[1].trim();
-                            if (dateParts.length === 3) {
-                                // YYYY-MM-DD
-                                parsedStart = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeStr}`);
-                            }
-                            if (end && end.includes(',')) {
-                                let eParts = end.split(',');
-                                let eDateParts = eParts[0].trim().split('/');
-                                let eTimeStr = eParts[1].trim();
-                                if (eDateParts.length === 3) {
-                                    parsedEnd = new Date(`${eDateParts[2]}-${eDateParts[1]}-${eDateParts[0]}T${eTimeStr}`);
-                                }
-                            }
-                        } else {
-                            parsedStart = new Date(start);
-                            parsedEnd = end ? new Date(end) : null;
-                        }
+                        let parsedStart = parseSheetDate(start);
+                        let parsedEnd = parseSheetDate(end);
 
                         if(title && parsedStart && !isNaN(parsedStart.getTime())) {
                             allClassEvents.push({
@@ -355,13 +355,13 @@
             const gridEl = document.getElementById('class-schedule-grid');
             let html = `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
             
-            // วาดหัวคอลัมน์เวลา
+            // วาดหัวคอลัมน์เวลา 08:00 - 19:00
             for(let h=8; h<20; h++) {
-                let colStart = (h-8)*4 + 2;
-                html += `<div class="grid-header" style="grid-column: ${colStart} / ${colStart+4}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
+                let colIndex = h - 8 + 2; 
+                html += `<div class="grid-header" style="grid-column: ${colIndex}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
             }
             
-            // วาดแถววันที่และเส้นตารางด้านหลัง
+            // วาดแถววันที่และเส้นตาราง (รายชั่วโมง) ด้านหลัง
             const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
             for(let d=0; d<7; d++) {
                 let row = d + 2; 
@@ -372,34 +372,49 @@
                             <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
                          </div>`;
                 
-                // วาดเส้นแบ่งเวลา 48 ช่อง (12 ชั่วโมง * 4)
-                for(let col = 0; col < 48; col++) {
-                    let colIndex = col + 2;
-                    let cssClass = (col + 1) % 4 === 0 ? 'grid-cell-hour' : 'grid-cell-15m'; // เส้นชั่วโมงจะเป็นเส้นประ, 15นาทีเป็นจุด
-                    html += `<div class="${cssClass}" style="grid-column: ${colIndex}; grid-row: ${row};"></div>`;
+                // คอนเทนเนอร์สำหรับวางวิชา (ครอบคลุมทั้งแถว)
+                html += `<div class="grid-event-container" style="grid-column: 2 / 14; grid-row: ${row};">`;
+                
+                // วาดเส้นแบ่งเวลา 12 ช่อง (12 ชั่วโมง)
+                for(let col = 0; col < 12; col++) {
+                    // กำหนดความกว้างและเส้นแบ่งให้แต่ละชั่วโมง
+                    html += `<div class="grid-cell-hour" style="position: absolute; left: ${(col/12)*100}%; width: ${(1/12)*100}%; height: 100%;"></div>`;
                 }
+                
+                // หากล่องวิชาเรียนที่อยู่ในวันนี้
+                let dayEvents = events.filter(ev => {
+                    let mappedDay = ev.start.getDay() === 0 ? 6 : ev.start.getDay() - 1;
+                    return mappedDay === d;
+                });
+
+                dayEvents.forEach(ev => {
+                    let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
+                    let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
+                    
+                    // คำนวณตำแหน่งและสัดส่วนความกว้างแบบเปอร์เซ็นต์ (อ้างอิงจากเวลาทำงานรวม 12 ชม. คือ 8:00 ถึง 20:00)
+                    let totalWorkingMinutes = 12 * 60; // 720 นาที
+                    let startMinutes = (sHour - 8) * 60 + sMin;
+                    let endMinutes = (eHour - 8) * 60 + eMin;
+                    
+                    if(startMinutes < 0) startMinutes = 0;
+                    if(endMinutes > totalWorkingMinutes) endMinutes = totalWorkingMinutes;
+                    if(startMinutes >= totalWorkingMinutes || endMinutes <= 0) return;
+                    
+                    let leftPercent = (startMinutes / totalWorkingMinutes) * 100;
+                    let widthPercent = ((endMinutes - startMinutes) / totalWorkingMinutes) * 100;
+                    
+                    const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
+                    
+                    html += `
+                        <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ev.title}</div>
+                            <div style="font-size: 10px; opacity: 0.9;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
+                        </div>`;
+                });
+
+                html += `</div>`; // ปิด grid-event-container
             }
             
-            // วางกล่องวิชาเรียน
-            events.forEach(ev => {
-                let mappedDay = ev.start.getDay() === 0 ? 6 : ev.start.getDay() - 1; 
-                let row = mappedDay + 2;
-                let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
-                let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
-                
-                let colStart = (sHour - 8) * 4 + Math.floor(sMin / 15) + 2;
-                let colEnd = (eHour - 8) * 4 + Math.floor(eMin / 15) + 2;
-                
-                if(colStart >= 50 || colEnd <= 2) return;
-                
-                const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
-                
-                html += `
-                    <div class="grid-event" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row}; background-color: ${ev.color};">
-                        <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ev.title}</div>
-                        <div style="font-size: 10px; opacity: 0.9;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
-                    </div>`;
-            });
             gridEl.innerHTML = html;
         }
 
