@@ -58,12 +58,11 @@
         .anno-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        /* ปฏิทินกิจกรรม */
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.75em; }
         .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; }
         .fc-event { cursor: pointer; border: none; font-size: 11px; }
         
-        /* ตารางเรียน */
+        /* ตารางเรียนแบบเส้นแบ่งรายชั่วโมง */
         .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .schedule-nav button { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 5px; }
         .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; }
@@ -179,16 +178,21 @@
     </main>
 
     <script>
+        // ลิงก์สำหรับประกาศและปฏิทินกิจกรรม (ยังคงใช้ CSV เหมือนเดิม)
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
-        const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv'; 
 
-        // ป้องกัน Browser Caching ด้วยการต่อท้าย timestamp
+        // ⚠️ เอา Web App URL จาก Google Apps Script (ที่เพิ่ง Deploy เสร็จ) มาใส่ตรงนี้ครับ
+        const CLASS_API_URL = 'https://script.google.com/macros/s/AKfycbzM6GjT_iE2x8rYJUJ2A_gVBO3z5eDHbIVfj66SmUZRoYAcbfBAoiY7SgyJSqSqMfzt1w/exec'; 
+
         function getNoCacheUrl(url) {
             const separator = url.includes('?') ? '&' : '?';
             return `${url}${separator}t=${new Date().getTime()}`;
         }
 
+        // ==========================================
+        // ส่วนของ ประกาศ และ ปฏิทินกิจกรรม (ทำงานเหมือนเดิม)
+        // ==========================================
         function loadAnnouncements() {
             if(!ANNOUNCEMENT_CSV_URL.includes('http')) return;
             fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
@@ -273,6 +277,9 @@
             if (!hasEvent) listEl.innerHTML = '<div style="color: #64748b; font-size: 13px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
+        // ==========================================
+        // ส่วนของ ตารางเรียน (โหลดจาก JSON API)
+        // ==========================================
         let allClassEvents = [];
         let currentWeekStart = getMonday(new Date()); 
         
@@ -282,77 +289,28 @@
             return new Date(d.setDate(diff));
         }
 
-        // ฟังก์ชันอ่านวันที่แบบยืดหยุ่น รองรับทั้งมีคอมม่า, T, หรือช่องว่าง
-        function parseSheetDate(dateString) {
-            if (!dateString) return null;
-            let str = String(dateString).trim();
-            
-            // กรณีรูปแบบมีลูกน้ำคั่น เช่น "03/11/2026, 9:00:00"
-            if (str.includes(',')) {
-                let parts = str.split(',');
-                let datePart = parts[0].trim(); 
-                let timePart = parts[1].trim(); 
-
-                // จัดการส่วนวันที่ (DD/MM/YYYY)
-                let dateSplit = datePart.split('/');
-                if (dateSplit.length === 3) {
-                    let day = dateSplit[0].padStart(2, '0');
-                    let month = dateSplit[1].padStart(2, '0');
-                    let year = dateSplit[2];
-                    
-                    // จัดการส่วนเวลา (HH:MM:SS) 
-                    let timeSplit = timePart.split(':');
-                    if(timeSplit[0].length === 1) {
-                         timePart = '0' + timePart; // เติม 0 ให้ชั่วโมงถ้าเป็นเลขหลักเดียว
-                    }
-
-                    // ประกอบเป็น ISO String เพื่อให้ Date() อ่านได้
-                    let isoString = `${year}-${month}-${day}T${timePart}`;
-                    return new Date(isoString);
-                }
-            }
-            
-            // กรณีรูปแบบใช้ช่องว่างแทนตัว T (เช่น "2026-11-03 09:00:00")
-            if (str.includes(' ') && !str.includes('T') && str.includes('-')) {
-                str = str.replace(' ', 'T');
-            }
-            
-            // ปล่อยให้ระบบ Date จัดการรูปแบบที่เหลือ
-            let resultDate = new Date(str);
-            if (!isNaN(resultDate.getTime())) {
-                return resultDate;
-            }
-            
-            return null;
-        }
-
         function initClassSchedule() {
-            if(!CLASS_CSV_URL.includes('http')) return;
-            fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
-                Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
-                    allClassEvents = []; // ล้างค่าเก่าเสมอ
-                    results.data.forEach(row => {
-                        const title = row.Title || row.title;
-                        const start = row.Start || row.start;
-                        const end = row.End || row.end;
-                        const room = row.Room || row.room;
-                        
-                        let parsedStart = parseSheetDate(start);
-                        let parsedEnd = parseSheetDate(end);
-
-                        if(title && parsedStart && !isNaN(parsedStart.getTime())) {
+            if(!CLASS_API_URL.includes('http')) return;
+            
+            // ดึงข้อมูลแบบ JSON แทน
+            fetch(getNoCacheUrl(CLASS_API_URL))
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        allClassEvents = [];
+                        data.events.forEach(ev => {
                             allClassEvents.push({
-                                title: title,
-                                start: parsedStart,
-                                end: (parsedEnd && !isNaN(parsedEnd.getTime())) ? parsedEnd : new Date(parsedStart.getTime() + 3600000), 
-                                room: room ? room.toString().trim() : '',
-                                color: row.Color || row.color || '#3b82f6'
+                                title: ev.title,
+                                start: new Date(ev.start),
+                                end: ev.end ? new Date(ev.end) : new Date(new Date(ev.start).getTime() + 3600000), 
+                                room: ev.room,
+                                color: ev.color
                             });
-                        }
-                    });
-                    applyClassFilters();
-                }});
-            });
+                        });
+                        applyClassFilters();
+                    }
+                })
+                .catch(err => console.error("Error fetching class schedule: ", err));
         }
 
         function changeWeek(offset) {
