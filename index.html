@@ -68,7 +68,7 @@
         
         .schedule-grid-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #cbd5e1; }
         
-        /* ตารางเรียน: 8:00 ถึง 20:00 รวม 13 ช่องเวลา */
+        /* กำหนด 1 คอลัมน์สำหรับชื่อวัน และ 13 คอลัมน์สำหรับแต่ละชั่วโมง (08:00 ถึง 20:00) */
         .schedule-grid { display: grid; grid-template-columns: 80px repeat(13, 1fr); grid-template-rows: 40px repeat(7, minmax(55px, auto)); min-width: 900px; background: #cbd5e1; gap: 1px; }
         
         .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; }
@@ -78,7 +78,7 @@
         .grid-cell { background: #ffffff; }
         .grid-event-container { position: relative; background: #ffffff; }
         
-        /* ข้อมูลอยู่กึ่งกลางแถบสี */
+        /* จัดข้อความให้อยู่กึ่งกลางแถบสี */
         .grid-event { position: absolute; top: 3px; bottom: 3px; background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         
         @media (max-width: 992px) { .grid-layout { grid-template-columns: 1fr; } }
@@ -376,7 +376,7 @@
             const gridEl = document.getElementById('class-schedule-grid');
             let html = `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
             
-            // วาดหัวตารางเวลาถึง 20:00 (รวม 13 คอลัมน์เวลา)
+            // วาดหัวตารางเวลาตามชั่วโมงหลัก (08:00 ถึง 20:00 น. รวม 13 ช่อง)
             for(let h=8; h<=20; h++) {
                 let colIndex = h - 8 + 2; 
                 html += `<div class="grid-header" style="grid-column: ${colIndex}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
@@ -392,7 +392,8 @@
                             <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
                          </div>`;
                 
-                for(let col = 0; col <= 12; col++) {
+                // วาดเส้นตารางพื้นหลังรายชั่วโมง (13 ช่อง)
+                for(let col = 0; col < 13; col++) {
                     let colIndex = col + 2;
                     html += `<div class="grid-cell" style="grid-column: ${colIndex}; grid-row: ${row};"></div>`;
                 }
@@ -408,7 +409,7 @@
                     let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
                     let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
                     
-                    let totalWorkingMinutes = 12 * 60; // 8:00 ถึง 20:00 (12 ชม.)
+                    let totalWorkingMinutes = 12 * 60; // ช่วงเวลาทำงาน 12 ชั่วโมง (08:00 - 20:00)
                     let startMinutes = (sHour - 8) * 60 + sMin;
                     let endMinutes = (eHour - 8) * 60 + eMin;
                     
