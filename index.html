@@ -34,6 +34,8 @@
         .sidebar-header .logo-icon { width: 40px; height: 40px; background-color: var(--primary-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
         .sidebar-header h2 { font-size: 18px; font-weight: 600; }
         .nav-menu { padding: 20px 0; overflow-y: auto; flex: 1; }
+        .nav-menu::-webkit-scrollbar { width: 5px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: #475569; border-radius: 5px; }
         .nav-item { display: flex; align-items: center; padding: 12px 25px; color: var(--sidebar-text); text-decoration: none; font-size: 15px; transition: 0.2s; margin-bottom: 5px; border-left: 4px solid transparent; }
         .nav-item i { width: 25px; font-size: 18px; margin-right: 12px; text-align: center; }
         .nav-item:hover, .nav-item.active { background-color: var(--sidebar-hover); color: white; border-left-color: var(--primary-color); }
@@ -46,7 +48,7 @@
         .dashboard-container { padding: 30px; flex: 1; }
         .page-title { font-size: 24px; color: #1e293b; margin-bottom: 25px; font-weight: 600; }
 
-        /* Layout */
+        /* Layout: ซ้าย 1 ส่วน (ประกาศ), ขวา 2 ส่วน (ปฏิทิน 2 อัน) */
         .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start; }
         .left-column { display: flex; flex-direction: column; gap: 25px; }
         .right-column { display: flex; flex-direction: column; gap: 25px; }
@@ -77,7 +79,7 @@
         .fc-event { border-radius: 4px; border: none; font-size: 11px; padding: 2px 4px; cursor: pointer; }
         .fc-h-event .fc-event-main { color: #fff; font-weight: 500; }
 
-        /* Custom CSS Grid สำหรับตารางเรียน */
+        /* Custom CSS Grid สำหรับตารางเรียน (วันแนวตั้ง Y, เวลาแนวนอน X) */
         .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .schedule-nav button { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 5px; transition: 0.2s; }
         .schedule-nav button:hover { background: #e2e8f0; }
@@ -87,12 +89,13 @@
         .room-filter:focus { border-color: var(--primary-color); }
 
         .schedule-grid-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #cbd5e1; }
+        
         .schedule-grid { 
             display: grid; 
-            /* ขยายเป็น 52 คอลัมน์ (รองรับ 13 ชั่วโมง คือ 08:00 ถึง 21:00 เพื่อให้คอลัมน์ 20:00 แสดงเต็ม) */
+            /* 🌟 ปรับเพิ่ม repeat เป็น 52 ช่อง (รองรับถึงเวลา 21:00) */
             grid-template-columns: 80px repeat(52, 1fr); 
             grid-template-rows: 40px repeat(7, minmax(55px, auto)); 
-            min-width: 1000px; 
+            min-width: 960px; /* เพิ่มความกว้างตารางให้สมดุลขึ้น */
             background: #cbd5e1; 
             gap: 1px;
         }
@@ -100,20 +103,15 @@
         .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .grid-day-date { font-size: 10px; color: #64748b; font-weight: normal; margin-top: 2px; }
         .grid-cell { background: #ffffff; }
-
-        /* จัดแต่งกล่องวิชาเรียนให้อยู่กึ่งกลาง */
+        
         .grid-event { 
             background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; 
             font-size: 11px; line-height: 1.3; overflow: hidden; margin: 3px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            display: flex; flex-direction: column; 
-            justify-content: center; /* จัดกึ่งกลางแนวตั้ง */
-            align-items: center;     /* จัดกึ่งกลางแนวนอน */
-            text-align: center;      /* จัดตัวหนังสือให้อยู่ตรงกลาง */
-            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; flex-direction: column; cursor: pointer;
+            /* 🌟 เพิ่มการจัดข้อความให้อยู่กึ่งกลางแนวนอนและแนวตั้ง */
+            justify-content: center; align-items: center; text-align: center;
         }
-        /* ตัดคำที่ล้นให้อ่านง่ายและอยู่ตรงกลาง */
-        .grid-event-title { font-weight: 600; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; word-break: break-word; }
+        .grid-event-title { font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .grid-event-time { font-size: 10px; opacity: 0.9; }
 
         @media (max-width: 992px) {
@@ -162,8 +160,10 @@
         <div class="dashboard-container">
             <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
+            <!-- Layout: ซ้าย (ประกาศ), ขวา (ปฏิทินกิจกรรม + ตารางเรียน) -->
             <div class="grid-layout">
                 
+                <!-- คอลัมน์ซ้าย: ประกาศ -->
                 <div class="left-column">
                     <div class="card">
                         <div class="card-header">
@@ -177,8 +177,10 @@
                     </div>
                 </div>
 
+                <!-- คอลัมน์ขวา: ปฏิทินกิจกรรม (บน) & ตารางเรียน (ล่าง) -->
                 <div class="right-column">
                     
+                    <!-- 1. ปฏิทินกิจกรรมภาพรวม -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3>
@@ -188,6 +190,7 @@
                         </div>
                     </div>
 
+                    <!-- 2. ปฏิทินตารางเรียนและการใช้ห้อง (แกน X = เวลา, แกน Y = วัน) -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fa-solid fa-chalkboard-user" style="color: #3b82f6;"></i> ตารางเรียนและการใช้ห้อง</h3>
@@ -216,7 +219,7 @@
                                     <button onclick="changeWeek(0)">สัปดาห์นี้</button>
                                     <button onclick="changeWeek(1)" title="สัปดาห์ถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
                                 </div>
-                                <div class="schedule-week-label" id="schedule-week-label"></div>
+                                <div class="schedule-week-label" id="schedule-week-label">1 พ.ย. - 7 พ.ย. 2026</div>
                             </div>
 
                             <div class="schedule-grid-wrapper">
@@ -394,7 +397,7 @@
             
             html += `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
             
-            // ขยายลูปแสดงเวลาไปถึง 20:00 (เพิ่มขึ้นจากเดิมที่จบ 19:00)
+            // 🌟 ปรับ Loop หัวตารางให้ถึง 20:00 (h <= 20)
             for(let h=8; h<=20; h++) {
                 let colStart = (h-8)*4 + 2;
                 let colEnd = colStart + 4;
@@ -413,7 +416,7 @@
                             <span class="grid-day-date">${dateStr}</span>
                          </div>`;
                          
-                // ขยายพื้นหลังให้ยาวคลุมไปถึงคอลัมน์ที่ 54 (สำหรับเวลา 20:00)
+                // 🌟 ขยายพื้นหลังช่องตารางให้ถึงคอลัมน์ที่ 54 (รองรับ 20:00 - 21:00)
                 html += `<div class="grid-cell" style="grid-column: 2 / 54; grid-row: ${row};"></div>`;
             }
             
@@ -431,6 +434,7 @@
                 let colEnd = (eHour - 8) * 4 + Math.floor(eMin / 15) + 2;
                 
                 if(colStart < 2) colStart = 2;
+                // 🌟 เพิ่มขอบเขตสูงสุดให้ถึงคอลัมน์ 54 
                 if(colEnd > 54) colEnd = 54;
                 if(colStart >= 54 || colEnd <= 2) return;
                 
