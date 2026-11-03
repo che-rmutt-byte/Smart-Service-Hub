@@ -183,7 +183,7 @@
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv'; 
 
-        // ฟังก์ชันสร้าง timestamp ต่อท้าย URL เพื่อป้องกัน Cache
+        // ป้องกัน Browser Caching ด้วยการต่อท้าย timestamp
         function getNoCacheUrl(url) {
             const separator = url.includes('?') ? '&' : '?';
             return `${url}${separator}t=${new Date().getTime()}`;
@@ -282,42 +282,42 @@
             return new Date(d.setDate(diff));
         }
 
-        // ปรับปรุงฟังก์ชันจัดการวันที่ให้ครอบคลุม
+        // ฟังก์ชันอ่านวันที่ครอบคลุมกรณี "DD/MM/YYYY, HH:MM:SS" (อ้างอิงจากภาพของคุณ)
         function parseSheetDate(dateString) {
             if (!dateString) return null;
             let str = dateString.trim();
             
-            // แบบที่ 1: มาในรูปแบบ DD/MM/YYYY, HH:MM:SS หรือ DD/MM/YYYY HH:MM:SS
-            if (str.includes('/')) {
-                // ถ้ามีลูกน้ำ ให้เอาออกแล้วแทนด้วยช่องว่าง
-                str = str.replace(',', '');
-                
-                let parts = str.split(/\s+|T/); // แยกด้วยช่องว่าง หรือตัว T
-                let dateParts = parts[0].trim().split('/');
-                
-                // ตรวจสอบว่าแยกได้ 3 ส่วน (วัน/เดือน/ปี)
-                if (dateParts.length === 3) {
-                    let day = dateParts[0];
-                    let month = dateParts[1];
-                    let year = dateParts[2];
+            if (str.includes(',')) {
+                let parts = str.split(',');
+                let datePart = parts[0].trim(); 
+                let timePart = parts[1].trim(); 
+
+                let dateSplit = datePart.split('/');
+                if (dateSplit.length === 3) {
+                    let day = dateSplit[0].padStart(2, '0');
+                    let month = dateSplit[1].padStart(2, '0');
+                    let year = dateSplit[2];
                     
-                    let timeStr = "00:00:00"; // กำหนดเวลาเริ่มต้น
-                    if (parts.length > 1) {
-                         timeStr = parts[1].trim();
+                    let timeSplit = timePart.split(':');
+                    if(timeSplit[0].length === 1) {
+                         timePart = '0' + timePart;
                     }
 
-                    // จัดเรียงเป็น YYYY-MM-DDTHH:MM:SS ซึ่งเป็นมาตรฐานที่ Date() อ่านได้ 100%
-                    return new Date(`${year}-${month}-${day}T${timeStr}`);
+                    let isoString = `${year}-${month}-${day}T${timePart}`;
+                    return new Date(isoString);
                 }
             }
             
-            // แบบที่ 2: มาในรูปแบบ YYYY-MM-DD HH:MM:SS (มีช่องว่าง แต่ไม่มี /)
-            if (str.includes(' ') && !str.includes('T')) {
+            if (str.includes(' ') && !str.includes('T') && str.includes('-')) {
                 str = str.replace(' ', 'T');
             }
             
-            // ให้ new Date() จัดการแบบที่เหลือ
-            return new Date(str);
+            let resultDate = new Date(str);
+            if (!isNaN(resultDate.getTime())) {
+                return resultDate;
+            }
+            
+            return null;
         }
 
         function initClassSchedule() {
