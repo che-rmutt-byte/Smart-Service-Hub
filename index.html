@@ -69,17 +69,13 @@
         .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; }
         
         .schedule-grid-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #cbd5e1; }
-        /* ปรับ grid column: แต่ละคอลัมน์คือ 1 ชั่วโมง (รวม 12 คอลัมน์ ไม่ใช่ 48 แล้ว) */
         .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 40px repeat(7, minmax(55px, auto)); min-width: 900px; background: #e2e8f0; gap: 1px; }
         
-        /* เส้นแบ่งหัวตาราง และ ป้ายวัน */
         .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
         .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
         
-        /* เส้นแบ่งคอลัมน์ (รายชั่วโมง) */
         .grid-cell-hour { background: #ffffff; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #cbd5e1; }
         
-        /* กล่องเหตุการณ์: ปรับให้วางตำแหน่งอิสระได้เพื่อให้วาดแบบละเอียดระดับนาทีได้ */
         .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #cbd5e1; }
         .grid-event { position: absolute; top: 3px; bottom: 3px; background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); z-index: 10; }
         
@@ -187,9 +183,15 @@
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv'; 
 
+        // ฟังก์ชันสร้าง timestamp ต่อท้าย URL เพื่อป้องกัน Cache
+        function getNoCacheUrl(url) {
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}t=${new Date().getTime()}`;
+        }
+
         function loadAnnouncements() {
             if(!ANNOUNCEMENT_CSV_URL.includes('http')) return;
-            fetch(ANNOUNCEMENT_CSV_URL).then(res => res.text()).then(csvText => {
+            fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                     const listEl = document.getElementById('announcement-list');
                     listEl.innerHTML = ''; 
@@ -219,7 +221,7 @@
                 datesSet: function(info) { renderEventDetails(info.view.currentStart, info.view.currentEnd); },
                 events: function(info, successCallback, failureCallback) {
                     if(!EVENT_CALENDAR_CSV_URL.includes('http')) return successCallback([]);
-                    fetch(EVENT_CALENDAR_CSV_URL).then(res => res.text()).then(csvText => {
+                    fetch(getNoCacheUrl(EVENT_CALENDAR_CSV_URL)).then(res => res.text()).then(csvText => {
                         Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                             allCalendarEvents = [];
                             var events = [];
@@ -280,31 +282,49 @@
             return new Date(d.setDate(diff));
         }
 
-        // ฟังก์ชันช่วยแปลงวันที่ที่ Google Sheet อาจส่งมาแปลกๆ ให้อ่านได้
+        // ปรับปรุงฟังก์ชันจัดการวันที่ให้ครอบคลุม
         function parseSheetDate(dateString) {
             if (!dateString) return null;
             let str = dateString.trim();
-            // ถ้ามาเป็นรูปแบบ DD/MM/YYYY, HH:MM:SS
-            if (str.includes(',') && str.includes('/')) {
-                let parts = str.split(',');
+            
+            // แบบที่ 1: มาในรูปแบบ DD/MM/YYYY, HH:MM:SS หรือ DD/MM/YYYY HH:MM:SS
+            if (str.includes('/')) {
+                // ถ้ามีลูกน้ำ ให้เอาออกแล้วแทนด้วยช่องว่าง
+                str = str.replace(',', '');
+                
+                let parts = str.split(/\s+|T/); // แยกด้วยช่องว่าง หรือตัว T
                 let dateParts = parts[0].trim().split('/');
-                let timeStr = parts[1].trim();
+                
+                // ตรวจสอบว่าแยกได้ 3 ส่วน (วัน/เดือน/ปี)
                 if (dateParts.length === 3) {
-                    // สร้างเป็น Date object จากรูปแบบ YYYY-MM-DDTHH:MM:SS
-                    return new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeStr}`);
+                    let day = dateParts[0];
+                    let month = dateParts[1];
+                    let year = dateParts[2];
+                    
+                    let timeStr = "00:00:00"; // กำหนดเวลาเริ่มต้น
+                    if (parts.length > 1) {
+                         timeStr = parts[1].trim();
+                    }
+
+                    // จัดเรียงเป็น YYYY-MM-DDTHH:MM:SS ซึ่งเป็นมาตรฐานที่ Date() อ่านได้ 100%
+                    return new Date(`${year}-${month}-${day}T${timeStr}`);
                 }
             }
-            // ถ้าเป็นรูปแบบมีช่องว่าง เช่น YYYY-MM-DD HH:MM:SS
+            
+            // แบบที่ 2: มาในรูปแบบ YYYY-MM-DD HH:MM:SS (มีช่องว่าง แต่ไม่มี /)
             if (str.includes(' ') && !str.includes('T')) {
                 str = str.replace(' ', 'T');
             }
+            
+            // ให้ new Date() จัดการแบบที่เหลือ
             return new Date(str);
         }
 
         function initClassSchedule() {
             if(!CLASS_CSV_URL.includes('http')) return;
-            fetch(CLASS_CSV_URL).then(res => res.text()).then(csvText => {
+            fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
+                    allClassEvents = []; // ล้างค่าเก่าเสมอ
                     results.data.forEach(row => {
                         const title = row.Title || row.title;
                         const start = row.Start || row.start;
@@ -355,13 +375,11 @@
             const gridEl = document.getElementById('class-schedule-grid');
             let html = `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
             
-            // วาดหัวคอลัมน์เวลา 08:00 - 19:00
             for(let h=8; h<20; h++) {
                 let colIndex = h - 8 + 2; 
                 html += `<div class="grid-header" style="grid-column: ${colIndex}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
             }
             
-            // วาดแถววันที่และเส้นตาราง (รายชั่วโมง) ด้านหลัง
             const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
             for(let d=0; d<7; d++) {
                 let row = d + 2; 
@@ -372,16 +390,12 @@
                             <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
                          </div>`;
                 
-                // คอนเทนเนอร์สำหรับวางวิชา (ครอบคลุมทั้งแถว)
                 html += `<div class="grid-event-container" style="grid-column: 2 / 14; grid-row: ${row};">`;
                 
-                // วาดเส้นแบ่งเวลา 12 ช่อง (12 ชั่วโมง)
                 for(let col = 0; col < 12; col++) {
-                    // กำหนดความกว้างและเส้นแบ่งให้แต่ละชั่วโมง
                     html += `<div class="grid-cell-hour" style="position: absolute; left: ${(col/12)*100}%; width: ${(1/12)*100}%; height: 100%;"></div>`;
                 }
                 
-                // หากล่องวิชาเรียนที่อยู่ในวันนี้
                 let dayEvents = events.filter(ev => {
                     let mappedDay = ev.start.getDay() === 0 ? 6 : ev.start.getDay() - 1;
                     return mappedDay === d;
@@ -391,8 +405,7 @@
                     let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
                     let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
                     
-                    // คำนวณตำแหน่งและสัดส่วนความกว้างแบบเปอร์เซ็นต์ (อ้างอิงจากเวลาทำงานรวม 12 ชม. คือ 8:00 ถึง 20:00)
-                    let totalWorkingMinutes = 12 * 60; // 720 นาที
+                    let totalWorkingMinutes = 12 * 60; 
                     let startMinutes = (sHour - 8) * 60 + sMin;
                     let endMinutes = (eHour - 8) * 60 + eMin;
                     
@@ -412,7 +425,7 @@
                         </div>`;
                 });
 
-                html += `</div>`; // ปิด grid-event-container
+                html += `</div>`; 
             }
             
             gridEl.innerHTML = html;
