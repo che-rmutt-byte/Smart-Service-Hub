@@ -13,89 +13,115 @@
 
     <style>
         :root {
-            --sidebar-bg: #1e293b; 
-            --sidebar-hover: #334155;
-            --sidebar-text: #cbd5e1;
-            --primary-color: #16a085; 
-            --primary-hover: #117a65;
-            --bg-light: #f4f6f9;
-            --text-dark: #333333;
+            --sidebar-bg: #0f172a;        /* เปลี่ยนเป็นสีน้ำเงินเข้มเกือบดำ (Slate 900) ให้ดูพรีเมียม */
+            --sidebar-hover: #1e293b;     /* Slate 800 */
+            --sidebar-text: #94a3b8;      /* Slate 400 */
+            --primary-color: #0d9488;     /* Teal 600 สีเขียวมรกตที่ดูทันสมัยและเป็นมืออาชีพขึ้น */
+            --primary-hover: #0f766e;     /* Teal 700 */
+            --bg-light: #f8fafc;          /* Slate 50 พื้นหลังละมุนตา */
+            --text-dark: #1e293b;         /* Slate 800 ตัวหนังสือหลักคมชัด */
             --card-bg: #ffffff;
-            --border-color: #e2e8f0;
+            --border-color: #e2e8f0;      /* Slate 200 */
             --sidebar-width: 280px;
+            --radius-box: 16px;           /* ความโค้งมนที่ทันสมัยขึ้น */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header .logo-icon { width: 40px; height: 40px; background-color: var(--primary-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
-        .sidebar-header h2 { font-size: 18px; font-weight: 600; }
-        .nav-menu { padding: 20px 0; overflow-y: auto; flex: 1; }
-        .nav-item { display: flex; align-items: center; padding: 12px 25px; color: var(--sidebar-text); text-decoration: none; font-size: 15px; transition: 0.2s; margin-bottom: 5px; border-left: 4px solid transparent; }
-        .nav-item i { width: 25px; font-size: 18px; margin-right: 12px; text-align: center; }
-        .nav-item:hover, .nav-item.active { background-color: var(--sidebar-hover); color: white; border-left-color: var(--primary-color); }
+        /* Modern Sidebar */
+        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 25px rgba(0,0,0,0.05); }
+        .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-header .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary-color), #0f766e); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
+        .sidebar-header h2 { font-size: 17px; font-weight: 600; letter-spacing: 0.3px; }
+        
+        .nav-menu { padding: 20px 15px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .nav-menu::-webkit-scrollbar { width: 4px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        
+        .nav-item { display: flex; align-items: center; padding: 12px 18px; color: var(--sidebar-text); text-decoration: none; font-size: 14px; font-weight: 400; transition: all 0.25s ease; border-radius: 10px; }
+        .nav-item i { width: 24px; font-size: 16px; margin-right: 12px; text-align: center; transition: transform 0.2s; }
+        .nav-item:hover { background-color: var(--sidebar-hover); color: white; }
+        .nav-item:hover i { transform: scale(1.1); }
+        .nav-item.active { background: linear-gradient(135deg, var(--primary-color), #0f766e); color: white; font-weight: 500; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25); }
 
+        /* Modern Topbar */
         .main-content { flex: 1; margin-left: var(--sidebar-width); transition: 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
-        .topbar { background-color: var(--card-bg); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
-        .menu-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--text-dark); cursor: pointer; }
+        .topbar { background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
 
-        .dashboard-container { padding: 30px; flex: 1; }
-        .page-title { font-size: 24px; color: #1e293b; margin-bottom: 25px; font-weight: 600; }
+        /* Dashboard Container */
+        .dashboard-container { padding: 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
+        .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
+        /* Modern Grid & Cards */
         .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start; }
         .left-column { display: flex; flex-direction: column; gap: 25px; }
         .right-column { display: flex; flex-direction: column; gap: 25px; }
 
-        .card { background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-color); overflow: hidden; }
-        .card-header { padding: 18px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #f8fafc; }
-        .card-header h3 { font-size: 16px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; }
+        .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
+        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
+        .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
-        .announcement-list { display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 5px; }
-        .announcement-item { padding: 15px; border-left: 4px solid var(--primary-color); background-color: #f8fafc; border-radius: 0 8px 8px 0; }
-        .anno-date { font-size: 12px; color: #64748b; margin-bottom: 5px; }
-        .anno-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
+        /* Announcements Style */
+        .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 4px; }
+        .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
+        .announcement-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); border-radius: 4px 0 0 4px; }
+        .announcement-item:hover { background-color: #f8fafc; border-color: #e2e8f0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .anno-date { font-size: 11px; color: #64748b; margin-bottom: 6px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        .fc { font-family: 'Prompt', sans-serif; font-size: 0.75em; }
-        .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; }
-        .fc-event { cursor: pointer; border: none; font-size: 11px; }
+        /* FullCalendar Modern Polish */
+        .card-body { padding: 25px; }
+        .fc { font-family: 'Prompt', sans-serif; font-size: 0.8em; }
+        .fc .fc-toolbar-title { font-size: 15px !important; font-weight: 600; color: #0f172a; }
+        .fc .fc-button { padding: 6px 14px !important; font-size: 0.85em !important; border-radius: 8px !important; font-weight: 500; box-shadow: none !important; }
+        .fc .fc-button-primary { background-color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
+        .fc .fc-button-primary:hover { background-color: var(--primary-hover) !important; }
+        .fc-event { border-radius: 6px; border: none; font-size: 11px; padding: 3px 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .schedule-nav button { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 5px; }
-        .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 13px; }
+        /* Schedule Toolbar & Controls */
+        .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+        .schedule-nav button:hover { background: #f1f5f9; color: var(--primary-color); border-color: var(--primary-color); }
         
-        .schedule-grid-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #cbd5e1; }
-        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 40px repeat(7, minmax(55px, auto)); min-width: 900px; background: #e2e8f0; gap: 1px; }
+        .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
+        .room-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
+        
+        .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 42px repeat(7, minmax(55px, auto)); min-width: 950px; background: #e2e8f0; gap: 1px; }
         
         .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
         .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
         
-        .grid-cell-hour { background: #ffffff; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #cbd5e1; }
+        .grid-cell-hour { background: #ffffff; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #e2e8f0; }
+        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #e2e8f0; min-height: 55px; }
         
-        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #cbd5e1; min-height: 55px; }
         .grid-event { 
             position: absolute; 
             top: 4px; 
             bottom: 4px; 
             background: var(--primary-color); 
             color: white; 
-            border-radius: 4px; 
-            padding: 2px 6px; 
+            border-radius: 6px; 
+            padding: 4px 8px; 
             font-size: 11px; 
-            line-height: 1.2; 
+            line-height: 1.3; 
             overflow: hidden; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12); 
             cursor: pointer; 
-            border: 1px solid rgba(0,0,0,0.1); 
+            border: none; 
             z-index: 10; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
             align-items: center;     
             text-align: center;      
+            transition: transform 0.15s ease;
         }
+        .grid-event:hover { transform: scale(1.02); z-index: 20; }
         
         @media (max-width: 992px) { .grid-layout { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
@@ -139,7 +165,7 @@
                 <div class="left-column">
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
-                        <div class="card-body" style="padding: 15px;">
+                        <div class="card-body">
                             <div class="announcement-list" id="announcement-list"></div>
                         </div>
                     </div>
@@ -149,7 +175,7 @@
                     <!-- ตารางเรียนและการใช้ห้อง -->
                     <div class="card">
                         <div class="card-header">
-                            <h3><i class="fa-solid fa-chalkboard-user" style="color: #3b82f6;"></i> ตารางเรียนและการใช้ห้อง</h3>
+                            <h3><i class="fa-solid fa-chalkboard-user" style="color: #0284c7;"></i> ตารางเรียนและการใช้ห้อง</h3>
                             <select id="room-filter" class="room-filter" onchange="applyClassFilters()">
                                 <option value="all">ดูทุกห้องรวมกัน</option>
                                 <optgroup label="ห้องเรียน">
@@ -167,14 +193,14 @@
                                 </optgroup>
                             </select>
                         </div>
-                        <div class="card-body" style="padding: 20px;">
+                        <div class="card-body">
                             <div class="schedule-toolbar">
                                 <div class="schedule-nav">
                                     <button onclick="changeWeek(-1)"><i class="fa-solid fa-chevron-left"></i></button>
                                     <button onclick="changeWeek(0)">สัปดาห์นี้</button>
                                     <button onclick="changeWeek(1)"><i class="fa-solid fa-chevron-right"></i></button>
                                 </div>
-                                <div class="schedule-week-label" id="schedule-week-label" style="font-weight: 600;"></div>
+                                <div class="schedule-week-label" id="schedule-week-label" style="font-weight: 600; color: #475569; font-size: 14px;"></div>
                             </div>
                             <div class="schedule-grid-wrapper">
                                 <div class="schedule-grid" id="class-schedule-grid">
@@ -186,10 +212,10 @@
                     <!-- ปฏิทินกิจกรรมภาควิชา -->
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
-                        <div class="card-body" style="padding: 15px;">
+                        <div class="card-body">
                             <div id="event-calendar"></div>
-                            <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                                <h4 style="font-size: 14px; margin-bottom: 10px; color: #1e293b;"><i class="fa-solid fa-list"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
+                            <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                                <h4 style="font-size: 14px; margin-bottom: 12px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
                                 <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;"></div>
                             </div>
                         </div>
@@ -255,7 +281,7 @@
                                         endDateObj.setDate(endDateObj.getDate() + 1);
                                         end = endDateObj.toISOString().split('T')[0]; 
                                     }
-                                    let ev = { title: title, start: start, end: end || null, actualEnd: actualEnd, color: row.Color || '#16a085' };
+                                    let ev = { title: title, start: start, end: end || null, actualEnd: actualEnd, color: row.Color || '#0d9488' };
                                     events.push(ev);
                                     allCalendarEvents.push(ev);
                                 }
@@ -282,14 +308,14 @@
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
                     listEl.innerHTML += `
-                        <div style="padding: 10px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 4px; font-size: 13px;">
-                            <b style="color: #1e293b;">${ev.title}</b><br>
-                            <span style="color: #64748b; font-size: 11px;"><i class="fa-regular fa-calendar"></i> ${dateStr}</span>
+                        <div style="padding: 12px 14px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 8px; font-size: 13px; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+                            <b style="color: #1e293b; font-weight: 600;">${ev.title}</b><br>
+                            <span style="color: #64748b; font-size: 11px; display:inline-block; margin-top:3px;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${dateStr}</span>
                         </div>
                     `;
                 }
             });
-            if (!hasEvent) listEl.innerHTML = '<div style="color: #64748b; font-size: 13px;">ไม่มีกิจกรรมในเดือนนี้</div>';
+            if (!hasEvent) listEl.innerHTML = '<div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
         let allClassEvents = [];
@@ -335,7 +361,7 @@
                         const startTimeVal = row.StartTime || row.starttime || "";
                         const endTimeVal = row.EndTime || row.endtime || "";
                         const room = row.Room || row.room || "";
-                        const color = row.Color || row.color || "#3b82f6";
+                        const color = row.Color || row.color || "#0284c7";
                         
                         if (title && dateVal && startTimeVal) {
                             let startIso = convertToValidDateString(dateVal, startTimeVal);
