@@ -2,8 +2,9 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChE Smart Service Hub - หน้าหลัก</title>
+    <!-- 🌟 ตั้งค่า Viewport ให้พอดีกับหน้าจอมือถือ ไม่ให้เกิดอาการซูมออกเอง -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChE Smart Hub - หน้าหลัก</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,10 +28,23 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
+        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; width: 100%; }
 
         /* Modern Sidebar */
-        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 100; box-shadow: 4px 0 25px rgba(0,0,0,0.05); }
+        .sidebar { 
+            width: var(--sidebar-width); 
+            background-color: var(--sidebar-bg); 
+            color: white; 
+            position: fixed; 
+            height: 100vh; 
+            left: 0; 
+            top: 0; 
+            display: flex; 
+            flex-direction: column; 
+            transition: transform 0.3s ease; 
+            z-index: 100; 
+            box-shadow: 4px 0 25px rgba(0,0,0,0.05); 
+        }
         .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .sidebar-header .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary-color), #0f766e); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
         .sidebar-header h2 { font-size: 17px; font-weight: 600; letter-spacing: 0.3px; }
@@ -46,13 +60,31 @@
         .nav-item.active { background: linear-gradient(135deg, var(--primary-color), #0f766e); color: white; font-weight: 500; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25); }
 
         /* Overlay สำหรับมือถือตอนเปิด Sidebar */
-        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 90; backdrop-filter: blur(2px); transition: opacity 0.3s ease; }
+        .sidebar-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.5); 
+            z-index: 90; 
+            backdrop-filter: blur(2px); 
+        }
         .sidebar-overlay.active { display: block; }
 
-        /* Modern Topbar */
-        .main-content { flex: 1; margin-left: var(--sidebar-width); transition: 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
+        /* Modern Topbar & Main Content */
+        .main-content { 
+            flex: 1; 
+            margin-left: var(--sidebar-width); 
+            transition: margin-left 0.3s ease; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            width: calc(100% - var(--sidebar-width)); 
+        }
         .topbar { background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
-        .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; padding: 5px; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
 
         /* Dashboard Container */
         .dashboard-container { padding: 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
@@ -64,7 +96,7 @@
         .left-column { display: flex; flex-direction: column; gap: 25px; }
         .right-column { display: flex; flex-direction: column; gap: 25px; }
 
-        .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
+        .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; }
         .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
         .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
@@ -72,27 +104,20 @@
         .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 4px; }
         .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
         .announcement-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); border-radius: 4px 0 0 4px; }
-        .announcement-item:hover { background-color: #f8fafc; border-color: #e2e8f0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .anno-date { font-size: 11px; color: #64748b; margin-bottom: 6px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
         .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        /* FullCalendar Modern Polish */
+        /* FullCalendar & Schedule */
         .card-body { padding: 25px; }
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.8em; }
         .fc .fc-toolbar-title { font-size: 15px !important; font-weight: 600; color: #0f172a; }
-        .fc .fc-button { padding: 6px 14px !important; font-size: 0.85em !important; border-radius: 8px !important; font-weight: 500; box-shadow: none !important; }
+        .fc .fc-button { padding: 6px 14px !important; font-size: 0.85em !important; border-radius: 8px !important; font-weight: 500; }
         .fc .fc-button-primary { background-color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
-        .fc .fc-button-primary:hover { background-color: var(--primary-hover) !important; }
-        .fc-event { border-radius: 6px; border: none; font-size: 11px; padding: 3px 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        
-        /* Schedule Toolbar & Controls */
+
         .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
-        .schedule-nav button:hover { background: #f1f5f9; color: var(--primary-color); border-color: var(--primary-color); }
-        
-        .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
-        .room-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
+        .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
+        .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; }
         
         .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); -webkit-overflow-scrolling: touch; }
         .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 42px repeat(7, minmax(55px, auto)); min-width: 950px; background: #e2e8f0; gap: 1px; }
@@ -104,40 +129,25 @@
         .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #e2e8f0; min-height: 55px; }
         
         .grid-event { 
-            position: absolute; 
-            top: 4px; 
-            bottom: 4px; 
-            background: var(--primary-color); 
-            color: white; 
-            border-radius: 6px; 
-            padding: 4px 8px; 
-            font-size: 11px; 
-            line-height: 1.3; 
-            overflow: hidden; 
-            box-shadow: 0 3px 8px rgba(0,0,0,0.12); 
-            cursor: pointer; 
-            border: none; 
-            z-index: 10; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center;     
-            text-align: center;      
-            transition: transform 0.15s ease;
+            position: absolute; top: 4px; bottom: 4px; background: var(--primary-color); color: white; border-radius: 6px; 
+            padding: 4px 8px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.12); 
+            cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; 
         }
-        .grid-event:hover { transform: scale(1.02); z-index: 20; }
-        
-        /* Responsive Media Queries สำหรับมือถือและจอแท็บเล็ต */
+
+        /* ================= Responsive สำหรับมือถือ ================= */
         @media (max-width: 992px) { 
             .grid-layout { grid-template-columns: 1fr; } 
         }
 
         @media (max-width: 768px) {
+            /* 🌟 ซ่อน Sidebar ไว้ด้านนอกจอค่าเริ่มต้น และขยายพื้นที่ main-content ให้เต็ม 100% */
             .sidebar { transform: translateX(-100%); }
             .sidebar.active { transform: translateX(0); }
-            .main-content { margin-left: 0; width: 100%; }
+            
+            .main-content { margin-left: 0 !important; width: 100% !important; }
             .menu-toggle { display: block; }
-            .dashboard-container { padding: 15px; }
+            
+            .dashboard-container { padding: 15px; width: 100%; }
             .topbar { padding: 12px 20px; }
             .card-header { padding: 15px; flex-direction: column; align-items: flex-start; gap: 10px; }
             .room-filter { width: 100%; }
@@ -167,6 +177,7 @@
 
     <main class="main-content">
         <header class="topbar">
+            <!-- 🌟 ปุ่ม 3 ขีดสำหรับเปิด-ปิด Sidebar บนมือถือ -->
             <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
         </header>
 
@@ -215,8 +226,7 @@
                                 <div class="schedule-week-label" id="schedule-week-label" style="font-weight: 600; color: #475569; font-size: 14px;"></div>
                             </div>
                             <div class="schedule-grid-wrapper">
-                                <div class="schedule-grid" id="class-schedule-grid">
-                                </div>
+                                <div class="schedule-grid" id="class-schedule-grid"></div>
                             </div>
                         </div>
                     </div>
@@ -320,7 +330,7 @@
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
                     listEl.innerHTML += `
-                        <div style="padding: 12px 14px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 8px; font-size: 13px; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+                        <div style="padding: 12px 14px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 8px; font-size: 13px; border: 1px solid #f1f5f9;">
                             <b style="color: #1e293b; font-weight: 600;">${ev.title}</b><br>
                             <span style="color: #64748b; font-size: 11px; display:inline-block; margin-top:3px;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${dateStr}</span>
                         </div>
@@ -342,20 +352,12 @@
         function convertToValidDateString(dateStr, timeStr) {
             if(!dateStr || !timeStr) return null;
             let formattedDate = dateStr.trim();
-            
             if (formattedDate.includes('/')) {
                 let parts = formattedDate.split('/');
-                if(parts.length === 3) {
-                    let day = parts[0].padStart(2, '0');
-                    let month = parts[1].padStart(2, '0');
-                    let year = parts[2];
-                    formattedDate = `${year}-${month}-${day}`;
-                }
+                if(parts.length === 3) formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
             }
-
             let formattedTime = timeStr.trim();
             if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
-            
             return `${formattedDate}T${formattedTime}:00`;
         }
 
@@ -366,7 +368,6 @@
             fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                     allClassEvents = [];
-                    
                     results.data.forEach(row => {
                         const title = row.Title || row.title || "";
                         const dateVal = row.Date || row.date || "";
@@ -378,7 +379,6 @@
                         if (title && dateVal && startTimeVal) {
                             let startIso = convertToValidDateString(dateVal, startTimeVal);
                             let endIso = convertToValidDateString(dateVal, endTimeVal);
-                            
                             let startObj = startIso ? new Date(startIso) : null;
                             let endObj = endIso ? new Date(endIso) : null;
 
@@ -395,9 +395,6 @@
                     });
                     applyClassFilters();
                 }});
-            }).catch(err => {
-                console.error("Error fetching class schedule CSV: ", err);
-                gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #dc3545; font-size: 14px;">การเชื่อมต่อล้มเหลว โปรดตรวจสอบลิงก์ CSV</div>';
             });
         }
 
@@ -467,7 +464,6 @@
                     
                     let leftPercent = (startMinutes / totalWorkingMinutes) * 100;
                     let widthPercent = ((endMinutes - startMinutes) / totalWorkingMinutes) * 100;
-                    
                     const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
                     
                     html += `
@@ -476,10 +472,8 @@
                             <div style="font-size: 10px; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
                         </div>`;
                 });
-
                 html += `</div>`; 
             }
-            
             gridEl.innerHTML = html;
         }
 
@@ -489,11 +483,10 @@
             initClassSchedule();
         });
 
+        // 🌟 ฟังก์ชันควบคุม Sidebar เปิด-ปิด บนมือถือ
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
         }
     </script>
 </body>
