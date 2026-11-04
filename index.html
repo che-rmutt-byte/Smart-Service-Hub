@@ -75,7 +75,29 @@
         .grid-cell-hour { background: #ffffff; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #cbd5e1; }
         
         .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #cbd5e1; min-height: 55px; }
-        .grid-event { position: absolute; top: 3px; bottom: 3px; background: var(--primary-color); color: white; border-radius: 4px; padding: 4px 6px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); z-index: 10; }
+        
+        /* 🌟 ปรับปรุงการจัดวางให้ข้อมูลอยู่ตรงกลางแถบสีทั้งแนวตั้งและแนวนอน */
+        .grid-event { 
+            position: absolute; 
+            top: 4px; 
+            bottom: 4px; 
+            background: var(--primary-color); 
+            color: white; 
+            border-radius: 4px; 
+            padding: 2px 6px; 
+            font-size: 11px; 
+            line-height: 1.2; 
+            overflow: hidden; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            cursor: pointer; 
+            border: 1px solid rgba(0,0,0,0.1); 
+            z-index: 10; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; /* จัดกึ่งกลางแนวตั้ง */
+            align-items: center;     /* จัดกึ่งกลางแนวนอน */
+            text-align: center;      /* จัดข้อความให้อยู่ตรงกลาง */
+        }
         
         @media (max-width: 992px) { .grid-layout { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
@@ -178,21 +200,16 @@
     </main>
 
     <script>
-        // ลิงก์ CSV ที่เผยแพร่จาก Google Sheets (นำมาใส่เหมือนเดิม)
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
 
-        // ป้องกัน Browser Caching
         function getNoCacheUrl(url) {
             if (!url) return "";
             const separator = url.includes('?') ? '&' : '?';
             return `${url}${separator}t=${new Date().getTime()}`;
         }
 
-        // ==========================================
-        // 1. ประกาศ (ดึงผ่าน CSV ปกติ)
-        // ==========================================
         function loadAnnouncements() {
             fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
@@ -213,9 +230,6 @@
             });
         }
 
-        // ==========================================
-        // 2. ปฏิทินกิจกรรมภาควิชา (ดึงผ่าน CSV ปกติ)
-        // ==========================================
         let allCalendarEvents = [];
         function initEventCalendar() {
             var calendarEl = document.getElementById('event-calendar');
@@ -278,9 +292,6 @@
             if (!hasEvent) listEl.innerHTML = '<div style="color: #64748b; font-size: 13px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
-        // ==========================================
-        // 3. ตารางเรียนและการใช้ห้อง (ดึงผ่าน CSV + แยกคอลัมน์แล้ว)
-        // ==========================================
         let allClassEvents = [];
         let currentWeekStart = getMonday(new Date()); 
         
@@ -290,12 +301,10 @@
             return new Date(d.setDate(diff));
         }
 
-        // ฟังก์ชันช่วยแปลงวันที่จากรูปแบบ "DD/MM/YYYY" (เช่น 03/11/2026) หรือ YYYY-MM-DD
         function convertToValidDateString(dateStr, timeStr) {
             if(!dateStr || !timeStr) return null;
             let formattedDate = dateStr.trim();
             
-            // กรณีเป็นแบบวัน/เดือน/ปี (เช่น 03/11/2026) ให้สลับเป็น ปี-เดือน-วัน เพื่อให้ JavaScript อ่านออก
             if (formattedDate.includes('/')) {
                 let parts = formattedDate.split('/');
                 if(parts.length === 3) {
@@ -306,11 +315,9 @@
                 }
             }
 
-            // จัดเวลาให้มี 0 นำหน้าเสมอ
             let formattedTime = timeStr.trim();
-            if(formattedTime.length === 4) formattedTime = '0' + formattedTime; // 9:00 -> 09:00
+            if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
             
-            // รวมร่างเป็น ISO String
             return `${formattedDate}T${formattedTime}:00`;
         }
 
@@ -320,10 +327,9 @@
 
             fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
-                    allClassEvents = []; // ล้างค่าเก่าเสมอ
+                    allClassEvents = [];
                     
                     results.data.forEach(row => {
-                        // ดึงข้อมูลตามชื่อคอลัมน์ใหม่ (แยก Date, StartTime, EndTime)
                         const title = row.Title || row.title || "";
                         const dateVal = row.Date || row.date || "";
                         const startTimeVal = row.StartTime || row.starttime || "";
@@ -338,12 +344,11 @@
                             let startObj = startIso ? new Date(startIso) : null;
                             let endObj = endIso ? new Date(endIso) : null;
 
-                            // ตรวจสอบว่าวันที่แปลงได้สำเร็จและถูกต้อง
                             if (startObj && !isNaN(startObj.getTime())) {
                                 allClassEvents.push({
                                     title: title,
                                     start: startObj,
-                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000), // ถ้าไม่มี EndTime ให้บวก 1 ชม.
+                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
                                     room: String(room).trim(),
                                     color: color
                                 });
@@ -429,8 +434,8 @@
                     
                     html += `
                         <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};">
-                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ev.title}</div>
-                            <div style="font-size: 10px; opacity: 0.9;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${ev.title}</div>
+                            <div style="font-size: 10px; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
                         </div>`;
                 });
 
