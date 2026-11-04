@@ -160,7 +160,7 @@
         }
         .grid-event:hover { transform: scale(1.02); z-index: 20; }
         
-        /* Responsive Media Queries */
+        /* Responsive Media Queries สำหรับมือถือ */
         @media (max-width: 992px) { 
             .grid-layout { grid-template-columns: 1fr; } 
         }
@@ -175,6 +175,30 @@
             .card-header { padding: 15px; flex-direction: column; align-items: flex-start; gap: 10px; }
             .room-filter { width: 100%; }
             .card-body { padding: 15px; }
+
+            /* 🌟 ปรับตารางเรียนบนมือถือให้ย่อลงพอดีจอ ไม่ต้องเลื่อนซ้ายขวา */
+            .schedule-grid-wrapper {
+                overflow-x: hidden !important;
+            }
+            .schedule-grid {
+                min-width: 100% !important;
+                grid-template-columns: 45px repeat(12, 1fr) !important;
+                grid-template-rows: 32px repeat(7, minmax(42px, auto)) !important;
+            }
+            .grid-header {
+                font-size: 8px !important;
+                padding: 0 1px;
+            }
+            .grid-day-label {
+                font-size: 9px !important;
+            }
+            .grid-day-label span:last-child {
+                font-size: 7px !important;
+            }
+            .grid-event {
+                font-size: 8px !important;
+                padding: 1px 2px !important;
+            }
         }
     </style>
 </head>
