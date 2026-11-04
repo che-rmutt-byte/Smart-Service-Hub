@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ChE Smart Service Hub - หน้าหลัก</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,24 +13,24 @@
 
     <style>
         :root {
-            --sidebar-bg: #0f172a;        /* เปลี่ยนเป็นสีน้ำเงินเข้มเกือบดำ (Slate 900) ให้ดูพรีเมียม */
-            --sidebar-hover: #1e293b;     /* Slate 800 */
-            --sidebar-text: #94a3b8;      /* Slate 400 */
-            --primary-color: #0d9488;     /* Teal 600 สีเขียวมรกตที่ดูทันสมัยและเป็นมืออาชีพขึ้น */
-            --primary-hover: #0f766e;     /* Teal 700 */
-            --bg-light: #f8fafc;          /* Slate 50 พื้นหลังละมุนตา */
-            --text-dark: #1e293b;         /* Slate 800 ตัวหนังสือหลักคมชัด */
+            --sidebar-bg: #0f172a;        
+            --sidebar-hover: #1e293b;     
+            --sidebar-text: #94a3b8;      
+            --primary-color: #0d9488;     
+            --primary-hover: #0f766e;     
+            --bg-light: #f8fafc;          
+            --text-dark: #1e293b;         
             --card-bg: #ffffff;
-            --border-color: #e2e8f0;      /* Slate 200 */
+            --border-color: #e2e8f0;      
             --sidebar-width: 280px;
-            --radius-box: 16px;           /* ความโค้งมนที่ทันสมัยขึ้น */
+            --radius-box: 16px;           
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
 
         /* Modern Sidebar */
-        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 25px rgba(0,0,0,0.05); }
+        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 100; box-shadow: 4px 0 25px rgba(0,0,0,0.05); }
         .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .sidebar-header .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary-color), #0f766e); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
         .sidebar-header h2 { font-size: 17px; font-weight: 600; letter-spacing: 0.3px; }
@@ -45,10 +45,14 @@
         .nav-item:hover i { transform: scale(1.1); }
         .nav-item.active { background: linear-gradient(135deg, var(--primary-color), #0f766e); color: white; font-weight: 500; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25); }
 
+        /* Overlay สำหรับมือถือตอนเปิด Sidebar */
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 90; backdrop-filter: blur(2px); transition: opacity 0.3s ease; }
+        .sidebar-overlay.active { display: block; }
+
         /* Modern Topbar */
         .main-content { flex: 1; margin-left: var(--sidebar-width); transition: 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
         .topbar { background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
-        .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; padding: 5px; }
 
         /* Dashboard Container */
         .dashboard-container { padding: 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
@@ -90,7 +94,7 @@
         .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
         .room-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
         
-        .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+        .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); -webkit-overflow-scrolling: touch; }
         .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 42px repeat(7, minmax(55px, auto)); min-width: 950px; background: #e2e8f0; gap: 1px; }
         
         .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
@@ -123,12 +127,20 @@
         }
         .grid-event:hover { transform: scale(1.02); z-index: 20; }
         
-        @media (max-width: 992px) { .grid-layout { grid-template-columns: 1fr; } }
+        /* Responsive Media Queries สำหรับมือถือและจอแท็บเล็ต */
+        @media (max-width: 992px) { 
+            .grid-layout { grid-template-columns: 1fr; } 
+        }
+
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
+            .dashboard-container { padding: 15px; }
+            .topbar { padding: 12px 20px; }
+            .card-header { padding: 15px; flex-direction: column; align-items: flex-start; gap: 10px; }
+            .room-filter { width: 100%; }
         }
     </style>
 </head>
@@ -478,8 +490,10 @@
         });
 
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
     </script>
 </body>
