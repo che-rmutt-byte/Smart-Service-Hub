@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>คลังรวมแบบฟอร์มเอกสารคำร้อง</title>
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- 🌟 นำเข้า PapaParse สำหรับอ่านไฟล์ CSV จาก Google Sheets -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
     body { background-color: #f4f6f9; padding: 30px 20px; color: #333; }
@@ -13,6 +18,7 @@
     .header h1 { font-size: 24px; color: #2d3748; display: flex; align-items: center; gap: 10px; }
     .back-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #ffffff; background-color: #7494c0; padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; }
     .back-btn:hover { background-color: #5d7ca4; }
+    
     .file-grid { display: flex; flex-direction: column; gap: 12px; }
     .file-card { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; transition: all 0.2s; }
     .file-card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.04); border-color: #cbd5e1; }
@@ -22,18 +28,19 @@
     .file-tag { display: inline-block; background-color: #e2e8f0; color: #4a5568; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: 600; }
     .download-btn { background: #1e7e34; color: white; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .download-btn:hover { background: #155d25; }
+    
+    /* Loading Text */
+    .loading-text { text-align: center; color: #64748b; padding: 30px; font-size: 15px; }
+
     /* ========================================= */
     /* โค้ดปรับขนาดสำหรับหน้าจอมือถือ (Responsive) */
     /* ========================================= */
     @media (max-width: 500px) {
-      /* ปรับหัวกระดาษและปุ่มกลับห้องแชต */
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .header h1 { font-size: 18px; }
       .back-btn { padding: 6px 12px; font-size: 12px; width: auto; align-self: flex-start; }
-      
-      /* ปรับกล่องรายการไฟล์และปุ่มเปิดไฟล์/ดาวน์โหลด */
       .file-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-      .download-btn, .open-btn { width: 100%; justify-content: center; padding: 10px; font-size: 12px; }
+      .download-btn { width: 100%; justify-content: center; padding: 10px; font-size: 12px; }
     }
   </style>
 </head>
@@ -41,70 +48,77 @@
   <div class="container">
     <div class="header">
       <h1><i class="fa-solid fa-folder-open" style="color: #007bff;"></i> ศูนย์รวมแบบฟอร์ม & เอกสารคำร้อง</h1>
-      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
+      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปหน้าหลัก</a>
     </div>
-    <div class="file-grid">
-      <div class="file-card">
-        <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
-          <div>
-            <div class="file-name">แบบขอลงทะเบียนเรียนแทนรายวิชาที่มีค่าระดับคะแนน ( F )</div>
-            <span class="file-tag">Google Drive File</span>
-          </div>
-        </div>
-        <a href="https://drive.google.com/file/d/127mC_okn_bv6G3bPr-y_mTSs_p9Aceyy/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
-      </div>
-      <div class="file-card">
-        <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
-          <div>
-            <div class="file-name">แบบคำร้องต่ำกว่าเกณฑ์-เกินกว่าเกณฑ์ และอื่นๆ</div>
-            <span class="file-tag">Google Drive File</span>
-          </div>
-        </div>
-        <a href="https://drive.google.com/file/d/1zcy38LyqMSJ9dZJEM6mR0_6sxHplKFYq/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
-      </div>
-      <div class="file-card">
-        <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
-          <div>
-            <div class="file-name">แบบเทียบโอน-ยกเว้นรายวิชา</div>
-            <span class="file-tag">Google Drive File</span>
-          </div>
-        </div>
-        <a href="https://drive.google.com/file/d/16SWBJFSQjvTb-b3DCxfL1C6Brpt5OOSD/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
-      </div>
-      <div class="file-card">
-        <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
-          <div>
-            <div class="file-name">แบบเพิ่ม-ถอนรายวิชา</div>
-            <span class="file-tag">Google Drive File</span>
-          </div>
-        </div>
-        <a href="https://drive.google.com/file/d/1CEl7GyqLUXxWRChXlTRoQc1QYRfUVXKU/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
-      </div>
-      <div class="file-card">
-        <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
-          <div>
-            <div class="file-name">แบบลาพักการศึกษา-ขอกลับเข้าศึกษา</div>
-            <span class="file-tag">Google Drive File</span>
-          </div>
-        </div>
-        <a href="https://drive.google.com/file/d/1TRi5Lw86U5-v4lxkjkBYwMk9gIksUMtk/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
-      </div>
-      <div class="file-card">
-        <div class="file-info">
-          <i class="fa-brands fa-google-drive"></i>
-          <div>
-            <div class="file-name">ใบลงทะเบียน</div>
-            <span class="file-tag">Google Drive File</span>
-          </div>
-        </div>
-        <a href="https://drive.google.com/file/d/1UXXdupNoBZvBCVZVcfXE4Xd09QpDO1eJ/view?usp=sharing" target="_blank" class="download-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง</a>
-      </div>
+    
+    <!-- 🌟 เปลี่ยนเป็น Container ว่างๆ เพื่อรอรับข้อมูลจาก Sheet -->
+    <div class="file-grid" id="file-grid">
+        <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูลแบบฟอร์ม...</div>
     </div>
   </div>
+
+  <script>
+    // ⚠️ นำลิงก์ CSV จากขั้นตอนที่ 1 มาใส่ในเครื่องหมายคำพูดด้านล่างนี้
+    const FORM_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTH2YHENzaIODDtmM28xu55xv0Hs9UeALM0TG4ZPs9MmmSNwHBpDgZvAPxI__yp3CKfVIwT5yotjnAH/pub?gid=1865329430&single=true&output=csv'; // ลิงก์สมมติ (เปลี่ยนเป็นลิงก์ของคุณ)
+
+    // ฟังก์ชันป้องกันข้อมูลแคช (Cache)
+    function getNoCacheUrl(url) {
+        if (!url) return "";
+        const separator = url.includes('?') ? '&' : '?';
+        return `${url}${separator}t=${new Date().getTime()}`;
+    }
+
+    function loadForms() {
+        const gridEl = document.getElementById('file-grid');
+
+        fetch(getNoCacheUrl(FORM_CSV_URL))
+            .then(res => res.text())
+            .then(csvText => {
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        gridEl.innerHTML = ''; // ล้างข้อความ Loading
+                        let hasData = false;
+
+                        results.data.forEach(item => {
+                            // อ้างอิงตามชื่อหัวคอลัมน์ใน Sheet
+                            const title = item.Title || item.title || "";
+                            const tag = item.Tag || item.tag || "Google Drive File";
+                            const link = item.Link || item.link || "";
+
+                            if (title && link) {
+                                hasData = true;
+                                gridEl.innerHTML += `
+                                    <div class="file-card">
+                                        <div class="file-info">
+                                            <i class="fa-brands fa-google-drive"></i>
+                                            <div>
+                                                <div class="file-name">${title}</div>
+                                                <span class="file-tag">${tag}</span>
+                                            </div>
+                                        </div>
+                                        <a href="${link}" target="_blank" class="download-btn">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดไฟล์จริง
+                                        </a>
+                                    </div>
+                                `;
+                            }
+                        });
+
+                        if (!hasData) {
+                            gridEl.innerHTML = '<div class="loading-text" style="color: #64748b;">ไม่มีข้อมูลแบบฟอร์มในระบบ</div>';
+                        }
+                    }
+                });
+            })
+            .catch(err => {
+                gridEl.innerHTML = '<div class="loading-text" style="color: red;">เชื่อมต่อล้มเหลว โปรดตรวจสอบลิงก์ CSV</div>';
+            });
+    }
+
+    // สั่งโหลดข้อมูลทันทีเมื่อเปิดหน้าเว็บ
+    document.addEventListener('DOMContentLoaded', loadForms);
+  </script>
 </body>
 </html>
