@@ -205,7 +205,16 @@
                             </optgroup>
                             <optgroup label="ห้องปฏิบัติการ">
                                 <option value="103">ห้องปฏิบัติการ 103</option>
+                                <option value="107">ห้องปฏิบัติการ 107</option>
                                 <option value="108">ห้องปฏิบัติการ 108</option>
+                                <option value="201">ห้องปฏิบัติการ 201</option>
+                                <option value="202">ห้องปฏิบัติการ 202</option>
+                                <option value="203">ห้องปฏิบัติการ 203</option>
+                                <option value="204">ห้องปฏิบัติการ 204</option>
+                                <option value="205">ห้องปฏิบัติการ 205</option>
+                                <option value="208">ห้องปฏิบัติการ 208</option>
+                                <option value="304">ห้องประชุม 304</option>
+                                <option value="307">ห้องปฏิบัติการ 307</option>
                                 <option value="807">ห้องปฏิบัติการ 807</option>
                                 <option value="808">ห้องปฏิบัติการ 808</option>
                             </optgroup>
@@ -248,6 +257,8 @@
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
         const ROOM_API_URL = 'https://script.google.com/macros/s/AKfycbxI-BYg7BRcD_RmSwQ-HRcxmLhCwyiCsIIJSuOJLIUm_uL70s21KhfqnEWyU223eyHMuQ/exec';
+        // URL ของเครื่องมือและห้องปฏิบัติการ
+        const EQUIP_API_URL = 'https://script.google.com/macros/s/AKfycbwvUSyfP5iuJg5LvFmNiMOLnHCz2VVahjRXmTLGY7V_KrIf8p8V7tBY24KOBwOeJUwZAA/exec'; 
 
         function getNoCacheUrl(url) {
             if (!url) return "";
@@ -340,7 +351,7 @@
         }
 
         // ==========================================
-        // ระบบตารางเรียนและการใช้ห้อง (รวมข้อมูลจาก 2 แหล่ง)
+        // ระบบตารางเรียนและการใช้ห้อง (รวมข้อมูลจาก 3 แหล่ง)
         // ==========================================
         let allClassEvents = [];
         let currentWeekStart = getMonday(new Date()); 
@@ -382,11 +393,12 @@
             const gridEl = document.getElementById('class-schedule-grid');
             gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียนและคิวจองห้อง...</div>';
 
-            // ดึงข้อมูลพร้อมกัน 2 แหล่ง (CSV ตารางเรียนประจำ + API ห้องที่อนุมัติแล้ว)
+            // ดึงข้อมูลพร้อมกัน 3 แหล่ง (CSV ตารางเรียนประจำ + API ห้องเรียน + API ห้องปฏิบัติการ/เครื่องมือ)
             Promise.all([
                 fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()),
-                fetch(ROOM_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false }))
-            ]).then(([csvText, apiData]) => {
+                fetch(ROOM_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
+                fetch(EQUIP_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false }))
+            ]).then(([csvText, roomApiData, equipApiData]) => {
                 allClassEvents = [];
                 
                 // 1. ดึงข้อมูลตารางเรียนจาก CSV
@@ -418,9 +430,9 @@
                         }
                     });
 
-                    // 2. ดึงข้อมูลการจองห้องจากระบบ (API)
-                    if (apiData && apiData.success && apiData.events) {
-                        apiData.events.forEach(ev => {
+                    // 2. ดึงข้อมูลการจองห้องเรียนจากระบบ (API)
+                    if (roomApiData && roomApiData.success && roomApiData.events) {
+                        roomApiData.events.forEach(ev => {
                             let startObj = new Date(ev.from);
                             let endObj = new Date(ev.to);
                             
@@ -428,16 +440,44 @@
                             if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
 
                             if (startObj && !isNaN(startObj.getTime())) {
-                                // ตัดคำว่า "ห้องเรียน" ออกเพื่อจัดหมวดหมู่ให้ตรงกับ Dropdown
+                                // ตัดคำว่า "ห้องเรียน" ออก
                                 let shortRoom = String(ev.room).replace("ห้องเรียน ", "").replace("ห้องปฏิบัติการ ", "").trim();
-                                let purposeTitle = ev.purpose || "จองห้อง"; // ถ้ายังไม่ได้เพิ่มใน Apps Script จะใช้คำว่า "จองห้อง" แทน
+                                let purposeTitle = ev.purpose || "จองห้อง";
                                 
                                 allClassEvents.push({
-                                    title: `${purposeTitle} (${ev.name})`, // ความประสงค์ + ชื่อผู้ขอ
+                                    title: `${purposeTitle} (${ev.name})`, 
                                     start: startObj,
                                     end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
                                     room: shortRoom,
-                                    color: "#f59e0b", // สีส้มเด่นๆ แยกให้ออกว่าคือการจองพิเศษ
+                                    color: "#f59e0b", // สีส้ม
+                                    isBooking: true
+                                });
+                            }
+                        });
+                    }
+
+                    // 3. ดึงข้อมูลการจองห้องปฏิบัติการจากระบบ (API)
+                    if (equipApiData && equipApiData.success && equipApiData.events) {
+                        equipApiData.events.forEach(ev => {
+                            if (ev.type !== "lab") return; // เอาเฉพาะ lab
+                            
+                            let startObj = new Date(ev.from);
+                            let endObj = new Date(ev.to);
+                            
+                            if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
+                            if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
+
+                            if (startObj && !isNaN(startObj.getTime())) {
+                                // ตัดคำว่า "ห้องแลป " ออก (ให้เหลือแต่ตัวเลข)
+                                let shortRoom = String(ev.room).replace("ห้องแลป ", "").replace("ห้องประชุม ", "").trim();
+                                let purposeTitle = ev.purpose || "จองห้อง";
+                                
+                                allClassEvents.push({
+                                    title: `${purposeTitle} (${ev.name})`, 
+                                    start: startObj,
+                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                                    room: shortRoom,
+                                    color: "#9b59b6", // สีม่วง
                                     isBooking: true
                                 });
                             }
