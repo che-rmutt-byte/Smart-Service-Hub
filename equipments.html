@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ระบบบริการเบิก-ยืมคืนอุปกรณ์และห้องปฏิบัติการ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    :root {
+      --primary-color: #0d9488;
+      --border-color: #e2e8f0;      
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
     html, body { margin: 0; padding: 0; height: 100%; height: 100dvh; }
     body { background-color: #f4f6f9; padding: 30px 20px; color: #333; overflow-y: auto; }
     
@@ -59,45 +64,40 @@
     .pdf-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
 
     /* =======================================
-       Calendar Styles (Unified PC & Mobile)
+       Calendar Schedule Styles (Like index.html)
        ======================================= */
-    .calendar-container { max-width: 100%; overflow-x: hidden; }
-    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .calendar-controls button { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+    .schedule-nav button:hover { background: #f1f5f9; color: var(--primary-color); border-color: var(--primary-color); }
     
-    /* โครงสร้างตารางปฏิทิน */
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-    .cal-header { font-weight: bold; text-align: center; background: #e2e8f0; padding: 8px 0; font-size: 13px; border-radius: 4px; }
-    .cal-day { min-height: 70px; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; background: #fff; display: flex; flex-direction: column; }
-    .cal-date { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; margin-bottom: 4px; background: #f1f5f9; border-radius: 4px; padding: 2px 0; }
+    .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; max-width: 200px; }
     
-    /* จุดแต้มสีแทนข้อมูลการจอง */
-    .cal-event-dot-wrapper { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 4px; }
-    .cal-event { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+    .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 42px repeat(7, minmax(55px, auto)); min-width: 950px; background: #e2e8f0; gap: 1px; }
     
-    /* ตรรกะสีของจุดปฏิทิน */
-    .event-full { background-color: #3b82f6; border: 1px solid #2563eb; }
-    .event-outside { background-color: #22c55e; border: 1px solid #16a34a; }
-    .event-morning { background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb; }
-    .event-afternoon { background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb; }
+    .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
+    .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+    
+    .grid-cell-hour { background: #ffffff; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #e2e8f0; }
+    .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #e2e8f0; min-height: 55px; }
+    
+    .grid-event { position: absolute; top: 4px; bottom: 4px; background: #3498db; color: white; border-radius: 6px; padding: 4px 8px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.12); cursor: pointer; border: none; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: transform 0.15s ease; }
+    .grid-event:hover { transform: scale(1.02); z-index: 20; }
 
-    /* แถบการ์ดข้อมูลการจองด้านล่างปฏิทิน */
-    .event-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
-    .event-card { padding: 15px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-
-    /* ปรับปฏิทินให้พอดีหน้าจอมือถือแนวตั้ง (ย่อขนาดตาราง) */
     @media (max-width: 600px) {
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .back-btn { padding: 6px 12px; font-size: 12px; align-self: flex-start; }
       .pdf-item { flex-direction: column; gap: 10px; align-items: flex-start; }
       .download-btn { width: 100%; justify-content: center; }
-      
-      .calendar-grid { gap: 2px; }
-      .cal-header { font-size: 10px; padding: 4px 0; }
-      .cal-day { min-height: 45px; padding: 2px; }
-      .cal-date { font-size: 11px; padding: 2px; }
-      .cal-event { width: 8px; height: 8px; margin: 1px; }
-      .cal-event-dot-wrapper { gap: 2px; padding-top: 2px; }
+
+      .schedule-grid-wrapper { overflow-x: hidden; }
+      .schedule-grid { min-width: 100%; grid-template-columns: 35px repeat(12, 1fr); }
+      .grid-header { font-size: 7px; padding: 2px 0; }
+      .grid-day-label { font-size: 9px; padding: 2px 0; }
+      .grid-day-label span:last-child { display: none; }
+      .grid-event-container { min-height: 40px; }
+      .grid-event { font-size: 7.5px; padding: 1px; border-radius: 3px; line-height: 1.1; }
+      .grid-event div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
     }
   </style>
 </head>
@@ -106,7 +106,7 @@
   <div class="container">
     <div class="header">
       <h1><i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i> บริการเบิกอุปกรณ์และจองห้องปฏิบัติการ</h1>
-      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
+      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปหน้าหลัก</a>
     </div>
 
     <div class="file-grid">
@@ -166,21 +166,22 @@
     </div>
   </div>
 
-  <!-- ================= Popup ปฏิทิน ================= -->
+  <!-- ================= Popup ปฏิทินเครื่องมือ-ครุภัณฑ์ (ใหม่) ================= -->
   <div class="modal-overlay" id="calendarModal">
-    <div class="modal-box" style="max-width: 800px;">
+    <div class="modal-box" style="max-width: 900px;">
       <div class="modal-header">
         <h3><i class="fa-solid fa-calendar-alt"></i> ปฏิทินการจองเครื่องมือ-ครุภัณฑ์</h3>
         <button class="close-modal" onclick="closeModal('calendarModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="calendar-container">
-        <div class="calendar-controls">
-          <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-          <div style="text-align: center;">
-            <h4 id="monthYearDisplay" style="margin: 0 0 5px 0;"></h4>
-            <!-- ตัวกรองปฏิทิน: แสดงเฉพาะเครื่องมือ -->
-            <select id="calendarFilter" onchange="renderCalendar()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; cursor: pointer; max-width: 200px;">
-              <option value="all">แสดงทั้งหมด</option>
+      <div>
+        <div class="schedule-toolbar">
+            <div class="schedule-nav">
+                <button onclick="changeEquipWeek(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="changeEquipWeek(0)">สัปดาห์นี้</button>
+                <button onclick="changeEquipWeek(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <select id="calendarFilter" class="room-filter" onchange="applyEquipFilters()">
+              <option value="all">แสดงเครื่องมือทั้งหมด</option>
               <option value="ตู้อบลมร้อน ยี่ห้อ Memmert รุ่น UF260">ตู้อบลมร้อน Memmert</option>
               <option value="เตาอบความจุ 115 ลิตร ยี่ห้อ WTB-BINDER รุ่น FD115">เตาอบ 115 ลิตร BINDER</option>
               <option value="เตาอบความจุไม่น้อยกว่า 4 ลิตร อุณหภูมิไม่น้อย กว่า1200 C">เตาอบ 1200C</option>
@@ -200,24 +201,15 @@
               <option value="อ่างน้ำควบคุมอุณหภูมิ (WATER BATH)">Water Bath</option>
               <option value="เครื่องทดสอบหาค่าความร้อนของเชื้อเพลิง ยี่ห้อ DDS รุ่น 3K-1">หาค่าความร้อนเชื้อเพลิง DDS</option>
             </select>
-          </div>
-          <button onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
+        <div style="text-align: center; margin-bottom: 10px;"><span id="equip-week-label" style="font-weight: 600; color: #475569; font-size: 14px;"></span></div>
+        
         <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
         
-        <!-- ตารางปฏิทิน (แสดงผลจุดสี) -->
-        <div id="calendarGrid" class="calendar-grid hidden"></div>
-        
-        <!-- คำอธิบายสี -->
-        <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #3b82f6;"></div> เต็มวัน</span>
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb;"></div> ครึ่งเช้า</span>
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb;"></div> ครึ่งบ่าย</span>
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #22c55e;"></div> นอกเวลา</span>
+        <div class="schedule-grid-wrapper hidden" id="equip-grid-wrapper">
+            <div class="schedule-grid" id="equip-schedule-grid">
+            </div>
         </div>
-        
-        <!-- แถบการ์ดรายละเอียดด้านล่าง -->
-        <div id="eventListContainer" class="event-list-container"></div>
       </div>
     </div>
   </div>
@@ -527,165 +519,157 @@
     }
 
     /* =======================================================
-       ปฏิทินแบบ Custom Grid
+       Calendar Schedule Custom Grid (สำหรับเครื่องมือ-ครุภัณฑ์)
        ======================================================= */
-    let currentDate = new Date();
-    let calendarEvents = [];
+    let currentEquipWeekStart = getEquipMonday(new Date()); 
+    let allEquipEvents = [];
+
+    function getEquipMonday(d) {
+        d = new Date(d);
+        var day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6:1);
+        return new Date(d.setDate(diff));
+    }
+
+    function parseThaiDateStr(str) {
+        if (!str) return null;
+        if (str.includes('T')) return new Date(str);
+        if (str.includes(' เวลา ')) {
+            let parts = str.split(' เวลา ');
+            let dParts = parts[0].split('-');
+            let tParts = parts[1].replace(' น.', '').split(':');
+            if (dParts.length === 3 && tParts.length >= 2) {
+                return new Date(dParts[0], dParts[1] - 1, dParts[2], tParts[0], tParts[1]);
+            }
+        }
+        return new Date(str);
+    }
 
     async function openCalendarModal() {
       document.getElementById('calendarModal').style.display = 'flex';
-      document.getElementById('calendarGrid').classList.add('hidden');
+      document.getElementById('equip-grid-wrapper').classList.add('hidden');
       document.getElementById('calendarLoading').style.display = 'block';
-      const oldMsg = document.getElementById('emptyCalMsg');
-      if (oldMsg) oldMsg.style.display = 'none';
 
       try {
         const res = await fetch(API_URL + "?action=calendar");
         const data = await res.json();
-        if (data.success) { calendarEvents = data.events; }
-      } catch (e) { console.error("Calendar Error", e); }
-      document.getElementById('calendarLoading').style.display = 'none';
-      document.getElementById('calendarGrid').classList.remove('hidden');
-      renderCalendar();
-    }
+        if (data.success) { 
+            allEquipEvents = [];
+            data.events.forEach(ev => {
+                // เอาเฉพาะเครื่องมือ
+                if (ev.type && ev.type !== "tool") return;
+                // โค้ดเก่าไม่ได้ส่ง type ถ้าไม่มีให้เช็คว่ามี room ไหม
+                if (!ev.type && (!ev.room || ev.room.includes("ห้อง"))) return; 
+                
+                let startObj = new Date(ev.from);
+                let endObj = new Date(ev.to);
+                
+                if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
+                if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
 
-    function changeMonth(step) { currentDate.setMonth(currentDate.getMonth() + step); renderCalendar(); }
-    
-    function extractTime(val) { 
-      if(!val) return ''; const str = String(val); 
-      if(str.includes(' เวลา ')) return str.split(' เวลา ')[1].replace(' น.', ''); 
-      if(str.includes('T')) return str.split('T')[1].substring(0,5); 
-      return str; 
-    }
-    
-    function shortDateTime(val) {
-      if(!val) return '';
-      const p = parseTimeStr(val);
-      if(p.dateStr) {
-        const parts = p.dateStr.split('-');
-        if(parts.length === 3) {
-          const y = parseInt(parts[0]) + 543;
-          return `${parts[2]}/${parts[1]}/${y} ${extractTime(val)}`;
+                if (startObj && !isNaN(startObj.getTime())) {
+                    allEquipEvents.push({
+                        title: `${ev.purpose} (${ev.name})`, 
+                        start: startObj,
+                        end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                        room: ev.room.trim()
+                    });
+                }
+            });
         }
-      }
-      return val;
+      } catch (e) { console.error("Calendar Error", e); }
+      
+      document.getElementById('calendarLoading').style.display = 'none';
+      document.getElementById('equip-grid-wrapper').classList.remove('hidden');
+      applyEquipFilters();
     }
 
-    function parseTimeStr(val) {
-      if(!val) return { dateStr: "", hour: 0 };
-      const str = String(val);
-      if(str.includes(' เวลา ')) { const p = str.split(' เวลา '); return { dateStr: p[0], hour: parseFloat(p[1].replace(' น.','').replace(':','.')) }; }
-      if(str.includes('T')) { const p = str.split('T'); const t = p[1].split(':'); return { dateStr: p[0], hour: t.length >= 2 ? parseFloat(t[0]+"."+t[1]) : 0 }; }
-      return { dateStr: str.split(' ')[0], hour: 0 };
-    }
-    
-    function formatDisplayTime(val) {
-      if(!val) return ''; const str = String(val);
-      if(str.includes(' เวลา ')) return str;
-      if(str.includes('T')) { const p = str.split('T'); return p[0] + ' เวลา ' + p[1].substring(0,5) + ' น.'; }
-      return str;
-    }
-    
-    function getEventClass(fromStr, toStr, timeSlot) {
-      if(timeSlot === "นอกเวลาราชการ") return "event-outside";
-      const from = parseTimeStr(fromStr); const to = parseTimeStr(toStr);
-      if(from.hour >= 16.30) return "event-outside";
-      if(to.hour <= 12.30) return "event-morning";
-      if(from.hour >= 12.00) return "event-afternoon";
-      return "event-full";
+    function changeEquipWeek(offset) {
+        if(offset === 0) currentEquipWeekStart = getEquipMonday(new Date());
+        else currentEquipWeekStart.setDate(currentEquipWeekStart.getDate() + (offset * 7));
+        applyEquipFilters();
     }
 
-    function renderCalendar() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-      const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-      document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
-      
-      const selectedRoom = document.getElementById('calendarFilter').value;
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      
-      const grid = document.getElementById('calendarGrid');
-      grid.innerHTML = '<div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>';
-      
-      let emptyMsg = document.getElementById('emptyCalMsg');
-      if (!emptyMsg) {
-        emptyMsg = document.createElement('div');
-        emptyMsg.id = 'emptyCalMsg';
-        emptyMsg.style.textAlign = 'center';
-        emptyMsg.style.padding = '25px';
-        emptyMsg.style.color = '#64748b';
-        emptyMsg.style.background = '#f8fafc';
-        emptyMsg.style.borderRadius = '8px';
-        emptyMsg.style.border = '1px dashed #cbd5e1';
-        emptyMsg.style.marginTop = '15px';
-        emptyMsg.innerText = 'ไม่มีคิวการจองในเดือนนี้';
-        grid.parentNode.insertBefore(emptyMsg, grid.nextSibling);
-      }
-      emptyMsg.style.display = 'none';
-
-      const eventList = document.getElementById('eventListContainer');
-      eventList.innerHTML = '<h4 style="margin-bottom: 5px; color: #4a5568;"><i class="fa-solid fa-list"></i> รายละเอียดการจองในเดือนนี้</h4>';
-      let hasMonthEvent = false;
-
-      for(let i=0; i<firstDay; i++) { 
-        const e = document.createElement('div'); 
-        e.className='cal-day empty-slot'; 
-        e.style.backgroundColor='#f8fafc'; 
-        grid.appendChild(e); 
-      }
-      
-      for(let day=1; day<=daysInMonth; day++) {
-        const dDiv = document.createElement('div'); dDiv.className='cal-day';
-        const dSpan = document.createElement('div'); dSpan.className='cal-date'; dSpan.innerText=day; dDiv.appendChild(dSpan);
-        const tDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    function applyEquipFilters() {
+        const selectedRoom = document.getElementById('calendarFilter').value;
+        const weekEnd = new Date(currentEquipWeekStart);
+        weekEnd.setDate(weekEnd.getDate() + 7);
         
-        const dotWrapper = document.createElement('div');
-        dotWrapper.className = 'cal-event-dot-wrapper';
-        dDiv.appendChild(dotWrapper);
-
-        calendarEvents.forEach(ev => {
-          if(selectedRoom !== "all" && ev.room !== selectedRoom) return;
-          const fromParsed = parseTimeStr(ev.from);
-          if(fromParsed.dateStr === tDateStr) {
-            hasMonthEvent = true;
-            const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
-            
-            // ใส่จุดลงในตารางปฏิทิน
-            const evDiv = document.createElement('div'); 
-            evDiv.className=`cal-event ${evClass}`;
-            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nเครื่องมือ: ${ev.room}\nเวลา: ${formatDisplayTime(ev.from)} - ${formatDisplayTime(ev.to)}`;
-            dotWrapper.appendChild(evDiv);
-
-            // ใส่การ์ดลงในรายการด้านล่าง
-            const card = document.createElement('div');
-            card.className = 'event-card';
-            card.innerHTML = `
-              <div style="font-weight: bold; color: #1a202c; font-size: 15px; margin-bottom: 5px; border-left: 4px solid #3498db; padding-left: 8px;">${ev.room}</div>
-              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-solid fa-hashtag"></i> Ticket:</b> ${ev.id}</div>
-              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-regular fa-clock"></i> เริ่มจอง:</b> ${shortDateTime(ev.from)}</div>
-              <div style="font-size: 13px; color: #4a5568;"><b><i class="fa-solid fa-flag-checkered"></i> กำหนดเสร็จ:</b> ${shortDateTime(ev.to)}</div>
-            `;
-            eventList.appendChild(card);
-          }
-        });
-
-        grid.appendChild(dDiv);
-      }
-
-      if (!hasMonthEvent) { 
-        emptyMsg.style.display = 'block'; 
-        eventList.innerHTML += '<div style="font-size: 13px; color: #94a3b8; text-align: center; padding: 20px;">ไม่มีรายการจองในเดือนนี้</div>';
-      }
+        let filtered = allEquipEvents.filter(ev => ev.start >= currentEquipWeekStart && ev.start < weekEnd);
+        if (selectedRoom !== 'all') filtered = filtered.filter(ev => ev.room === selectedRoom);
+        
+        renderEquipClassGrid(filtered);
+        
+        const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+        const endOfWeek = new Date(currentEquipWeekStart);
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
+        document.getElementById('equip-week-label').innerText = `${currentEquipWeekStart.getDate()} ${thaiMonths[currentEquipWeekStart.getMonth()]} - ${endOfWeek.getDate()} ${thaiMonths[endOfWeek.getMonth()]} ${endOfWeek.getFullYear() + 543}`;
     }
 
-    // ==========================================
-    // ระบบอ่าน URL Parameter เพื่อดึงสถานะอัตโนมัติ
-    // ==========================================
+    function renderEquipClassGrid(events) {
+        const gridEl = document.getElementById('equip-schedule-grid');
+        let html = `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
+        
+        for(let h=8; h<20; h++) {
+            let colIndex = h - 8 + 2; 
+            html += `<div class="grid-header" style="grid-column: ${colIndex}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
+        }
+        
+        const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
+        for(let d=0; d<7; d++) {
+            let row = d + 2; 
+            let targetDate = new Date(currentEquipWeekStart);
+            targetDate.setDate(targetDate.getDate() + d);
+            html += `<div class="grid-day-label" style="grid-column: 1; grid-row: ${row};">
+                        <span>${days[d]}</span>
+                        <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
+                     </div>`;
+            
+            html += `<div class="grid-event-container" style="grid-column: 2 / 14; grid-row: ${row};">`;
+            
+            for(let col = 0; col < 12; col++) {
+                html += `<div class="grid-cell-hour" style="position: absolute; left: ${(col/12)*100}%; width: ${(1/12)*100}%; height: 100%;"></div>`;
+            }
+            
+            let dayEvents = events.filter(ev => {
+                let mappedDay = ev.start.getDay() === 0 ? 6 : ev.start.getDay() - 1;
+                return mappedDay === d;
+            });
+
+            dayEvents.forEach(ev => {
+                let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
+                let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
+                
+                let totalWorkingMinutes = 12 * 60; 
+                let startMinutes = (sHour - 8) * 60 + sMin;
+                let endMinutes = (eHour - 8) * 60 + eMin;
+                
+                if(startMinutes < 0) startMinutes = 0;
+                if(endMinutes > totalWorkingMinutes) endMinutes = totalWorkingMinutes;
+                if(startMinutes >= totalWorkingMinutes || endMinutes <= 0) return;
+                
+                let leftPercent = (startMinutes / totalWorkingMinutes) * 100;
+                let widthPercent = ((endMinutes - startMinutes) / totalWorkingMinutes) * 100;
+                const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
+                
+                // เครื่องมือ ตัดให้เหลือข้อความสั้นๆ
+                let shortTool = ev.room;
+                if(shortTool.length > 20) shortTool = shortTool.substring(0,20) + '...';
+
+                html += `
+                    <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%;" title="${ev.title}\nเวลา: ${timeStr} \nเครื่องมือ: ${ev.room}">
+                        <div style="font-weight: 600; width: 100%;"><i class="fa-solid fa-microscope" style="margin-right:2px;"></i> ${ev.title}</div>
+                        <div style="opacity: 0.9; width: 100%;">เวลา ${timeStr} ${shortTool}</div>
+                    </div>`;
+            });
+            html += `</div>`; 
+        }
+        gridEl.innerHTML = html;
+    }
+
+    // ระบบอ่าน URL Parameter
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const ticketId = urlParams.get('ticket');
-
       if (ticketId) {
         openTrackingModal();
         document.getElementById('ticketInput').value = ticketId;
