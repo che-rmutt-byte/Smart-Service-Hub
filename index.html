@@ -2,7 +2,6 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <!-- 🌟 ตั้งค่า viewport ให้โทรศัพท์ซูมออกกว้างขึ้น (initial-scale=0.5) เพื่อให้เห็นหน้าเว็บทั้งหมดทันทีโดยไม่ต้องซูมเอง -->
     <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=2.0, user-scalable=yes">
     <title>ChE Smart Service Hub - หน้าหลัก</title>
     
@@ -60,11 +59,12 @@
         .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
-        /* 🌟 ปุ่มทางลัดสำหรับมือถือ (ซ่อนบนคอมพิวเตอร์) */
-        .mobile-quick-actions { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .quick-btn { background: #ffffff; border: 1px solid var(--border-color); padding: 12px 8px; border-radius: 12px; text-align: center; text-decoration: none; color: var(--text-dark); font-size: 11px; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: 0.2s; }
-        .quick-btn i { font-size: 18px; color: var(--primary-color); }
-        .quick-btn:active { background: #f1f5f9; }
+        /* Mobile Quick Menu Buttons (แสดงเฉพาะบนมือถือ) */
+        .mobile-quick-menu { display: none; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
+        .quick-btn { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 15px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; }
+        .quick-btn i { font-size: 20px; color: var(--primary-color); margin-bottom: 8px; }
+        .quick-btn span { font-size: 11px; text-align: center; font-weight: 500; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .quick-btn:active { background: #f1f5f9; transform: scale(0.96); }
 
         /* Modern Grid & Cards */
         .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start; }
@@ -74,6 +74,9 @@
         .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
         .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
         .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
+        
+        /* ตกแต่งการ์ดปฏิทินกิจกรรมภาควิชาเพิ่มเติม */
+        .calendar-card { border-top: 4px solid var(--primary-color); }
         
         /* Announcements Style */
         .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 4px; }
@@ -93,12 +96,6 @@
         .fc .fc-button-primary:hover { background-color: var(--primary-hover) !important; }
         .fc-event { border-radius: 6px; border: none; font-size: 11px; padding: 3px 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        /* 🌟 ตกแต่งการ์ดปฏิทินกิจกรรมภาควิชาให้มีสีสันสวยงามสะดุดตา */
-        .calendar-card {
-            border-top: 4px solid var(--primary-color);
-            background: linear-gradient(to bottom, #ffffff 0%, #fcfdfd 100%);
-        }
-
         /* Schedule Toolbar & Controls */
         .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
@@ -147,10 +144,8 @@
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
             .grid-layout { grid-template-columns: 1fr; }
-            
-            /* แสดงปุ่มทางลัดเฉพาะในมือถือ และซ่อนชื่อหัวข้อ Dashboard ด้านบน */
-            .mobile-quick-actions { display: grid; }
-            .page-title { display: none; }
+            .page-title { display: none; } /* ซ่อนหัวข้อ Dashboard บนมือถือ */
+            .mobile-quick-menu { display: grid; } /* แสดงปุ่มไอคอนทางลัดบนมือถือ */
         }
     </style>
 </head>
@@ -177,27 +172,51 @@
 
     <main class="main-content">
         <header class="topbar">
-            <!-- 🌟 ปุ่ม 3 ขีดสำหรับกดเปิด-ปิด เมนูด้านข้างบนมือถือ -->
+            <!-- ปุ่ม 3 ขีดสำหรับกดเปิด-ปิด เมนูด้านข้างบนมือถือ -->
             <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
         </header>
 
         <div class="dashboard-container">
             <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
-            <!-- 🌟 ปุ่มไอคอนทางลัดสำหรับมือถือ (แสดงผลเฉพาะหน้าจอโทรศัพท์) -->
-            <div class="mobile-quick-actions">
-                <a href="knowledge.html" class="quick-btn"><i class="fa-solid fa-book-open"></i> คู่มืออุปกรณ์</a>
-                <a href="forms.html" class="quick-btn"><i class="fa-solid fa-file-signature"></i> แบบฟอร์ม</a>
-                <a href="equipments.html" class="quick-btn"><i class="fa-solid fa-microscope"></i> เบิกและจอง</a>
-                <a href="classrooms.html" class="quick-btn"><i class="fa-solid fa-fingerprint"></i> ห้องเรียน&นิ้ว</a>
-                <a href="Maintenance.html" class="quick-btn"><i class="fa-solid fa-wrench"></i> แจ้งซ่อม</a>
-                <a href="staffs.html" class="quick-btn"><i class="fa-solid fa-headset"></i> ติดต่อเจ้าหน้าที่</a>
-                <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="quick-btn"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
-                <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="quick-btn"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
+            <!-- ปุ่มไอคอนทางลัดสำหรับเข้าเมนูต่างๆ (แสดงเฉพาะบนมือถือ) -->
+            <div class="mobile-quick-menu">
+                <a href="knowledge.html" class="quick-btn">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>คู่มืออุปกรณ์</span>
+                </a>
+                <a href="forms.html" class="quick-btn">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>คำร้อง</span>
+                </a>
+                <a href="equipments.html" class="quick-btn">
+                    <i class="fa-solid fa-microscope"></i>
+                    <span>เบิกอุปกรณ์</span>
+                </a>
+                <a href="classrooms.html" class="quick-btn">
+                    <i class="fa-solid fa-fingerprint"></i>
+                    <span>ขอใช้ห้อง</span>
+                </a>
+                <a href="Maintenance.html" class="quick-btn">
+                    <i class="fa-solid fa-wrench"></i>
+                    <span>แจ้งซ่อม</span>
+                </a>
+                <a href="staffs.html" class="quick-btn">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>ติดต่อเจ้าหน้าที่</span>
+                </a>
+                <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="quick-btn">
+                    <i class="fa-solid fa-building-user"></i>
+                    <span>ภาควิชา</span>
+                </a>
+                <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="quick-btn">
+                    <i class="fa-regular fa-newspaper"></i>
+                    <span>ข่าวสาร</span>
+                </a>
             </div>
 
             <div class="grid-layout">
-                <!-- 🌟 คอมพิวเตอร์: ฝั่งซ้ายนำ "ประกาศล่าสุด" มาไว้ด้านบนสุด -->
+                <!-- คอลัมน์ซ้าย: คอมพิวเตอร์แสดง "ประกาศล่าสุด" อยู่ด้านบน -->
                 <div class="left-column">
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
@@ -207,7 +226,20 @@
                     </div>
                 </div>
 
+                <!-- คอลัมน์ขวา: ปฏิทินกิจกรรมภาควิชา และ ตารางเรียน -->
                 <div class="right-column">
+                    <!-- ปฏิทินกิจกรรมภาควิชา -->
+                    <div class="card calendar-card">
+                        <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
+                        <div class="card-body">
+                            <div id="event-calendar"></div>
+                            <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                                <h4 style="font-size: 14px; margin-bottom: 12px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
+                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- ตารางเรียนและการใช้ห้อง -->
                     <div class="card">
                         <div class="card-header">
@@ -241,18 +273,6 @@
                             <div class="schedule-grid-wrapper">
                                 <div class="schedule-grid" id="class-schedule-grid">
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 🌟 ปฏิทินกิจกรรมภาควิชา (ใส่การ์ดสไตล์สีสันสะดุดตา) -->
-                    <div class="card calendar-card">
-                        <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
-                        <div class="card-body">
-                            <div id="event-calendar"></div>
-                            <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-                                <h4 style="font-size: 14px; margin-bottom: 12px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
-                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;"></div>
                             </div>
                         </div>
                     </div>
@@ -497,7 +517,7 @@
             initClassSchedule();
         });
 
-        // 🌟 ฟังก์ชันควบคุม Sidebar เปิด-ปิด บนมือถือ
+        // ฟังก์ชันควบคุม Sidebar เปิด-ปิด บนมือถือ
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
