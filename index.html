@@ -55,16 +55,16 @@
         .topbar { background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
         .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
 
+        /* 🌟 แถบปุ่มทางลัดสำหรับมือถือ (Mobile Quick Actions) */
+        .mobile-quick-actions { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .quick-action-btn { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-dark); font-size: 11px; font-weight: 500; text-align: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.2s; }
+        .quick-action-btn i { font-size: 18px; color: var(--primary-color); }
+        .quick-action-btn:active { background-color: #f1f5f9; transform: scale(0.96); }
+
         /* Dashboard Container */
         .dashboard-container { padding: 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
         .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
-
-        /* Mobile Quick Shortcuts (ซ่อนบนคอม แสดงเฉพาะมือถือ) */
-        .mobile-shortcuts { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .shortcut-btn { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; text-decoration: none; color: var(--text-dark); font-size: 11px; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: 0.2s; }
-        .shortcut-btn i { font-size: 18px; color: var(--primary-color); }
-        .shortcut-btn:active { background: #f1f5f9; }
 
         /* Modern Grid & Cards */
         .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start; }
@@ -75,9 +75,6 @@
         .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
         .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
-        /* 🌟 ปฏิทินกิจกรรมภาควิชา (ตกแต่งสีการ์ดเพิ่มเติม) */
-        .calendar-card { border-top: 4px solid var(--primary-color); background: linear-gradient(to bottom, #ffffff, #fdfdfd); }
-
         /* Announcements Style */
         .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 4px; }
         .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
@@ -87,7 +84,7 @@
         .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        /* FullCalendar Modern Polish */
+        /* FullCalendar Modern Polish (พร้อมแต่งสีสันการ์ดปฏิทินกิจกรรม) */
         .card-body { padding: 25px; }
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.8em; }
         .fc .fc-toolbar-title { font-size: 15px !important; font-weight: 600; color: #0f172a; }
@@ -144,8 +141,8 @@
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
             .grid-layout { grid-template-columns: 1fr; }
-            .mobile-shortcuts { display: grid; } /* แสดงปุ่มไอคอนทางลัดเฉพาะมือถือ */
-            .page-title { display: none; } /* ซ่อนหัวข้อ Dashboard บนมือถือตามต้องการ */
+            .mobile-quick-actions { display: grid; } /* แสดงปุ่มทางลัดเฉพาะในมือถือ */
+            .desktop-page-title { display: none; } /* ซ่อนหัวข้อ Dashboard บนมือถือ */
         }
     </style>
 </head>
@@ -177,22 +174,22 @@
         </header>
 
         <div class="dashboard-container">
-            <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
+            <h1 class="page-title desktop-page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
-            <!-- 🌟 ปุ่มไอคอนทางลัดสำหรับมือถือ (เข้าเมนูต่างๆ จากแถบซ้าย) -->
-            <div class="mobile-shortcuts">
-                <a href="knowledge.html" class="shortcut-btn"><i class="fa-solid fa-book-open"></i>คู่มืออุปกรณ์</a>
-                <a href="forms.html" class="shortcut-btn"><i class="fa-solid fa-file-signature"></i>แบบฟอร์ม</a>
-                <a href="equipments.html" class="shortcut-btn"><i class="fa-solid fa-microscope"></i>เบิกอุปกรณ์</a>
-                <a href="classrooms.html" class="shortcut-btn"><i class="fa-solid fa-fingerprint"></i>ขอใช้ห้อง</a>
-                <a href="Maintenance.html" class="shortcut-btn"><i class="fa-solid fa-wrench"></i>แจ้งซ่อม</a>
-                <a href="staffs.html" class="shortcut-btn"><i class="fa-solid fa-headset"></i>ติดต่อเจ้าหน้าที่</a>
-                <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="shortcut-btn"><i class="fa-solid fa-building-user"></i>ภาควิชา</a>
-                <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="shortcut-btn"><i class="fa-regular fa-newspaper"></i>ข่าวสาร</a>
+            <!-- 🌟 ปุ่มไอคอนทางลัดสำหรับเข้าเมนูต่างๆ (แสดงเฉพาะบนมือถือ) -->
+            <div class="mobile-quick-actions">
+                <a href="knowledge.html" class="quick-action-btn"><i class="fa-solid fa-book-open"></i> คู่มืออุปกรณ์</a>
+                <a href="forms.html" class="quick-action-btn"><i class="fa-solid fa-file-signature"></i> แบบฟอร์ม</a>
+                <a href="equipments.html" class="quick-action-btn"><i class="fa-solid fa-microscope"></i> เบิกอุปกรณ์</a>
+                <a href="classrooms.html" class="quick-action-btn"><i class="fa-solid fa-fingerprint"></i> สแกนนิ้ว/ห้อง</a>
+                <a href="Maintenance.html" class="quick-action-btn"><i class="fa-solid fa-wrench"></i> แจ้งซ่อม</a>
+                <a href="staffs.html" class="quick-action-btn"><i class="fa-solid fa-headset"></i> ติดต่อ</a>
+                <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="quick-action-btn"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
+                <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="quick-action-btn"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
             </div>
 
             <div class="grid-layout">
-                <!-- 🌟 ฝั่งคอมพิวเตอร์: ย้าย "ประกาศล่าสุด" มาไว้ด้านบนของคอลัมน์ซ้าย -->
+                <!-- ฝั่งซ้าย (คอมพิวเตอร์: ประกาศล่าสุด | มือถือ: เรียงตามลำดับโครงสร้าง) -->
                 <div class="left-column">
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
@@ -202,7 +199,20 @@
                     </div>
                 </div>
 
+                <!-- ฝั่งขวา (คอมพิวเตอร์: ปฏิทินกิจกรรม และ ตารางเรียน | มือถือ: ต่อเนื่องลงมา) -->
                 <div class="right-column">
+                    <!-- ปฏิทินกิจกรรมภาควิชา (วางไว้ด้านบนฝั่งขวาตามความต้องการ) -->
+                    <div class="card">
+                        <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
+                        <div class="card-body">
+                            <div id="event-calendar"></div>
+                            <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                                <h4 style="font-size: 14px; margin-bottom: 12px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
+                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- ตารางเรียนและการใช้ห้อง -->
                     <div class="card">
                         <div class="card-header">
@@ -236,18 +246,6 @@
                             <div class="schedule-grid-wrapper">
                                 <div class="schedule-grid" id="class-schedule-grid">
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ปฏิทินกิจกรรมภาควิชา (เพิ่มสีการ์ดสวยงาม) -->
-                    <div class="card calendar-card">
-                        <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
-                        <div class="card-body">
-                            <div id="event-calendar"></div>
-                            <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-                                <h4 style="font-size: 14px; margin-bottom: 12px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
-                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;"></div>
                             </div>
                         </div>
                     </div>
