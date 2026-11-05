@@ -2,8 +2,8 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <!-- 🌟 ตั้งค่า viewport ให้พอดีกับหน้าจอโทรศัพท์ ไม่ต้องเลื่อนซ้ายขวา -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+    <!-- 🌟 ตั้งค่า viewport ให้โทรศัพท์ซูมออกกว้างขึ้น (initial-scale=0.5) เพื่อให้เห็นหน้าเว็บทั้งหมดทันทีโดยไม่ต้องซูมเอง -->
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=2.0, user-scalable=yes">
     <title>ChE Smart Service Hub - หน้าหลัก</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -57,22 +57,20 @@
 
         /* Dashboard Container */
         .dashboard-container { padding: 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
-        
-        /* 🌟 แผงปุ่มไอคอนทางลัดสำหรับมือถือ (ซ่อนบนคอมพิวเตอร์) */
-        .mobile-shortcut-bar { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .shortcut-btn { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: var(--text-dark); font-size: 11px; font-weight: 500; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: 0.2s; }
-        .shortcut-btn i { font-size: 18px; color: var(--primary-color); }
-        .shortcut-btn:active { background-color: #f1f5f9; }
+        .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
-        .grid-layout { display: flex; flex-direction: column; gap: 25px; }
-        .full-width-section { width: 100%; }
+        /* Modern Grid & Cards */
+        .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start; }
+        .left-column { display: flex; flex-direction: column; gap: 25px; }
+        .right-column { display: flex; flex-direction: column; gap: 25px; }
 
         .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
-        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; flex-wrap: wrap; gap: 10px; }
+        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
         .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
         /* Announcements Style */
-        .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: 280px; overflow-y: auto; padding-right: 4px; }
+        .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 4px; }
         .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
         .announcement-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); border-radius: 4px 0 0 4px; }
         .announcement-item:hover { background-color: #f8fafc; border-color: #e2e8f0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
@@ -90,14 +88,14 @@
         .fc-event { border-radius: 6px; border: none; font-size: 11px; padding: 3px 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
         /* Schedule Toolbar & Controls */
-        .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
         .schedule-nav button:hover { background: #f1f5f9; color: var(--primary-color); border-color: var(--primary-color); }
         
         .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
         .room-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
         
-        .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); -webkit-overflow-scrolling: touch; }
+        .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
         .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 42px repeat(7, minmax(55px, auto)); min-width: 950px; background: #e2e8f0; gap: 1px; }
         
         .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
@@ -130,25 +128,13 @@
         }
         .grid-event:hover { transform: scale(1.02); z-index: 20; }
         
-        /* 🌟 ปรับแต่งหน้าจอโทรศัพท์มือถือ (Mobile Responsive) ให้ตารางพอดีจอและแสดงปุ่มทางลัด */
+        /* 🌟 ปรับแต่งเฉพาะหน้าจอโทรศัพท์มือถือ (Mobile Responsive) */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
-            .dashboard-container { padding: 15px; }
-            .mobile-shortcut-bar { display: grid; }
-            
-            /* บีบสเกลตารางเรียนบนมือถือให้ย่อพอดีจอโดยไม่ต้องเลื่อนซ้ายขวาเยอะ */
-            .schedule-grid-wrapper {
-                overflow-x: auto;
-            }
-            .schedule-grid {
-                transform: scale(0.72);
-                transform-origin: top left;
-                width: 138%; /* ชดเชยสเกลให้เต็มกรอบพอดี */
-                margin-bottom: -15%;
-            }
+            .grid-layout { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -180,23 +166,10 @@
         </header>
 
         <div class="dashboard-container">
-            <!-- 🌟 นำแถบหัวข้อ "ระบบจัดการข้อมูลภาควิชา (Dashboard)" ออกตามที่ขอ -->
-
-            <!-- 🌟 แผงปุ่มไอคอนทางลัดสำหรับเข้าเมนูต่างๆ (แสดงเฉพาะบนมือถือ) -->
-            <div class="mobile-shortcut-bar">
-                <a href="knowledge.html" class="shortcut-btn"><i class="fa-solid fa-book-open"></i> คู่มือ</a>
-                <a href="forms.html" class="shortcut-btn"><i class="fa-solid fa-file-signature"></i> คำร้อง</a>
-                <a href="equipments.html" class="shortcut-btn"><i class="fa-solid fa-microscope"></i> เบิก/จอง</a>
-                <a href="classrooms.html" class="shortcut-btn"><i class="fa-solid fa-fingerprint"></i> ห้อง/สแกน</a>
-                <a href="Maintenance.html" class="shortcut-btn"><i class="fa-solid fa-wrench"></i> แจ้งซ่อม</a>
-                <a href="staffs.html" class="shortcut-btn"><i class="fa-solid fa-headset"></i> ติดต่อ</a>
-                <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="shortcut-btn"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
-                <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="shortcut-btn"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
-            </div>
+            <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
             <div class="grid-layout">
-                <!-- 1. ส่วนประกาศล่าสุด -->
-                <div class="full-width-section">
+                <div class="left-column">
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
                         <div class="card-body">
@@ -205,8 +178,8 @@
                     </div>
                 </div>
 
-                <!-- 2. ตารางเรียนและการใช้ห้อง (ปรับให้พอดีหน้าจอมือถือ) -->
-                <div class="full-width-section">
+                <div class="right-column">
+                    <!-- ตารางเรียนและการใช้ห้อง -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fa-solid fa-chalkboard-user" style="color: #0284c7;"></i> ตารางเรียนและการใช้ห้อง</h3>
@@ -242,17 +215,15 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 3. ปฏิทินกิจกรรมภาควิชา -->
-                <div class="full-width-section">
+                    <!-- ปฏิทินกิจกรรมภาควิชา -->
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
                         <div class="card-body">
                             <div id="event-calendar"></div>
                             <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
                                 <h4 style="font-size: 14px; margin-bottom: 12px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
-                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto; padding-right: 5px;"></div>
+                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;"></div>
                             </div>
                         </div>
                     </div>
@@ -298,7 +269,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'th', 
-                height: 420,
+                height: 380, 
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
                 datesSet: function(info) { renderEventDetails(info.view.currentStart, info.view.currentEnd); },
                 events: function(info, successCallback, failureCallback) {
@@ -344,14 +315,9 @@
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
                     listEl.innerHTML += `
-                        <div style="padding: 12px 16px; border-left: 5px solid ${ev.color}; background: #ffffff; border-radius: 8px; font-size: 13px; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <b style="color: #1e293b; font-weight: 600; font-size: 14px;">${ev.title}</b><br>
-                                <span style="color: #64748b; font-size: 12px; display:inline-block; margin-top:4px;"><i class="fa-regular fa-calendar" style="margin-right:4px; color: ${ev.color};"></i> ${dateStr}</span>
-                            </div>
-                            <span style="background-color: ${ev.color}15; color: ${ev.color}; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px;">
-                                <span style="width: 6px; height: 6px; background-color: ${ev.color}; border-radius: 50%;"></span> กิจกรรม
-                            </span>
+                        <div style="padding: 12px 14px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 8px; font-size: 13px; border: 1px solid #f1f5f9;">
+                            <b style="color: #1e293b; font-weight: 600;">${ev.title}</b><br>
+                            <span style="color: #64748b; font-size: 11px; display:inline-block; margin-top:3px;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${dateStr}</span>
                         </div>
                     `;
                 }
@@ -502,6 +468,7 @@
             initClassSchedule();
         });
 
+        // 🌟 ฟังก์ชันควบคุม Sidebar เปิด-ปิด บนมือถือ
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
