@@ -125,20 +125,17 @@
             }
             .shortcut-btn i { font-size: 20px; color: var(--primary-color); }
 
-            /* แต่งสีการ์ดปฏิทินในโทรศัพท์ */
-            #activity-card {
-                background-color: #f0fdfa; 
-                border: 1px solid #14b8a6;
-                box-shadow: 0 4px 15px rgba(13, 148, 136, 0.15);
+            /* ปรับแต่งตารางเรียนให้รองรับการดูในหน้าเดียว (หรือย่อขยายได้) */
+            .schedule-grid-wrapper {
+                overflow-x: auto;
+                touch-action: pan-x pinch-zoom;
             }
-            #activity-card .card-header {
-                background-color: #0d9488;
-                border-bottom: none;
+            .schedule-grid {
+                min-width: 700px; /* ย่อให้พอดีจอมากขึ้น และรองรับการซูมด้วยนิ้ว */
             }
-            #activity-card .card-header h3, 
-            #activity-card .card-header i {
-                color: #ffffff !important;
-            }
+            .grid-header { font-size: 10px; }
+            .grid-day-label { font-size: 11px; }
+            .grid-event { font-size: 9px; padding: 2px 4px; }
         }
     </style>
 </head>
@@ -328,10 +325,11 @@
                     let dateStr = ev.start.split('T')[0];
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
+                    // 🌟 เปลี่ยนสีของการ์ดตามที่ดึงข้อมูลมาจากชีต
                     listEl.innerHTML += `
-                        <div style="padding: 12px 14px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 8px; font-size: 13px; border: 1px solid #f1f5f9;">
-                            <b style="color: #1e293b; font-weight: 600;">${ev.title}</b><br>
-                            <span style="color: #64748b; font-size: 11px; display:inline-block; margin-top:3px;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${dateStr}</span>
+                        <div style="padding: 12px 14px; background-color: ${ev.color}; color: #ffffff; border-radius: 8px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <b style="font-weight: 600;">${ev.title}</b><br>
+                            <span style="font-size: 11px; display:inline-block; margin-top:3px; opacity: 0.95;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${dateStr}</span>
                         </div>
                     `;
                 }
