@@ -104,17 +104,14 @@
         /* Mobile Shortcuts Hide Desktop */
         .mobile-shortcuts { display: none; }
 
-        /* 🌟 ปรับแต่ง Mobile Responsive */
+        /* 🌟 ปรับแต่ง Mobile Responsive ให้ตารางเรียนพอดีจอซ้ายขวาเป๊ะๆ */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
-            
-            /* ซ่อนหัวข้อในโทรศัพท์ */
-            .page-title { display: none; }
+            .page-title { display: none; } /* ซ่อนหัวข้อในโทรศัพท์ */
 
-            /* แสดงปุ่มลัดในโทรศัพท์ */
             .mobile-shortcuts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
             .shortcut-btn { 
                 background: var(--card-bg); border-radius: 12px; padding: 12px 5px; 
@@ -125,17 +122,20 @@
             }
             .shortcut-btn i { font-size: 20px; color: var(--primary-color); }
 
-            /* ปรับแต่งตารางเรียนให้รองรับการดูในหน้าเดียว (หรือย่อขยายได้) */
+            /* บีบตารางเรียนให้อยู่พอดีจอ (100%) ไม่ต้องเลื่อนแนวนอน */
             .schedule-grid-wrapper {
-                overflow-x: auto;
-                touch-action: pan-x pinch-zoom;
+                overflow-x: hidden; /* ปิดการเลื่อนแนวนอน */
             }
             .schedule-grid {
-                min-width: 700px; /* ย่อให้พอดีจอมากขึ้น และรองรับการซูมด้วยนิ้ว */
+                min-width: 100%; /* บังคับให้พอดีความกว้างหน้าจอ */
+                grid-template-columns: 35px repeat(12, 1fr); /* ลดขนาดคอลัมน์บอกวัน */
             }
-            .grid-header { font-size: 10px; }
-            .grid-day-label { font-size: 11px; }
-            .grid-event { font-size: 9px; padding: 2px 4px; }
+            .grid-header { font-size: 7px; padding: 2px 0; }
+            .grid-day-label { font-size: 9px; padding: 2px 0; }
+            .grid-day-label span:last-child { display: none; } /* ซ่อนวันที่ด้านล่างวันจันทร์-ศุกร์ เพื่อประหยัดพื้นที่ */
+            .grid-event-container { min-height: 40px; }
+            .grid-event { font-size: 7.5px; padding: 1px; border-radius: 3px; line-height: 1.1; }
+            .grid-event div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
         }
     </style>
 </head>
@@ -169,7 +169,7 @@
         <div class="dashboard-container">
             <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
-            <!-- 🌟 ปุ่มเมนูทางลัดสำหรับมือถือ (แสดงเฉพาะมือถือ) -->
+            <!-- ปุ่มเมนูทางลัดสำหรับมือถือ (แสดงเฉพาะมือถือ) -->
             <div class="mobile-shortcuts">
                 <a href="knowledge.html" class="shortcut-btn"><i class="fa-solid fa-book-open"></i> คู่มืออุปกรณ์</a>
                 <a href="forms.html" class="shortcut-btn"><i class="fa-solid fa-file-signature"></i> แบบฟอร์ม</a>
@@ -181,9 +181,8 @@
                 <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="shortcut-btn"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
             </div>
 
-            <!-- 🌟 Content Stack: เรียง 1. ประกาศ -> 2. ตารางเรียน -> 3. ปฏิทิน -->
             <div class="content-stack">
-                <!-- ประกาศล่าสุด (ย้ายมาอยู่บนสุด) -->
+                <!-- ประกาศล่าสุด -->
                 <div class="card">
                     <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
                     <div class="card-body">
@@ -191,7 +190,7 @@
                     </div>
                 </div>
 
-                <!-- ตารางเรียนและการใช้ห้อง -->
+                <!-- ตารางเรียนและการใช้ห้อง (รวมข้อมูล API จองห้องเรียนด้วย) -->
                 <div class="card">
                     <div class="card-header">
                         <h3><i class="fa-solid fa-chalkboard-user" style="color: #0284c7;"></i> ตารางเรียนและการใช้ห้อง</h3>
@@ -244,9 +243,11 @@
     </main>
 
     <script>
+        // Data URLs
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
+        const ROOM_API_URL = 'https://script.google.com/macros/s/AKfycbxI-BYg7BRcD_RmSwQ-HRcxmLhCwyiCsIIJSuOJLIUm_uL70s21KhfqnEWyU223eyHMuQ/exec';
 
         function getNoCacheUrl(url) {
             if (!url) return "";
@@ -254,6 +255,7 @@
             return `${url}${separator}t=${new Date().getTime()}`;
         }
 
+        // โหลดประกาศ
         function loadAnnouncements() {
             fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
@@ -274,6 +276,7 @@
             });
         }
 
+        // โหลดปฏิทินกิจกรรม
         let allCalendarEvents = [];
         function initEventCalendar() {
             var calendarEl = document.getElementById('event-calendar');
@@ -325,7 +328,6 @@
                     let dateStr = ev.start.split('T')[0];
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
-                    // 🌟 เปลี่ยนสีของการ์ดตามที่ดึงข้อมูลมาจากชีต
                     listEl.innerHTML += `
                         <div style="padding: 12px 14px; background-color: ${ev.color}; color: #ffffff; border-radius: 8px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                             <b style="font-weight: 600;">${ev.title}</b><br>
@@ -337,6 +339,9 @@
             if (!hasEvent) listEl.innerHTML = '<div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
+        // ==========================================
+        // ระบบตารางเรียนและการใช้ห้อง (รวมข้อมูลจาก 2 แหล่ง)
+        // ==========================================
         let allClassEvents = [];
         let currentWeekStart = getMonday(new Date()); 
         
@@ -358,13 +363,34 @@
             return `${formattedDate}T${formattedTime}:00`;
         }
 
+        // แปลงเวลาจาก API กรณีรูปแบบ "2026-11-05 เวลา 09:00 น."
+        function parseThaiDateStr(str) {
+            if (!str) return null;
+            if (str.includes('T')) return new Date(str);
+            if (str.includes(' เวลา ')) {
+                let parts = str.split(' เวลา ');
+                let dParts = parts[0].split('-');
+                let tParts = parts[1].replace(' น.', '').split(':');
+                if (dParts.length === 3 && tParts.length >= 2) {
+                    return new Date(dParts[0], dParts[1] - 1, dParts[2], tParts[0], tParts[1]);
+                }
+            }
+            return new Date(str);
+        }
+
         function initClassSchedule() {
             const gridEl = document.getElementById('class-schedule-grid');
-            gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียน...</div>';
+            gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียนและคิวจองห้อง...</div>';
 
-            fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
+            // ดึงข้อมูลพร้อมกัน 2 แหล่ง (CSV ตารางเรียนประจำ + API ห้องที่อนุมัติแล้ว)
+            Promise.all([
+                fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()),
+                fetch(ROOM_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false }))
+            ]).then(([csvText, apiData]) => {
+                allClassEvents = [];
+                
+                // 1. ดึงข้อมูลตารางเรียนจาก CSV
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
-                    allClassEvents = [];
                     results.data.forEach(row => {
                         const title = row.Title || row.title || "";
                         const dateVal = row.Date || row.date || "";
@@ -385,11 +411,39 @@
                                     start: startObj,
                                     end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
                                     room: String(room).trim(),
-                                    color: color
+                                    color: color,
+                                    isBooking: false
                                 });
                             }
                         }
                     });
+
+                    // 2. ดึงข้อมูลการจองห้องจากระบบ (API)
+                    if (apiData && apiData.success && apiData.events) {
+                        apiData.events.forEach(ev => {
+                            let startObj = new Date(ev.from);
+                            let endObj = new Date(ev.to);
+                            
+                            if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
+                            if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
+
+                            if (startObj && !isNaN(startObj.getTime())) {
+                                // ตัดคำว่า "ห้องเรียน" ออกเพื่อจัดหมวดหมู่ให้ตรงกับ Dropdown
+                                let shortRoom = String(ev.room).replace("ห้องเรียน ", "").replace("ห้องปฏิบัติการ ", "").trim();
+                                let purposeTitle = ev.purpose || "จองห้อง"; // ถ้ายังไม่ได้เพิ่มใน Apps Script จะใช้คำว่า "จองห้อง" แทน
+                                
+                                allClassEvents.push({
+                                    title: `${purposeTitle} (${ev.name})`, // ความประสงค์ + ชื่อผู้ขอ
+                                    start: startObj,
+                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                                    room: shortRoom,
+                                    color: "#f59e0b", // สีส้มเด่นๆ แยกให้ออกว่าคือการจองพิเศษ
+                                    isBooking: true
+                                });
+                            }
+                        });
+                    }
+                    
                     applyClassFilters();
                 }});
             });
@@ -463,10 +517,13 @@
                     let widthPercent = ((endMinutes - startMinutes) / totalWorkingMinutes) * 100;
                     const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
                     
+                    // ไอคอนจองห้อง
+                    let iconStr = ev.isBooking ? `<i class="fa-solid fa-address-card" style="margin-right:2px;"></i> ` : "";
+
                     html += `
-                        <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};">
-                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${ev.title}</div>
-                            <div style="font-size: 10px; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
+                        <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};" title="${ev.title}\nเวลา: ${timeStr} ห้อง: ${ev.room}">
+                            <div style="font-weight: 600; width: 100%;">${iconStr}${ev.title}</div>
+                            <div style="opacity: 0.9; width: 100%;">เวลา ${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
                         </div>`;
                 });
                 html += `</div>`; 
