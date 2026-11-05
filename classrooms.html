@@ -23,7 +23,6 @@
     .icon-room { color: #9b59b6; }
     .icon-scan { color: #e67e22; }
     .icon-track { color: #007bff; }
-    .icon-calendar { color: #28a745; }
     .icon-pdf { color: #e74c3c; }
     .file-name { font-weight: bold; font-size: 16px; color: #1a202c; line-height: 1.4; }
     .file-tag { display: inline-block; background-color: #f1f5f9; color: #475569; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-top: 4px; font-weight: 600; }
@@ -55,43 +54,11 @@
     .checkbox-group label { font-weight: normal; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; }
     .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
-    /* =======================================
-       Calendar Styles (Unified PC & Mobile)
-       ======================================= */
-    .calendar-container { max-width: 100%; overflow-x: hidden; }
-    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .calendar-controls button { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-    .cal-header { font-weight: bold; text-align: center; background: #e2e8f0; padding: 8px 0; font-size: 13px; border-radius: 4px; }
-    .cal-day { min-height: 70px; border: 1px solid #e2e8f0; padding: 4px; border-radius: 4px; background: #fff; display: flex; flex-direction: column; }
-    .cal-date { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; margin-bottom: 4px; background: #f1f5f9; border-radius: 4px; padding: 2px 0; }
-    
-    .cal-event-dot-wrapper { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 4px; }
-    .cal-event { width: 12px; height: 12px; border-radius: 50%; display: inline-block; cursor: pointer; }
-    
-    .event-full { background-color: #3b82f6; border: 1px solid #2563eb; }
-    .event-outside { background-color: #22c55e; border: 1px solid #16a34a; }
-    .event-morning { background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb; }
-    .event-afternoon { background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb; }
-
-    .event-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; border-top: 2px solid #e2e8f0; padding-top: 15px; }
-    .event-card { padding: 15px; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-
-    /* ปรับแต่งปฏิทินสำหรับมือถือ ให้เล็กกะทัดรัด */
     @media (max-width: 600px) {
       .header { flex-direction: column; align-items: flex-start; gap: 12px; }
       .back-btn { padding: 6px 12px; font-size: 12px; align-self: flex-start; }
       .pdf-item { flex-direction: column; gap: 10px; align-items: flex-start; }
       .download-btn { width: 100%; justify-content: center; }
-      
-      .calendar-grid { gap: 2px; }
-      .cal-header { font-size: 10px; padding: 4px 0; }
-      .cal-day { min-height: 40px; padding: 2px; border-radius: 4px; }
-      .cal-date { font-size: 10px; padding: 2px 4px; margin-bottom: 2px; border-radius: 2px; }
-      .cal-event { width: 8px; height: 8px; margin: 1px; }
-      .cal-event-dot-wrapper { gap: 2px; padding-top: 2px; }
-      .event-list-container { margin-top: 10px; padding-top: 10px; }
     }
   </style>
 </head>
@@ -100,20 +67,11 @@
   <div class="container">
     <div class="header">
       <h1><i class="fa-solid fa-school" style="color: #9b59b6;"></i> บริการขอใช้ห้องเรียน & สแกนนิ้ว</h1>
-      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปห้องแชต</a>
+      <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปหน้าหลัก</a>
     </div>
 
     <div class="file-grid">
-      <!-- 1. ปฏิทิน -->
-      <div class="file-card" onclick="openCalendarModal()">
-        <div class="file-info">
-          <i class="fa-solid fa-calendar-alt action-icon icon-calendar"></i>
-          <div><div class="file-name">ปฏิทินการจองห้องเรียน</div><span class="file-tag">ตรวจสอบคิวการใช้ห้องเรียน</span></div>
-        </div>
-        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
-      </div>
-
-      <!-- 2. แบบฟอร์มขอใช้ห้องเรียน -->
+      <!-- 1. แบบฟอร์มขอใช้ห้องเรียน -->
       <div class="file-card" onclick="openModal('roomModal')">
         <div class="file-info">
           <i class="fa-solid fa-chalkboard-user action-icon icon-room"></i>
@@ -122,7 +80,7 @@
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
       
-      <!-- 3. แบบฟอร์มขอสแกนนิ้ว -->
+      <!-- 2. แบบฟอร์มขอสแกนนิ้ว -->
       <div class="file-card" onclick="openModal('scanModal')">
         <div class="file-info">
           <i class="fa-solid fa-fingerprint action-icon icon-scan"></i>
@@ -131,7 +89,7 @@
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
 
-      <!-- 4. ติดตามสถานะ -->
+      <!-- 3. ติดตามสถานะ -->
       <div class="file-card" onclick="openTrackingModal()">
         <div class="file-info">
           <i class="fa-solid fa-magnifying-glass-chart action-icon icon-track"></i>
@@ -140,54 +98,13 @@
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
 
-      <!-- 5. รวมลิงก์ไฟล์ PDF -->
+      <!-- 4. รวมลิงก์ไฟล์ PDF -->
       <div class="file-card" onclick="openModal('pdfModal')">
         <div class="file-info">
           <i class="fa-solid fa-file-pdf action-icon icon-pdf"></i>
           <div><div class="file-name">เอกสารและแบบฟอร์ม (PDF)</div><span class="file-tag">ดาวน์โหลดไฟล์เอกสารต้นฉบับเพื่อพิมพ์</span></div>
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= Popup ปฏิทิน ================= -->
-  <div class="modal-overlay" id="calendarModal">
-    <div class="modal-box" style="max-width: 800px;">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-calendar-alt"></i> ปฏิทินการจองห้องเรียน</h3>
-        <button class="close-modal" onclick="closeModal('calendarModal')"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="calendar-container">
-        <div class="calendar-controls">
-          <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-          <div style="text-align: center;">
-            <h4 id="monthYearDisplay" style="margin: 0 0 5px 0;"></h4>
-            <!-- ตัวกรองปฏิทิน: แสดงเฉพาะห้องเรียน -->
-            <select id="calendarRoomFilter" onchange="renderCalendar()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; cursor: pointer; max-width: 200px;">
-              <option value="all">ดูทุกห้องเรียน</option>
-              <option value="ห้องเรียน 301">ห้องเรียน 301</option>
-              <option value="ห้องเรียน 303">ห้องเรียน 303</option>
-              <option value="ห้องเรียน 806">ห้องเรียน 806</option>
-              <option value="ห้องเรียน 809">ห้องเรียน 809</option>
-            </select>
-          </div>
-          <button onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
-        </div>
-        <div id="calendarLoading" style="text-align: center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</div>
-        
-        <!-- ตารางปฏิทิน -->
-        <div id="calendarGrid" class="calendar-grid hidden"></div>
-        
-        <div style="margin-top: 15px; font-size: 11px; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #3b82f6;"></div> เต็มวัน</span>
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #60a5fa 50%, #f1f5f9 50%); border: 1px solid #2563eb;"></div> ครึ่งเช้า</span>
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f1f5f9 50%, #60a5fa 50%); border: 1px solid #2563eb;"></div> ครึ่งบ่าย</span>
-          <span style="display: flex; align-items: center; gap: 5px;"><div style="width: 12px; height: 12px; background: #22c55e;"></div> นอกเวลา</span>
-        </div>
-
-        <!-- แถบการ์ดรายละเอียดด้านล่าง -->
-        <div id="eventListContainer" class="event-list-container"></div>
       </div>
     </div>
   </div>
@@ -225,7 +142,8 @@
           <label>ขอใช้ห้อง *</label>
           <select id="r_room" required>
             <option value="">-- เลือกห้อง --</option>
-            <option value="ห้องเรียน 301">ห้องเรียน 301</option><option value="ห้องเรียน 303">ห้องเรียน 303</option><option value="ห้องเรียน 806">ห้องเรียน 806</option><option value="ห้องเรียน 809">ห้องเรียน 809</option>
+            <option value="ห้องเรียน 301">ห้องเรียน 301</option><option value="ห้องเรียน 303">ห้องเรียน 303</option><option value="ห้องเรียน 304">ห้องเรียน 304</option><option value="ห้องเรียน 806">ห้องเรียน 806</option><option value="ห้องเรียน 809">ห้องเรียน 809</option>
+            <option value="ห้องปฏิบัติการ 103">ห้องปฏิบัติการ 103</option><option value="ห้องปฏิบัติการ 108">ห้องปฏิบัติการ 108</option><option value="ห้องปฏิบัติการ 807">ห้องปฏิบัติการ 807</option><option value="ห้องปฏิบัติการ 808">ห้องปฏิบัติการ 808</option>
           </select>
         </div>
         <div class="form-group"><label>เลือกเวลา *</label><select id="r_timeSlot" required><option value="">-- เลือกระยะเวลา --</option><option value="ในเวลาราชการ">ในเวลาราชการ</option><option value="นอกเวลาราชการ">นอกเวลาราชการ</option></select></div>
@@ -313,7 +231,6 @@
         <div class="search-section"><input type="text" id="ticketInput" class="search-input" placeholder="กรอก Ticket ID (เช่น ROOM-xxxx หรือ SCAN-xxxx)"><button class="btn-search" onclick="fetchTicketData()"><i class="fa-solid fa-search"></i> ค้นหา</button></div>
       </div>
       
-      <!-- ================= Modified Scan Detail View ================= -->
       <div id="scanDetailView" class="hidden">
         <h4 style="margin-bottom: 15px; color: #e67e22;"><i class="fa-solid fa-fingerprint"></i> ข้อมูลการขอสแกนลายนิ้วมือ</h4>
         <div class="detail-row"><span class="detail-label">รหัสอ้างอิง:</span> <span id="vs_id"></span></div>
@@ -322,9 +239,7 @@
         <div class="detail-row" id="vs_evidence_row"></div>
         
         <h5 style="margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 5px;">สถานะการอนุมัติแยกรายประตู</h5>
-        <div id="vs_doors_detail_list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-          <!-- ข้อมูลสถานะประตูจะถูกสร้างโดย Javascript -->
-        </div>
+        <div id="vs_doors_detail_list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
       </div>
 
       <div id="roomDetailView" class="hidden">
@@ -465,7 +380,6 @@
         if (data.error) { alert(data.error); } else {
           document.getElementById('searchView').classList.add('hidden'); document.getElementById('closeTrackBtn').classList.remove('hidden');
 
-          // ================= Modified fetch logic for Scan =================
           if (data.formType === "Scan") {
             document.getElementById('scanDetailView').classList.remove('hidden');
             document.getElementById('vs_id').innerText = data.id; 
@@ -473,24 +387,20 @@
             document.getElementById('vs_purpose').innerText = data.purpose; 
             document.getElementById('vs_evidence_row').innerHTML = data.evidence ? `<span class="detail-label">รูปหลักฐาน:</span> <a href="${data.evidence}" target="_blank" style="color: #007bff; font-weight: bold;"><i class="fa-solid fa-image"></i> คลิกเพื่อดูรูปภาพ</a>` : "";
             
-            // สร้างกล่องแสดงสถานะแยกทีละประตู
             const doorListContainer = document.getElementById('vs_doors_detail_list');
             doorListContainer.innerHTML = "";
             
             if (data.doorsDetail && data.doorsDetail.length > 0) {
               data.doorsDetail.forEach(door => {
-                // จัดการสีป้าย: อาจารย์
                 let advColor = "#ffc107"; let advText = "#212529";
                 if (door.adv === "อนุมัติ") { advColor = "#28a745"; advText = "white"; }
                 else if (door.adv === "ไม่อนุมัติ") { advColor = "#dc3545"; advText = "white"; }
                 
-                // จัดการสีป้าย: หัวหน้าธุรการ
                 let headColor = "#ffc107"; let headText = "#212529";
                 if (door.head === "อนุมัติ") { headColor = "#28a745"; headText = "white"; }
                 else if (door.head === "ไม่อนุมัติ") { headColor = "#dc3545"; headText = "white"; }
                 else if (door.head === "-") { door.head = "รอตรวจสอบ"; }
 
-                // จัดการสีป้าย: แอดมิน
                 let adminColor = "#ffc107"; let adminText = "#212529";
                 if (door.admin === "รับทราบ/ดำเนินการแล้ว" || door.admin === "อนุมัติ") { adminColor = "#28a745"; adminText = "white"; }
                 else if (door.admin === "ไม่อนุมัติ") { adminColor = "#dc3545"; adminText = "white"; }
@@ -519,8 +429,6 @@
               });
             }
           } 
-          
-          // การแสดงผล Tracking: ส่วนห้องเรียน
           else if (data.formType === "Room") {
             document.getElementById('roomDetailView').classList.remove('hidden');
             document.getElementById('vr_id').innerText = data.id; 
@@ -539,7 +447,6 @@
     }
 
     function setBadges(advId, advStatus, headId, headStatus, adminId, adminStatus) {
-      // จัดการสีป้าย: อาจารย์
       const advBadge = document.getElementById(advId); 
       const currentAdv = advStatus || "รอตรวจสอบ"; 
       advBadge.innerText = currentAdv;
@@ -547,7 +454,6 @@
       else if (currentAdv === "ไม่อนุมัติ") { advBadge.style.backgroundColor = "#dc3545"; advBadge.style.color = "#ffffff"; } 
       else { advBadge.style.backgroundColor = "#ffc107"; advBadge.style.color = "#212529"; }
       
-      // จัดการสีป้าย: หัวหน้าธุรการ
       if(headId) {
          const headBadge = document.getElementById(headId); 
          const currentHead = headStatus || "รอตรวจสอบ"; 
@@ -557,7 +463,6 @@
          else { headBadge.style.backgroundColor = "#ffc107"; headBadge.style.color = "#212529"; }
       }
 
-      // จัดการสีป้าย: แอดมิน
       const adminBadge = document.getElementById(adminId); 
       const currentAdmin = adminStatus || "รอตรวจสอบ"; 
       adminBadge.style.padding = "4px 10px";
@@ -568,164 +473,9 @@
       else { adminBadge.style.backgroundColor = "#6c757d"; adminBadge.style.color = "#ffffff"; }
     }
 
-    /* =======================================================
-       ปฏิทินแบบ Custom Grid
-       ======================================================= */
-    let currentDate = new Date();
-    let calendarEvents = [];
-
-    async function openCalendarModal() {
-      document.getElementById('calendarModal').style.display = 'flex';
-      document.getElementById('calendarGrid').classList.add('hidden');
-      document.getElementById('calendarLoading').style.display = 'block';
-      const oldMsg = document.getElementById('emptyCalMsg');
-      if (oldMsg) oldMsg.style.display = 'none';
-
-      try {
-        const res = await fetch(API_URL + "?action=calendar");
-        const data = await res.json();
-        if (data.success) { calendarEvents = data.events; }
-      } catch (e) { console.error("Calendar Error", e); }
-      document.getElementById('calendarLoading').style.display = 'none';
-      document.getElementById('calendarGrid').classList.remove('hidden');
-      renderCalendar();
-    }
-
-    function changeMonth(step) { currentDate.setMonth(currentDate.getMonth() + step); renderCalendar(); }
-    
-    function extractTime(val) { 
-      if(!val) return ''; const str = String(val); 
-      if(str.includes(' เวลา ')) return str.split(' เวลา ')[1].replace(' น.', ''); 
-      if(str.includes('T')) return str.split('T')[1].substring(0,5); 
-      return str; 
-    }
-    
-    function shortDateTime(val) {
-      if(!val) return '';
-      const p = parseTimeStr(val);
-      if(p.dateStr) {
-        const parts = p.dateStr.split('-');
-        if(parts.length === 3) {
-          const y = parseInt(parts[0]) + 543;
-          return `${parts[2]}/${parts[1]}/${y} ${extractTime(val)}`;
-        }
-      }
-      return val;
-    }
-
-    function parseTimeStr(val) {
-      if(!val) return { dateStr: "", hour: 0 };
-      const str = String(val);
-      if(str.includes(' เวลา ')) { const p = str.split(' เวลา '); return { dateStr: p[0], hour: parseFloat(p[1].replace(' น.','').replace(':','.')) }; }
-      if(str.includes('T')) { const p = str.split('T'); const t = p[1].split(':'); return { dateStr: p[0], hour: t.length >= 2 ? parseFloat(t[0]+"."+t[1]) : 0 }; }
-      return { dateStr: str.split(' ')[0], hour: 0 };
-    }
-    
-    function formatDisplayTime(val) {
-      if(!val) return ''; const str = String(val);
-      if(str.includes(' เวลา ')) return str;
-      if(str.includes('T')) { const p = str.split('T'); return p[0] + ' เวลา ' + p[1].substring(0,5) + ' น.'; }
-      return str;
-    }
-    
-    function getEventClass(fromStr, toStr, timeSlot) {
-      if(timeSlot === "นอกเวลาราชการ") return "event-outside";
-      const from = parseTimeStr(fromStr); const to = parseTimeStr(toStr);
-      if(from.hour >= 16.30) return "event-outside";
-      if(to.hour <= 12.30) return "event-morning";
-      if(from.hour >= 12.00) return "event-afternoon";
-      return "event-full";
-    }
-
-    function renderCalendar() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-      const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-      document.getElementById('monthYearDisplay').innerText = `${thaiMonths[month]} ${year + 543}`;
-      
-      const selectedRoom = document.getElementById('calendarRoomFilter').value;
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      
-      const grid = document.getElementById('calendarGrid');
-      grid.innerHTML = '<div class="cal-header">อา.</div><div class="cal-header">จ.</div><div class="cal-header">อ.</div><div class="cal-header">พ.</div><div class="cal-header">พฤ.</div><div class="cal-header">ศ.</div><div class="cal-header">ส.</div>';
-      
-      let emptyMsg = document.getElementById('emptyCalMsg');
-      if (!emptyMsg) {
-        emptyMsg = document.createElement('div');
-        emptyMsg.id = 'emptyCalMsg';
-        emptyMsg.style.textAlign = 'center';
-        emptyMsg.style.padding = '25px';
-        emptyMsg.style.color = '#64748b';
-        emptyMsg.style.background = '#f8fafc';
-        emptyMsg.style.borderRadius = '8px';
-        emptyMsg.style.border = '1px dashed #cbd5e1';
-        emptyMsg.style.marginTop = '15px';
-        emptyMsg.innerText = 'ไม่มีคิวการจองในเดือนนี้';
-        grid.parentNode.insertBefore(emptyMsg, grid.nextSibling);
-      }
-      emptyMsg.style.display = 'none';
-
-      const eventList = document.getElementById('eventListContainer');
-      eventList.innerHTML = '<h4 style="margin-bottom: 5px; color: #4a5568;"><i class="fa-solid fa-list"></i> รายละเอียดการจองในเดือนนี้</h4>';
-      let hasMonthEvent = false;
-
-      for(let i=0; i<firstDay; i++) { 
-        const e = document.createElement('div'); 
-        e.className='cal-day empty-slot'; 
-        e.style.backgroundColor='#f8fafc'; 
-        grid.appendChild(e); 
-      }
-      
-      for(let day=1; day<=daysInMonth; day++) {
-        const dDiv = document.createElement('div'); dDiv.className='cal-day';
-        const dSpan = document.createElement('div'); dSpan.className='cal-date'; dSpan.innerText=day; dDiv.appendChild(dSpan);
-        const tDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        
-        const dotWrapper = document.createElement('div');
-        dotWrapper.className = 'cal-event-dot-wrapper';
-        dDiv.appendChild(dotWrapper);
-
-        calendarEvents.forEach(ev => {
-          if(selectedRoom !== "all" && ev.room !== selectedRoom) return;
-          const fromParsed = parseTimeStr(ev.from);
-          if(fromParsed.dateStr === tDateStr) {
-            hasMonthEvent = true;
-            const evClass = getEventClass(ev.from, ev.to, ev.timeSlot);
-            
-            const evDiv = document.createElement('div'); 
-            evDiv.className=`cal-event ${evClass}`;
-            evDiv.title = `Ticket: ${ev.id}\nผู้จอง: ${ev.name}\nห้องเรียน: ${ev.room}\nเวลา: ${formatDisplayTime(ev.from)} - ${formatDisplayTime(ev.to)}`;
-            dotWrapper.appendChild(evDiv);
-
-            const card = document.createElement('div');
-            card.className = 'event-card';
-            card.innerHTML = `
-              <div style="font-weight: bold; color: #1a202c; font-size: 15px; margin-bottom: 5px; border-left: 4px solid #9b59b6; padding-left: 8px;">${ev.room}</div>
-              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-solid fa-hashtag"></i> Ticket:</b> ${ev.id}</div>
-              <div style="font-size: 13px; color: #4a5568; margin-bottom: 3px;"><b><i class="fa-regular fa-clock"></i> เริ่มจอง:</b> ${shortDateTime(ev.from)}</div>
-              <div style="font-size: 13px; color: #4a5568;"><b><i class="fa-solid fa-flag-checkered"></i> กำหนดเสร็จ:</b> ${shortDateTime(ev.to)}</div>
-            `;
-            eventList.appendChild(card);
-          }
-        });
-
-        grid.appendChild(dDiv);
-      }
-
-      if (!hasMonthEvent) { 
-        emptyMsg.style.display = 'block'; 
-        eventList.innerHTML += '<div style="font-size: 13px; color: #94a3b8; text-align: center; padding: 20px;">ไม่มีรายการจองในเดือนนี้</div>';
-      }
-    }
-
-    // ==========================================
-    // ระบบอ่าน URL Parameter เพื่อดึงสถานะอัตโนมัติ
-    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const ticketId = urlParams.get('ticket');
-
       if (ticketId) {
         openTrackingModal();
         document.getElementById('ticketInput').value = ticketId;
