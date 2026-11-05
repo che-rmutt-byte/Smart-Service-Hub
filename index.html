@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <!-- 🌟 ปรับ viewport เป็นมาตรฐานเพื่อให้พอดีจอโทรศัพท์มือถืออัตโนมัติ ไม่ต้องซูมออกหรือเลื่อนซ้ายขวา -->
+    <!-- 🌟 ตั้งค่า viewport ให้พอดีกับหน้าจอโทรศัพท์ ไม่ต้องเลื่อนซ้ายขวา -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
     <title>ChE Smart Service Hub - หน้าหลัก</title>
     
@@ -30,7 +30,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        /* Modern Sidebar (คอมพิวเตอร์ปกติ - ปรับให้แสดงไอคอนและซ่อนตัวหนังสือบางส่วนหรือจัดระเบียบใหม่ตามต้องการ) */
+        /* Modern Sidebar (คอมพิวเตอร์ปกติ) */
         .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 25px rgba(0,0,0,0.05); }
         .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .sidebar-header .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary-color), #0f766e); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
@@ -56,9 +56,14 @@
         .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
 
         /* Dashboard Container */
-        .dashboard-container { padding: 25px 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
+        .dashboard-container { padding: 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
+        
+        /* 🌟 แผงปุ่มไอคอนทางลัดสำหรับมือถือ (ซ่อนบนคอมพิวเตอร์) */
+        .mobile-shortcut-bar { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .shortcut-btn { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: var(--text-dark); font-size: 11px; font-weight: 500; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: 0.2s; }
+        .shortcut-btn i { font-size: 18px; color: var(--primary-color); }
+        .shortcut-btn:active { background-color: #f1f5f9; }
 
-        /* โครงสร้างเลย์เอาต์ */
         .grid-layout { display: flex; flex-direction: column; gap: 25px; }
         .full-width-section { width: 100%; }
 
@@ -92,15 +97,14 @@
         .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
         .room-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
         
-        /* 🌟 ปรับแต่งตารางเรียนให้พอดีจอ ไม่ล้นและเลื่อนง่ายบนมือถือ */
-        .schedule-grid-wrapper { width: 100%; overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); -webkit-overflow-scrolling: touch; }
-        .schedule-grid { display: grid; grid-template-columns: 70px repeat(12, minmax(60px, 1fr)); grid-template-rows: 40px repeat(7, minmax(50px, auto)); min-width: 800px; background: #e2e8f0; gap: 1px; }
+        .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); -webkit-overflow-scrolling: touch; }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 42px repeat(7, minmax(55px, auto)); min-width: 950px; background: #e2e8f0; gap: 1px; }
         
-        .grid-header { background: #f8fafc; font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
-        .grid-day-label { background: #f8fafc; font-size: 12px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+        .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
+        .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
         
         .grid-cell-hour { background: #ffffff; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #e2e8f0; }
-        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #e2e8f0; min-height: 50px; }
+        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #e2e8f0; min-height: 55px; }
         
         .grid-event { 
             position: absolute; 
@@ -109,9 +113,9 @@
             background: var(--primary-color); 
             color: white; 
             border-radius: 6px; 
-            padding: 3px 6px; 
-            font-size: 10px; 
-            line-height: 1.2; 
+            padding: 4px 8px; 
+            font-size: 11px; 
+            line-height: 1.3; 
             overflow: hidden; 
             box-shadow: 0 3px 8px rgba(0,0,0,0.12); 
             cursor: pointer; 
@@ -126,14 +130,25 @@
         }
         .grid-event:hover { transform: scale(1.02); z-index: 20; }
         
-        /* 🌟 ปรับแต่งเฉพาะหน้าจอโทรศัพท์มือถือ (Mobile Responsive) */
+        /* 🌟 ปรับแต่งหน้าจอโทรศัพท์มือถือ (Mobile Responsive) ให้ตารางพอดีจอและแสดงปุ่มทางลัด */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
             .dashboard-container { padding: 15px; }
-            .card-body { padding: 15px; }
+            .mobile-shortcut-bar { display: grid; }
+            
+            /* บีบสเกลตารางเรียนบนมือถือให้ย่อพอดีจอโดยไม่ต้องเลื่อนซ้ายขวาเยอะ */
+            .schedule-grid-wrapper {
+                overflow-x: auto;
+            }
+            .schedule-grid {
+                transform: scale(0.72);
+                transform-origin: top left;
+                width: 138%; /* ชดเชยสเกลให้เต็มกรอบพอดี */
+                margin-bottom: -15%;
+            }
         }
     </style>
 </head>
@@ -145,17 +160,16 @@
             <div class="logo-icon"><i class="fa-solid fa-flask-vial"></i></div>
             <h2>ChE Smart Hub</h2>
         </div>
-        <!-- 🌟 เมนูด้านซ้ายแปลงเป็นไอคอนพร้อมข้อความทางลัด -->
         <nav class="nav-menu">
-            <a href="index.html" class="nav-item active" title="หน้าหลัก (Dashboard)"><i class="fa-solid fa-house"></i> <span>หน้าหลัก (Dashboard)</span></a>
-            <a href="knowledge.html" class="nav-item" title="คู่มือการใช้งานอุปกรณ์"><i class="fa-solid fa-book-open"></i> <span>คู่มือการใช้งานอุปกรณ์</span></a>
-            <a href="forms.html" class="nav-item" title="แบบฟอร์มคำร้อง"><i class="fa-solid fa-file-signature"></i> <span>แบบฟอร์มคำร้อง</span></a>
-            <a href="equipments.html" class="nav-item" title="เบิกอุปกรณ์และจองห้อง"><i class="fa-solid fa-microscope"></i> <span>เบิกอุปกรณ์และจองห้อง</span></a>
-            <a href="classrooms.html" class="nav-item" title="ขอใช้ห้องเรียน&สแกนนิ้ว"><i class="fa-solid fa-fingerprint"></i> <span>ขอใช้ห้องเรียน&สแกนนิ้ว</span></a>
-            <a href="Maintenance.html" class="nav-item" title="แจ้งซ่อมอุปกรณ์"><i class="fa-solid fa-wrench"></i> <span>แจ้งซ่อมอุปกรณ์</span></a>
-            <a href="staffs.html" class="nav-item" title="ติดต่อเจ้าหน้าที่"><i class="fa-solid fa-headset"></i> <span>ติดต่อเจ้าหน้าที่</span></a>
-            <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="nav-item" title="ภาควิชา"><i class="fa-solid fa-building-user"></i> <span>ภาควิชา</span></a>
-            <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="nav-item" title="ข่าวสาร"><i class="fa-regular fa-newspaper"></i> <span>ข่าวสาร</span></a>
+            <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> หน้าหลัก (Dashboard)</a>
+            <a href="knowledge.html" class="nav-item"><i class="fa-solid fa-book-open"></i> คู่มือการใช้งานอุปกรณ์</a>
+            <a href="forms.html" class="nav-item"><i class="fa-solid fa-file-signature"></i> แบบฟอร์มคำร้อง</a>
+            <a href="equipments.html" class="nav-item"><i class="fa-solid fa-microscope"></i> เบิกอุปกรณ์และจองห้อง</a>
+            <a href="classrooms.html" class="nav-item"><i class="fa-solid fa-fingerprint"></i> ขอใช้ห้องเรียน&สแกนนิ้ว</a>
+            <a href="Maintenance.html" class="nav-item"><i class="fa-solid fa-wrench"></i> แจ้งซ่อมอุปกรณ์</a>
+            <a href="staffs.html" class="nav-item"><i class="fa-solid fa-headset"></i> ติดต่อเจ้าหน้าที่</a>
+            <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="nav-item"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
+            <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="nav-item"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
         </nav>
     </aside>
 
@@ -166,7 +180,19 @@
         </header>
 
         <div class="dashboard-container">
-            <!-- 🌟 เอาหัวข้อ "ระบบจัดการข้อมูลภาควิชา (Dashboard)" ออกตามที่ต้องการเรียบร้อยแล้ว -->
+            <!-- 🌟 นำแถบหัวข้อ "ระบบจัดการข้อมูลภาควิชา (Dashboard)" ออกตามที่ขอ -->
+
+            <!-- 🌟 แผงปุ่มไอคอนทางลัดสำหรับเข้าเมนูต่างๆ (แสดงเฉพาะบนมือถือ) -->
+            <div class="mobile-shortcut-bar">
+                <a href="knowledge.html" class="shortcut-btn"><i class="fa-solid fa-book-open"></i> คู่มือ</a>
+                <a href="forms.html" class="shortcut-btn"><i class="fa-solid fa-file-signature"></i> คำร้อง</a>
+                <a href="equipments.html" class="shortcut-btn"><i class="fa-solid fa-microscope"></i> เบิก/จอง</a>
+                <a href="classrooms.html" class="shortcut-btn"><i class="fa-solid fa-fingerprint"></i> ห้อง/สแกน</a>
+                <a href="Maintenance.html" class="shortcut-btn"><i class="fa-solid fa-wrench"></i> แจ้งซ่อม</a>
+                <a href="staffs.html" class="shortcut-btn"><i class="fa-solid fa-headset"></i> ติดต่อ</a>
+                <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="shortcut-btn"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
+                <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="shortcut-btn"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
+            </div>
 
             <div class="grid-layout">
                 <!-- 1. ส่วนประกาศล่าสุด -->
@@ -179,7 +205,7 @@
                     </div>
                 </div>
 
-                <!-- 2. ตารางเรียนและการใช้ห้อง (ปรับขนาดพอดีซ้ายขวาในมือถือ) -->
+                <!-- 2. ตารางเรียนและการใช้ห้อง (ปรับให้พอดีหน้าจอมือถือ) -->
                 <div class="full-width-section">
                     <div class="card">
                         <div class="card-header">
@@ -318,7 +344,7 @@
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
                     listEl.innerHTML += `
-                        <div style="padding: 12px 16px; border-left: 5px solid ${ev.color}; background: #ffffff; border-radius: 8px; font-size: 13px; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px;">
+                        <div style="padding: 12px 16px; border-left: 5px solid ${ev.color}; background: #ffffff; border-radius: 8px; font-size: 13px; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <b style="color: #1e293b; font-weight: 600; font-size: 14px;">${ev.title}</b><br>
                                 <span style="color: #64748b; font-size: 12px; display:inline-block; margin-top:4px;"><i class="fa-regular fa-calendar" style="margin-right:4px; color: ${ev.color};"></i> ${dateStr}</span>
@@ -476,7 +502,6 @@
             initClassSchedule();
         });
 
-        // 🌟 ฟังก์ชันควบคุม Sidebar เปิด-ปิด บนมือถือ
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
