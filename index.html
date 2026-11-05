@@ -56,21 +56,20 @@
         .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
 
         /* Dashboard Container */
-        .dashboard-container { padding: 35px; flex: 1; max-width: 1700px; width: 100%; margin: 0 auto; }
+        .dashboard-container { padding: 35px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
         .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
-        /* Modern Grid & Cards (ปรับสัดส่วนให้ประกาศและฝั่งตารางสมดุลกันมากขึ้น) */
-        .grid-layout { display: grid; grid-template-columns: 360px 1fr; gap: 25px; align-items: start; }
-        .left-column { display: flex; flex-direction: column; gap: 25px; }
-        .right-column { display: flex; flex-direction: column; gap: 25px; }
+        /* 🌟 ปรับโครงสร้างเลย์เอาต์ให้ตารางทั้ง 2 เต็มจอซ้ายขวา (Grid Full Width) */
+        .grid-layout { display: flex; flex-direction: column; gap: 25px; }
+        .full-width-section { width: 100%; }
 
         .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
-        .card-header { padding: 18px 22px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
-        .card-header h3 { font-size: 14px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
+        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
+        .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
         /* Announcements Style */
-        .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 220px); overflow-y: auto; padding-right: 4px; }
+        .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: 280px; overflow-y: auto; padding-right: 4px; }
         .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
         .announcement-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); border-radius: 4px 0 0 4px; }
         .announcement-item:hover { background-color: #f8fafc; border-color: #e2e8f0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
@@ -78,43 +77,42 @@
         .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        /* FullCalendar Modern Polish (ย่อขนาดให้กะทัดรัดขึ้น) */
-        .card-body { padding: 20px; }
-        .fc { font-family: 'Prompt', sans-serif; font-size: 0.75em; }
-        .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; color: #0f172a; }
-        .fc .fc-button { padding: 5px 12px !important; font-size: 0.8em !important; border-radius: 8px !important; font-weight: 500; box-shadow: none !important; }
+        /* FullCalendar Modern Polish */
+        .card-body { padding: 25px; }
+        .fc { font-family: 'Prompt', sans-serif; font-size: 0.8em; }
+        .fc .fc-toolbar-title { font-size: 15px !important; font-weight: 600; color: #0f172a; }
+        .fc .fc-button { padding: 6px 14px !important; font-size: 0.85em !important; border-radius: 8px !important; font-weight: 500; box-shadow: none !important; }
         .fc .fc-button-primary { background-color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
         .fc .fc-button-primary:hover { background-color: var(--primary-hover) !important; }
-        .fc-event { border-radius: 6px; border: none; font-size: 10px; padding: 2px 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .fc-event { border-radius: 6px; border: none; font-size: 11px; padding: 3px 6px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
         /* Schedule Toolbar & Controls */
-        .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s; }
+        .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
         .schedule-nav button:hover { background: #f1f5f9; color: var(--primary-color); border-color: var(--primary-color); }
         
-        .room-filter { padding: 6px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 12px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
+        .room-filter { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 13px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
         .room-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
         
         .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
-        /* ยืดให้แสดงผลยาวขึ้นโดยขยาย min-width ของตารางเรียน */
-        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 38px repeat(7, minmax(48px, auto)); min-width: 1100px; background: #e2e8f0; gap: 1px; }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 42px repeat(7, minmax(55px, auto)); min-width: 950px; background: #e2e8f0; gap: 1px; }
         
-        .grid-header { background: #f8fafc; font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
-        .grid-day-label { background: #f8fafc; font-size: 12px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+        .grid-header { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
+        .grid-day-label { background: #f8fafc; font-size: 13px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
         
         .grid-cell-hour { background: #ffffff; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #e2e8f0; }
-        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #e2e8f0; min-height: 48px; }
+        .grid-event-container { position: relative; background: #ffffff; border-bottom: 1px solid #e2e8f0; min-height: 55px; }
         
         .grid-event { 
             position: absolute; 
-            top: 3px; 
-            bottom: 3px; 
+            top: 4px; 
+            bottom: 4px; 
             background: var(--primary-color); 
             color: white; 
             border-radius: 6px; 
-            padding: 3px 6px; 
-            font-size: 10px; 
-            line-height: 1.2; 
+            padding: 4px 8px; 
+            font-size: 11px; 
+            line-height: 1.3; 
             overflow: hidden; 
             box-shadow: 0 3px 8px rgba(0,0,0,0.12); 
             cursor: pointer; 
@@ -135,7 +133,6 @@
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
-            .grid-layout { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -170,7 +167,8 @@
             <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
             <div class="grid-layout">
-                <div class="left-column">
+                <!-- 🌟 1. ส่วนประกาศล่าสุด ถูกย้ายขึ้นมาอยู่ด้านบนสุด -->
+                <div class="full-width-section">
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
                         <div class="card-body">
@@ -179,8 +177,8 @@
                     </div>
                 </div>
 
-                <div class="right-column">
-                    <!-- ตารางเรียนและการใช้ห้อง -->
+                <!-- 🌟 2. ตารางเรียนและการใช้ห้อง (ขยายเต็มจอซ้ายขวา) -->
+                <div class="full-width-section">
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fa-solid fa-chalkboard-user" style="color: #0284c7;"></i> ตารางเรียนและการใช้ห้อง</h3>
@@ -208,7 +206,7 @@
                                     <button onclick="changeWeek(0)">สัปดาห์นี้</button>
                                     <button onclick="changeWeek(1)"><i class="fa-solid fa-chevron-right"></i></button>
                                 </div>
-                                <div class="schedule-week-label" id="schedule-week-label" style="font-weight: 600; color: #475569; font-size: 13px;"></div>
+                                <div class="schedule-week-label" id="schedule-week-label" style="font-weight: 600; color: #475569; font-size: 14px;"></div>
                             </div>
                             <div class="schedule-grid-wrapper">
                                 <div class="schedule-grid" id="class-schedule-grid">
@@ -216,16 +214,18 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- ปฏิทินกิจกรรมภาควิชา -->
+                <!-- 🌟 3. ปฏิทินกิจกรรมภาควิชา (ขยายเต็มจอซ้ายขวา) -->
+                <div class="full-width-section">
                     <div class="card">
                         <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
                         <div class="card-body">
                             <div id="event-calendar"></div>
-                            <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                                <h4 style="font-size: 13px; margin-bottom: 10px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
-                                <!-- มีการปรับแต่งการ์ดกิจกรรมเดือนนี้ให้มีแถบสีกำกับตามกิจกรรม -->
-                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 5px;"></div>
+                            <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                                <h4 style="font-size: 14px; margin-bottom: 12px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
+                                <!-- 🌟 เพิ่มการ์ดรายการพร้อมสีกำกับขอบซ้าย -->
+                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto; padding-right: 5px;"></div>
                             </div>
                         </div>
                     </div>
@@ -271,7 +271,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'th', 
-                height: 320, // ลดความสูง FullCalendar ลงให้กะทัดรัด
+                height: 420, // ปรับความสูง FullCalendar ให้เหมาะสมกับการแสดงผลเต็มจอ
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
                 datesSet: function(info) { renderEventDetails(info.view.currentStart, info.view.currentEnd); },
                 events: function(info, successCallback, failureCallback) {
@@ -316,16 +316,21 @@
                     let dateStr = ev.start.split('T')[0];
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
-                    // 🌟 เพิ่มสีกำกับการ์ดรายละเอียดกิจกรรมเดือนนี้ โดยดึงค่าสี ev.color มาทำแถบขอบด้านซ้าย (Border-left)
+                    // 🌟 แสดงผลการ์ดกิจกรรมพร้อมแถบสีกำกับขอบซ้ายตามสีของกิจกรรมในปฏิทิน
                     listEl.innerHTML += `
-                        <div style="padding: 10px 12px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 8px; font-size: 12px; border: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                            <b style="color: #1e293b; font-weight: 600;">${ev.title}</b><br>
-                            <span style="color: #64748b; font-size: 11px; display:inline-block; margin-top:3px;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${dateStr}</span>
+                        <div style="padding: 12px 16px; border-left: 5px solid ${ev.color}; background: #ffffff; border-radius: 8px; font-size: 13px; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <b style="color: #1e293b; font-weight: 600; font-size: 14px;">${ev.title}</b><br>
+                                <span style="color: #64748b; font-size: 12px; display:inline-block; margin-top:4px;"><i class="fa-regular fa-calendar" style="margin-right:4px; color: ${ev.color};"></i> ${dateStr}</span>
+                            </div>
+                            <span style="background-color: ${ev.color}15; color: ${ev.color}; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                                <span style="width: 6px; height: 6px; background-color: ${ev.color}; border-radius: 50%;"></span> กิจกรรม
+                            </span>
                         </div>
                     `;
                 }
             });
-            if (!hasEvent) listEl.innerHTML = '<div style="color: #94a3b8; font-size: 12px; text-align: center; padding: 8px;">ไม่มีกิจกรรมในเดือนนี้</div>';
+            if (!hasEvent) listEl.innerHTML = '<div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
         let allClassEvents = [];
@@ -457,7 +462,7 @@
                     html += `
                         <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};">
                             <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${ev.title}</div>
-                            <div style="font-size: 9px; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
+                            <div style="font-size: 10px; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
                         </div>`;
                 });
                 html += `</div>`; 
