@@ -60,14 +60,14 @@
         .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
-        /* Modern Grid & Cards */
-        .grid-layout { display: grid; grid-template-columns: 1.1fr 1.9fr; gap: 20px; align-items: start; }
-        .left-column { display: flex; flex-direction: column; gap: 20px; }
-        .right-column { display: flex; flex-direction: column; gap: 20px; }
+        /* Modern Grid & Cards (ปรับสัดส่วน ประกาศ 1 ส่วน : ปฏิทิน/ตารางเรียน 2 ส่วน) */
+        .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; align-items: start; }
+        .left-column { display: flex; flex-direction: column; gap: 25px; }
+        .right-column { display: flex; flex-direction: column; gap: 25px; }
 
         .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
         .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
-        .card-header h3 { font-size: 14px; color: #0f172a; display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 600; }
+        .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
         /* Announcements Style */
         .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 4px; }
@@ -78,8 +78,8 @@
         .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        /* FullCalendar Modern Polish (ปรับให้เล็กลง) */
-        .card-body { padding: 18px; }
+        /* FullCalendar Modern Polish (ปรับขนาดให้เล็กลง) */
+        .card-body { padding: 20px; }
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.75em; }
         .fc .fc-toolbar-title { font-size: 14px !important; font-weight: 600; color: #0f172a; }
         .fc .fc-button { padding: 4px 10px !important; font-size: 0.8em !important; border-radius: 6px !important; font-weight: 500; box-shadow: none !important; }
@@ -89,14 +89,14 @@
         
         /* Schedule Toolbar & Controls */
         .schedule-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s; }
+        .schedule-nav button { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s; }
         .schedule-nav button:hover { background: #f1f5f9; color: var(--primary-color); border-color: var(--primary-color); }
         
-        .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Prompt'; font-size: 12px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
+        .room-filter { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt'; font-size: 12px; color: #1e293b; background: white; font-weight: 500; outline: none; cursor: pointer; transition: border-color 0.2s; }
         .room-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
         
-        .schedule-grid-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border-color); }
-        .schedule-grid { display: grid; grid-template-columns: 75px repeat(12, 1fr); grid-template-rows: 38px repeat(7, minmax(48px, auto)); min-width: 900px; background: #e2e8f0; gap: 1px; }
+        .schedule-grid-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+        .schedule-grid { display: grid; grid-template-columns: 80px repeat(12, 1fr); grid-template-rows: 38px repeat(7, minmax(48px, auto)); min-width: 900px; background: #e2e8f0; gap: 1px; }
         
         .grid-header { background: #f8fafc; font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #cbd5e1; border-right: 1px solid #cbd5e1; }
         .grid-day-label { background: #f8fafc; font-size: 12px; font-weight: 600; color: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
@@ -110,7 +110,7 @@
             bottom: 3px; 
             background: var(--primary-color); 
             color: white; 
-            border-radius: 5px; 
+            border-radius: 6px; 
             padding: 3px 6px; 
             font-size: 10px; 
             line-height: 1.2; 
@@ -221,9 +221,9 @@
                         <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
                         <div class="card-body">
                             <div id="event-calendar"></div>
-                            <div style="margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                            <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                                 <h4 style="font-size: 13px; margin-bottom: 10px; color: #1e293b; font-weight: 600;"><i class="fa-solid fa-list-check" style="color: var(--primary-color);"></i> รายละเอียดกิจกรรมเดือนนี้</h4>
-                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 170px; overflow-y: auto; padding-right: 5px;"></div>
+                                <div id="event-details-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 160px; overflow-y: auto; padding-right: 5px;"></div>
                             </div>
                         </div>
                     </div>
@@ -269,7 +269,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'th', 
-                height: 320, /* 🌟 ปรับลดความสูงปฏิทินให้เล็กลง */
+                height: 300, /* 🌟 ลดความสูงปฏิทินลงเหลือ 300px ให้กะทัดรัดขึ้น */
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
                 datesSet: function(info) { renderEventDetails(info.view.currentStart, info.view.currentEnd); },
                 events: function(info, successCallback, failureCallback) {
@@ -314,9 +314,9 @@
                     let dateStr = ev.start.split('T')[0];
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
-                    /* 🌟 เพิ่มสีกำกับการ์ด (แถบซ้ายสีตามกิจกรรม) */
+                    /* 🌟 เพิ่มการ์ดรายการกิจกรรมพร้อมแถบสีกำกับด้านซ้าย (border-left ตามสีของอีเวนต์) */
                     listEl.innerHTML += `
-                        <div style="padding: 10px 12px; border-left: 4px solid ${ev.color}; background: #f8fafc; border-radius: 6px; font-size: 12px; border: 1px solid #f1f5f9; border-left-width: 4px; border-left-style: solid;">
+                        <div style="padding: 10px 12px; border-left: 4px solid ${ev.color}; background: #ffffff; border-radius: 8px; font-size: 12px; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                             <b style="color: #1e293b; font-weight: 600;">${ev.title}</b><br>
                             <span style="color: #64748b; font-size: 11px; display:inline-block; margin-top:2px;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${dateStr}</span>
                         </div>
@@ -349,7 +349,7 @@
 
         function initClassSchedule() {
             const gridEl = document.getElementById('class-schedule-grid');
-            gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 25px; text-align: center; color: #64748b; font-size: 13px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียน...</div>';
+            gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 13px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียน...</div>';
 
             fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
@@ -422,7 +422,7 @@
                 targetDate.setDate(targetDate.getDate() + d);
                 html += `<div class="grid-day-label" style="grid-column: 1; grid-row: ${row};">
                             <span>${days[d]}</span>
-                            <span style="font-size: 9px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
+                            <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
                          </div>`;
                 
                 html += `<div class="grid-event-container" style="grid-column: 2 / 14; grid-row: ${row};">`;
