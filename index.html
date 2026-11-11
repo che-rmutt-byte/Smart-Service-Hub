@@ -28,7 +28,7 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         
-        /* ป้องกัน Android ขยายฟอนต์เอง (-webkit-text-size-adjust) */
+        /* เพิ่มคำสั่งป้องกัน Android ขยายฟอนต์เอง (-webkit-text-size-adjust) */
         body { 
             background-color: var(--bg-light); 
             color: var(--text-dark); 
@@ -114,7 +114,7 @@
         /* Mobile Shortcuts Hide Desktop */
         .mobile-shortcuts { display: none; }
 
-        /* ปรับจุดตัด Breakpoint เป็น 992px เพื่อดักโทรศัพท์รุ่นใหม่/แอนดรอยด์หน้าจอใหญ่ที่โดนซูมออก */
+        /* 🌟 ปรับจุดตัด Breakpoint เป็น 992px เพื่อดักโทรศัพท์รุ่นใหม่/แอนดรอยด์หน้าจอใหญ่ที่โดนซูมออก 0.5 */
         @media (max-width: 992px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.active { transform: translateX(0); }
@@ -133,14 +133,16 @@
             .shortcut-btn i { font-size: 20px; color: var(--primary-color); }
 
             /* บีบตารางเรียนให้อยู่พอดีจอ (100%) ไม่ต้องเลื่อนแนวนอน */
-            .schedule-grid-wrapper { overflow-x: hidden; }
+            .schedule-grid-wrapper {
+                overflow-x: hidden; /* ปิดการเลื่อนแนวนอน */
+            }
             .schedule-grid {
-                min-width: 100%; 
-                grid-template-columns: 35px repeat(12, 1fr);
+                min-width: 100%; /* บังคับให้พอดีความกว้างหน้าจอ */
+                grid-template-columns: 35px repeat(12, 1fr); /* ลดขนาดคอลัมน์บอกวัน */
             }
             .grid-header { font-size: 7px; padding: 2px 0; }
             .grid-day-label { font-size: 9px; padding: 2px 0; }
-            .grid-day-label span:last-child { display: none; }
+            .grid-day-label span:last-child { display: none; } /* ซ่อนวันที่ด้านล่างวันจันทร์-ศุกร์ เพื่อประหยัดพื้นที่ */
             .grid-event-container { min-height: 40px; }
             .grid-event { font-size: 7.5px; padding: 1px; border-radius: 3px; line-height: 1.1; }
             .grid-event div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
@@ -263,9 +265,9 @@
         // Data URLs
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
-        const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/1zrMSqwv_8MuvqXhG29suNdIHNDQ4OyRy3y8N-Kd3_w8/pub?output=csv'; 
+        const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
         
-        // ⚠️ URL ของ Web App ฝั่งขอใช้ห้องเรียน และ เครื่องมือ/ห้องปฏิบัติการ 
+        // ⚠️ ต้องวาง URL ของ Web App ฝั่งขอใช้ห้องเรียน และ เครื่องมือ/ห้องปฏิบัติการ 
         const ROOM_API_URL = 'https://script.google.com/macros/s/AKfycbxI-BYg7BRcD_RmSwQ-HRcxmLhCwyiCsIIJSuOJLIUm_uL70s21KhfqnEWyU223eyHMuQ/exec';
         const EQUIP_API_URL = 'https://script.google.com/macros/s/AKfycbwvUSyfP5iuJg5LvFmNiMOLnHCz2VVahjRXmTLGY7V_KrIf8p8V7tBY24KOBwOeJUwZAA/exec'; 
 
@@ -346,6 +348,7 @@
                     let dateStr = ev.start.split('T')[0];
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
+                    // ดึงสีจากการตั้งค่าใน Sheet มาใช้เป็นสีพื้นหลังการ์ด
                     listEl.innerHTML += `
                         <div style="padding: 12px 14px; background-color: ${ev.color}; color: #ffffff; border-radius: 8px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                             <b style="font-weight: 600;">${ev.title}</b><br>
@@ -357,9 +360,6 @@
             if (!hasEvent) listEl.innerHTML = '<div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">ไม่มีกิจกรรมในเดือนนี้</div>';
         }
 
-        // ==========================================
-        // ระบบตารางเรียนและการใช้ห้อง
-        // ==========================================
         let allClassEvents = [];
         let currentWeekStart = getMonday(new Date()); 
         
@@ -369,7 +369,6 @@
             return new Date(d.setDate(diff));
         }
 
-        // 🌟 เพิ่มการดักจับจุดทศนิยม (.) เพื่อแปลงให้เป็นโคลอน (:) อัตโนมัติ
         function convertToValidDateString(dateStr, timeStr) {
             if(!dateStr || !timeStr) return null;
             let formattedDate = dateStr.trim();
@@ -377,22 +376,18 @@
                 let parts = formattedDate.split('/');
                 if(parts.length === 3) formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
             }
-            
-            // แก้ไขปัญหาการกรอกเวลาโดยใช้จุด (เช่น 13.00 ให้เปลี่ยนเป็น 13:00)
-            let formattedTime = timeStr.trim().replace('.', ':');
+            let formattedTime = timeStr.trim();
             if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
-            
             return `${formattedDate}T${formattedTime}:00`;
         }
 
-        // ดักจับจุด (.) ในการดึงข้อมูลเวลาจาก API ด้วย
         function parseThaiDateStr(str) {
             if (!str) return null;
             if (str.includes('T')) return new Date(str);
             if (str.includes(' เวลา ')) {
                 let parts = str.split(' เวลา ');
                 let dParts = parts[0].split('-');
-                let tParts = parts[1].replace(' น.', '').replace('.', ':').split(':');
+                let tParts = parts[1].replace(' น.', '').split(':');
                 if (dParts.length === 3 && tParts.length >= 2) {
                     return new Date(dParts[0], dParts[1] - 1, dParts[2], tParts[0], tParts[1]);
                 }
