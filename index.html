@@ -27,7 +27,17 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; min-height: 100vh; overflow-x: hidden; }
+        
+        /* เพิ่มคำสั่งป้องกัน Android ขยายฟอนต์เอง (-webkit-text-size-adjust) */
+        body { 
+            background-color: var(--bg-light); 
+            color: var(--text-dark); 
+            display: flex; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            -webkit-text-size-adjust: 100%; 
+            text-size-adjust: 100%;
+        }
 
         /* Modern Sidebar */
         .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 25px rgba(0,0,0,0.05); }
@@ -57,7 +67,7 @@
         .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
-        /* 🌟 Modern Stack Layout (แก้ปัญหาเลย์เอาต์หน้ากระดาน) */
+        /* Modern Stack Layout */
         .content-stack { display: flex; flex-direction: column; gap: 25px; }
 
         .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
@@ -104,8 +114,8 @@
         /* Mobile Shortcuts Hide Desktop */
         .mobile-shortcuts { display: none; }
 
-        /* 🌟 ปรับแต่ง Mobile Responsive */
-        @media (max-width: 768px) {
+        /* 🌟 ปรับจุดตัด Breakpoint เป็น 992px เพื่อดักโทรศัพท์รุ่นใหม่/แอนดรอยด์หน้าจอใหญ่ที่โดนซูมออก 0.5 */
+        @media (max-width: 992px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
