@@ -28,7 +28,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         
-        /* เพิ่มคำสั่งป้องกัน Android ขยายฟอนต์เอง (-webkit-text-size-adjust) */
         body { 
             background-color: var(--bg-light); 
             color: var(--text-dark); 
@@ -39,7 +38,6 @@
             text-size-adjust: 100%;
         }
 
-        /* Modern Sidebar */
         .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); color: white; position: fixed; height: 100vh; left: 0; top: 0; display: flex; flex-direction: column; transition: 0.3s ease; z-index: 100; box-shadow: 4px 0 25px rgba(0,0,0,0.05); }
         .sidebar-header { padding: 25px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .sidebar-header .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary-color), #0f766e); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
@@ -58,7 +56,6 @@
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 90; backdrop-filter: blur(2px); }
         .sidebar-overlay.active { display: block; }
 
-        /* Main Content */
         .main-content { flex: 1; margin-left: var(--sidebar-width); transition: 0.3s ease; display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
         .topbar { background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
         .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
@@ -67,14 +64,12 @@
         .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
-        /* Modern Stack Layout */
         .content-stack { display: flex; flex-direction: column; gap: 25px; }
 
         .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
         .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
         .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
-        /* Announcements Style */
         .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
         .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
         .announcement-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); border-radius: 4px 0 0 4px; }
@@ -83,7 +78,6 @@
         .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
-        /* Calendar & Schedule Base Styles */
         .card-body { padding: 25px; }
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.8em; }
         .fc .fc-toolbar-title { font-size: 15px !important; font-weight: 600; color: #0f172a; }
@@ -111,16 +105,14 @@
         .grid-event { position: absolute; top: 4px; bottom: 4px; background: var(--primary-color); color: white; border-radius: 6px; padding: 4px 8px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.12); cursor: pointer; border: none; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: transform 0.15s ease; }
         .grid-event:hover { transform: scale(1.02); z-index: 20; }
         
-        /* Mobile Shortcuts Hide Desktop */
         .mobile-shortcuts { display: none; }
 
-        /* 🌟 ปรับจุดตัด Breakpoint เป็น 992px เพื่อดักโทรศัพท์รุ่นใหม่/แอนดรอยด์หน้าจอใหญ่ที่โดนซูมออก 0.5 */
         @media (max-width: 992px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
-            .page-title { display: none; } /* ซ่อนหัวข้อในโทรศัพท์ */
+            .page-title { display: none; } 
 
             .mobile-shortcuts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
             .shortcut-btn { 
@@ -132,17 +124,16 @@
             }
             .shortcut-btn i { font-size: 20px; color: var(--primary-color); }
 
-            /* บีบตารางเรียนให้อยู่พอดีจอ (100%) ไม่ต้องเลื่อนแนวนอน */
             .schedule-grid-wrapper {
-                overflow-x: hidden; /* ปิดการเลื่อนแนวนอน */
+                overflow-x: hidden; 
             }
             .schedule-grid {
-                min-width: 100%; /* บังคับให้พอดีความกว้างหน้าจอ */
-                grid-template-columns: 35px repeat(12, 1fr); /* ลดขนาดคอลัมน์บอกวัน */
+                min-width: 100%; 
+                grid-template-columns: 35px repeat(12, 1fr); 
             }
             .grid-header { font-size: 7px; padding: 2px 0; }
             .grid-day-label { font-size: 9px; padding: 2px 0; }
-            .grid-day-label span:last-child { display: none; } /* ซ่อนวันที่ด้านล่างวันจันทร์-ศุกร์ เพื่อประหยัดพื้นที่ */
+            .grid-day-label span:last-child { display: none; } 
             .grid-event-container { min-height: 40px; }
             .grid-event { font-size: 7.5px; padding: 1px; border-radius: 3px; line-height: 1.1; }
             .grid-event div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
@@ -369,16 +360,21 @@
             return new Date(d.setDate(diff));
         }
 
+        // ฟังก์ชันแปลงวันที่ให้รองรับหลายรูปแบบ
         function convertToValidDateString(dateStr, timeStr) {
             if(!dateStr || !timeStr) return null;
-            let formattedDate = dateStr.trim();
+            let formattedDate = String(dateStr).trim();
             if (formattedDate.includes('/')) {
                 let parts = formattedDate.split('/');
                 if(parts.length === 3) formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
             }
-            let formattedTime = timeStr.trim();
-            if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
-            return `${formattedDate}T${formattedTime}:00`;
+            let formattedTime = String(timeStr).trim();
+            if(formattedTime.length === 4) formattedTime = '0' + formattedTime; // แก้ไขกรณีพิมพ์ 9:00 แทน 09:00
+            
+            // กรณีลืมใส่ :00 นาที
+            if(!formattedTime.includes(':')) formattedTime = formattedTime + ":00";
+            
+            return `${formattedDate}T${formattedTime}`;
         }
 
         function parseThaiDateStr(str) {
@@ -408,12 +404,13 @@
                 
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                     results.data.forEach(row => {
-                        const title = row.Title || row.title || "";
-                        const dateVal = row.Date || row.date || "";
-                        const startTimeVal = row.StartTime || row.starttime || "";
-                        const endTimeVal = row.EndTime || row.endtime || "";
-                        const room = row.Room || row.room || "";
-                        const color = row.Color || row.color || "#0284c7";
+                        // รองรับหัวคอลัมน์หลายรูปแบบ (แก้ปัญหาหาชื่อคอลัมน์ไม่เจอ)
+                        const title = row.Title || row.title || row['หัวข้อ'] || row['ชื่อวิชา'] || "";
+                        const dateVal = row.Date || row.date || row['วันที่'] || "";
+                        const startTimeVal = row.StartTime || row.starttime || row['เวลาเริ่ม'] || "";
+                        const endTimeVal = row.EndTime || row.endtime || row['เวลาเลิก'] || "";
+                        const room = row.Room || row.room || row['ห้องเรียน'] || row['ห้อง'] || "";
+                        const color = row.Color || row.color || row['สี'] || "#0284c7";
                         
                         if (title && dateVal && startTimeVal) {
                             let startIso = convertToValidDateString(dateVal, startTimeVal);
@@ -426,7 +423,7 @@
                                     title: title,
                                     start: startObj,
                                     end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
-                                    room: String(room).trim(),
+                                    room: String(room).replace("ห้องเรียน ", "").replace("ห้องปฏิบัติการ ", "").trim(), // ดักตัดคำว่าห้องเรียนทิ้ง
                                     color: color,
                                     isBooking: false
                                 });
@@ -501,7 +498,11 @@
             weekEnd.setDate(weekEnd.getDate() + 7);
             
             let filtered = allClassEvents.filter(ev => ev.start >= currentWeekStart && ev.start < weekEnd);
-            if (selectedRoom !== 'all') filtered = filtered.filter(ev => ev.room === selectedRoom);
+            
+            // กรองให้ตรงเป๊ะ ป้องกันเช่น เลือก 301 แต่โชว์ 3011
+            if (selectedRoom !== 'all') {
+                filtered = filtered.filter(ev => String(ev.room) === String(selectedRoom));
+            }
             
             renderClassGrid(filtered);
             
