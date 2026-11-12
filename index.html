@@ -215,7 +215,7 @@
                                 <option value="204">ห้องปฏิบัติการ 204</option>
                                 <option value="205">ห้องปฏิบัติการ 205</option>
                                 <option value="208">ห้องปฏิบัติการ 208</option>
-                                <option value="304" selected>ห้องประชุม 304</option>
+                                <option value="304">ห้องประชุม 304</option>
                                 <option value="307">ห้องปฏิบัติการ 307</option>
                                 <option value="807">ห้องปฏิบัติการ 807</option>
                                 <option value="808">ห้องปฏิบัติการ 808</option>
@@ -318,25 +318,6 @@
             return `${url}${separator}t=${new Date().getTime()}`;
         }
 
-        // ================= ฟังก์ชันแปลงวันที่ดักจับรูปแบบที่ผิดเพี้ยน =================
-        function parseApiDate(dateStr) {
-            if (!dateStr) return null;
-            let d = new Date(dateStr);
-            if (!isNaN(d.getTime())) return d;
-            
-            // กรณี Apps Script ส่งวันที่มีข้อความ Timezone ติดมาด้วย (เช่น "Thu Nov 12 ... GMT+0700 T 09:00")
-            if (dateStr.includes('T')) {
-                let parts = dateStr.split('T');
-                let baseDate = new Date(parts[0]);
-                if (!isNaN(baseDate.getTime())) {
-                    let timeParts = (parts[1] || '00:00').split(':');
-                    baseDate.setHours(parseInt(timeParts[0]||0), parseInt(timeParts[1]||0), 0);
-                    return baseDate;
-                }
-            }
-            return parseThaiDateStr(dateStr);
-        }
-
         // ================= Meeting Modal Logic =================
         function openMeetingModal() {
             document.getElementById('meetingModal').style.display = 'flex';
@@ -378,6 +359,11 @@
                 closeMeetingModal();
                 btn.innerText = "ยืนยันการจอง";
                 btn.disabled = false;
+                
+                // รีโหลดตารางเผื่อแอดมินอนุมัติไว
+                setTimeout(() => {
+                    initClassSchedule();
+                }, 2000);
             })
             .catch(err => {
                 alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
@@ -387,6 +373,295 @@
         }
         // =======================================================
 
+        // ฟังก์ชันดักจับวันที่แปลกๆ 
+        function parseApiDate(dateStr) {
+            if (!dateStr) return null;
+            let d = new Date(dateStr);
+            if (!isNaN(d.getTime())) return d;
+            
+            if (dateStr.includes('T')) {
+                let parts = dateStr.split('T');
+                let baseDate = new Date(parts[0]);
+                if (!isNaN(baseDate.getTime())) {
+                    let timeParts = (parts[1] || '00:00').split(':');
+                    baseDate.setHours(parseInt(timeParts[0]||0), parseInt(timeParts[1]||0), 0);
+                    return baseDate;
+                }
+            }
+            return parseThaiDateStr(dateStr);
+        }
+
+        function parseThaiDateStr(str) {
+            if (!str) return null;
+            if (str.includes('T')) return new Date(str);
+            if (str.includes(' เวลา ')) {
+                let parts = str.split(' เวลา ');
+                let dParts = parts[0].split('-');
+                let tParts = parts[1].replace(' น.', '').split(':');
+                if (dParts.length === 3 && tParts.length >= 2) {
+                    return new Date(dParts[0], dParts[1] - 1, dParts[2], tParts[0], tParts[1]);
+                }
+            }
+            return new Date(str);
+        }
+
+        function convertToValidDateString(dateStr, timeStr) {
+            if(!dateStr || !timeStr) return null;
+            let formattedDate = dateStr.trim();
+            if (formattedDate.includes('/')) {
+                let parts = formattedDate.split('/');
+                if(parts.length === 3) formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            }
+            let formattedTime = timeStr.trim();
+            if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
+            return `${formattedDate}T${formattedTime}:00`;
+        }
+
+        function getMonday(d) {
+            d = new Date(d);
+            var day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6:1);
+            return new Date(d.setDate(diff));
+        }
+
+        // =======================================================
+        let allClassEvents = [];
+        let currentWeekStart = getMonday(new Date()); 
+
+        function initClassSchedule() {
+            const gridEl = document.getElementById('class-schedule-grid');
+            gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียนและคิวจองห้อง...</div>';
+
+            // ดึงค่า Dropdown เดิมที่บันทึกไว้ ถ้ารีเฟรชจะได้ไม่กลับไปหน้าแรก
+            const savedFilter = localStorage.getItem('selectedRoomFilter');
+            if (savedFilter) {
+                document.getElementById('room-filter').value = savedFilter;
+            }
+
+            const fetchPromises = [
+                fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()).catch(() => ""),
+                fetch(ROOM_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
+                fetch(EQUIP_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
+                (MEETING_API_URL && MEETING_API_URL !== 'ใส่_URL_WEB_APP_ห้องประชุมที่นี่') 
+                    ? fetch(MEETING_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })) 
+                    : Promise.resolve({ success: false }) 
+            ];
+
+            // ใช้ allSettled เพื่อรอให้ทุกอันโหลดเสร็จ ถึงแม้อันไหนจะพังก็ไม่ทำให้หน้าเว็บค้าง
+            Promise.allSettled(fetchPromises).then((results) => {
+                allClassEvents = [];
+                
+                // 1. ตารางสอน CSV (ผลลัพธ์แรก)
+                if (results[0].status === "fulfilled" && results[0].value) {
+                    Papa.parse(results[0].value, { 
+                        header: true, 
+                        skipEmptyLines: true, 
+                        complete: function(parsed) {
+                            parsed.data.forEach(row => {
+                                const title = row.Title || row.title || "";
+                                const dateVal = row.Date || row.date || "";
+                                const startTimeVal = row.StartTime || row.starttime || "";
+                                const endTimeVal = row.EndTime || row.endtime || "";
+                                const room = row.Room || row.room || "";
+                                const color = row.Color || row.color || "#0284c7";
+                                
+                                if (title && dateVal && startTimeVal) {
+                                    let startIso = convertToValidDateString(dateVal, startTimeVal);
+                                    let endIso = convertToValidDateString(dateVal, endTimeVal);
+                                    let startObj = startIso ? new Date(startIso) : null;
+                                    let endObj = endIso ? new Date(endIso) : null;
+
+                                    if (startObj && !isNaN(startObj.getTime())) {
+                                        allClassEvents.push({
+                                            title: title,
+                                            start: startObj,
+                                            end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                                            room: String(room).trim(),
+                                            color: color,
+                                            isBooking: false
+                                        });
+                                    }
+                                }
+                            });
+                            
+                            // ประมวลผล API หลังจาก CSV เสร็จ (เพื่อให้ Data ครบถ้วน)
+                            processApiResults(results);
+                        }
+                    });
+                } else {
+                    processApiResults(results);
+                }
+            });
+        }
+
+        // ฟังก์ชันแยกสำหรับจัดการ API
+        function processApiResults(results) {
+            // 2. API ขอใช้ห้องเรียน
+            const roomApiData = results[1].status === "fulfilled" ? results[1].value : null;
+            if (roomApiData && roomApiData.success && roomApiData.events) {
+                roomApiData.events.forEach(ev => {
+                    let startObj = parseApiDate(ev.from);
+                    let endObj = parseApiDate(ev.to);
+
+                    if (startObj && !isNaN(startObj.getTime())) {
+                        let shortRoom = String(ev.room).replace("ห้องเรียน ", "").replace("ห้องปฏิบัติการ ", "").trim();
+                        let purposeTitle = ev.purpose || "จองห้อง";
+                        
+                        allClassEvents.push({
+                            title: `${purposeTitle} (${ev.name})`, 
+                            start: startObj,
+                            end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                            room: shortRoom,
+                            color: "#f59e0b", 
+                            isBooking: true
+                        });
+                    }
+                });
+            }
+
+            // 3. API ขอใช้ห้องปฏิบัติการ/เครื่องมือ
+            const equipApiData = results[2].status === "fulfilled" ? results[2].value : null;
+            if (equipApiData && equipApiData.success && equipApiData.events) {
+                equipApiData.events.forEach(ev => {
+                    if (ev.type !== "lab") return; 
+                    let startObj = parseApiDate(ev.from);
+                    let endObj = parseApiDate(ev.to);
+
+                    if (startObj && !isNaN(startObj.getTime())) {
+                        let shortRoom = String(ev.room).replace("ห้องแลป ", "").replace("ห้องปฏิบัติการ ", "").replace("ห้องประชุม ", "").trim();
+                        let purposeTitle = ev.purpose || "จองห้อง";
+                        
+                        allClassEvents.push({
+                            title: `${purposeTitle} (${ev.name})`, 
+                            start: startObj,
+                            end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                            room: shortRoom,
+                            color: "#9b59b6", 
+                            isBooking: true
+                        });
+                    }
+                });
+            }
+
+            // 4. API จองห้องประชุมใหม่
+            const meetingApiData = results[3].status === "fulfilled" ? results[3].value : null;
+            if (meetingApiData && meetingApiData.success && meetingApiData.events) {
+                meetingApiData.events.forEach(ev => {
+                    let startObj = parseApiDate(ev.from);
+                    let endObj = parseApiDate(ev.to);
+                    
+                    if (startObj && !isNaN(startObj.getTime())) {
+                        // ปรับชื่อห้องให้ตรงกับ value ใน Dropdown (304)
+                        let shortRoom = String(ev.room).replace("ห้องประชุม ", "").trim();
+                        let purposeTitle = ev.purpose || "จองห้องประชุม";
+                        
+                        allClassEvents.push({
+                            title: `${purposeTitle} (${ev.name})`, 
+                            start: startObj,
+                            end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                            room: shortRoom, 
+                            color: "#10b981", // สีเขียวมินต์
+                            isBooking: true
+                        });
+                    }
+                });
+            }
+            
+            // วาดตารางหลังจากรวมข้อมูลเสร็จ
+            applyClassFilters();
+        }
+
+        // =======================================================
+        // ฟังก์ชันเมื่อเปลี่ยน Dropdown
+        function applyClassFilters() {
+            const selectedRoom = document.getElementById('room-filter').value;
+            
+            // 💾 บันทึกค่าลง Local Storage ให้จำค่าไว้ถ้ารีเฟรช
+            localStorage.setItem('selectedRoomFilter', selectedRoom);
+            
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            
+            let filtered = allClassEvents.filter(ev => ev.start >= currentWeekStart && ev.start < weekEnd);
+            
+            if (selectedRoom !== 'all') {
+                filtered = filtered.filter(ev => ev.room === selectedRoom);
+            }
+            
+            renderClassGrid(filtered);
+            
+            const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            const endOfWeek = new Date(currentWeekStart);
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+            document.getElementById('schedule-week-label').innerText = `${currentWeekStart.getDate()} ${thaiMonths[currentWeekStart.getMonth()]} - ${endOfWeek.getDate()} ${thaiMonths[endOfWeek.getMonth()]} ${endOfWeek.getFullYear() + 543}`;
+        }
+
+        function changeWeek(offset) {
+            if(offset === 0) currentWeekStart = getMonday(new Date());
+            else currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
+            applyClassFilters();
+        }
+
+        function renderClassGrid(events) {
+            const gridEl = document.getElementById('class-schedule-grid');
+            let html = `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
+            
+            for(let h=8; h<20; h++) {
+                let colIndex = h - 8 + 2; 
+                html += `<div class="grid-header" style="grid-column: ${colIndex}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
+            }
+            
+            const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
+            for(let d=0; d<7; d++) {
+                let row = d + 2; 
+                let targetDate = new Date(currentWeekStart);
+                targetDate.setDate(targetDate.getDate() + d);
+                html += `<div class="grid-day-label" style="grid-column: 1; grid-row: ${row};">
+                            <span>${days[d]}</span>
+                            <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
+                         </div>`;
+                
+                html += `<div class="grid-event-container" style="grid-column: 2 / 14; grid-row: ${row};">`;
+                
+                for(let col = 0; col < 12; col++) {
+                    html += `<div class="grid-cell-hour" style="position: absolute; left: ${(col/12)*100}%; width: ${(1/12)*100}%; height: 100%;"></div>`;
+                }
+                
+                let dayEvents = events.filter(ev => {
+                    let mappedDay = ev.start.getDay() === 0 ? 6 : ev.start.getDay() - 1;
+                    return mappedDay === d;
+                });
+
+                dayEvents.forEach(ev => {
+                    let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
+                    let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
+                    
+                    let totalWorkingMinutes = 12 * 60; 
+                    let startMinutes = (sHour - 8) * 60 + sMin;
+                    let endMinutes = (eHour - 8) * 60 + eMin;
+                    
+                    if(startMinutes < 0) startMinutes = 0;
+                    if(endMinutes > totalWorkingMinutes) endMinutes = totalWorkingMinutes;
+                    if(startMinutes >= totalWorkingMinutes || endMinutes <= 0) return;
+                    
+                    let leftPercent = (startMinutes / totalWorkingMinutes) * 100;
+                    let widthPercent = ((endMinutes - startMinutes) / totalWorkingMinutes) * 100;
+                    const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
+                    
+                    let iconStr = ev.isBooking ? `<i class="fa-solid fa-address-card" style="margin-right:2px;"></i> ` : "";
+
+                    html += `
+                        <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};" title="${ev.title}\nเวลา: ${timeStr} ห้อง: ${ev.room}">
+                            <div style="font-weight: 600; width: 100%;">${iconStr}${ev.title}</div>
+                            <div style="opacity: 0.9; width: 100%;">เวลา ${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
+                        </div>`;
+                });
+                html += `</div>`; 
+            }
+            gridEl.innerHTML = html;
+        }
+
+        // =======================================================
+        // โหลดข้อมูลประกาศและปฏิทิน
         function loadAnnouncements() {
             fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
@@ -467,237 +742,6 @@
                 }
             });
             if (!hasEvent) listEl.innerHTML = '<div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">ไม่มีกิจกรรมในเดือนนี้</div>';
-        }
-
-        let allClassEvents = [];
-        let currentWeekStart = getMonday(new Date()); 
-        
-        function getMonday(d) {
-            d = new Date(d);
-            var day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6:1);
-            return new Date(d.setDate(diff));
-        }
-
-        function convertToValidDateString(dateStr, timeStr) {
-            if(!dateStr || !timeStr) return null;
-            let formattedDate = dateStr.trim();
-            if (formattedDate.includes('/')) {
-                let parts = formattedDate.split('/');
-                if(parts.length === 3) formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            }
-            let formattedTime = timeStr.trim();
-            if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
-            return `${formattedDate}T${formattedTime}:00`;
-        }
-
-        function parseThaiDateStr(str) {
-            if (!str) return null;
-            if (str.includes('T')) return new Date(str);
-            if (str.includes(' เวลา ')) {
-                let parts = str.split(' เวลา ');
-                let dParts = parts[0].split('-');
-                let tParts = parts[1].replace(' น.', '').split(':');
-                if (dParts.length === 3 && tParts.length >= 2) {
-                    return new Date(dParts[0], dParts[1] - 1, dParts[2], tParts[0], tParts[1]);
-                }
-            }
-            return new Date(str);
-        }
-
-        function initClassSchedule() {
-            const gridEl = document.getElementById('class-schedule-grid');
-            gridEl.innerHTML = '<div style="grid-column: 1 / 14; padding: 30px; text-align: center; color: #64748b; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดตารางเรียนและคิวจองห้อง...</div>';
-
-            Promise.all([
-                fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()),
-                fetch(ROOM_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
-                fetch(EQUIP_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
-                (MEETING_API_URL && MEETING_API_URL !== 'ใส่_URL_WEB_APP_ห้องประชุมที่นี่') 
-                    ? fetch(MEETING_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })) 
-                    : Promise.resolve({ success: false }) 
-            ]).then(([csvText, roomApiData, equipApiData, meetingApiData]) => {
-                allClassEvents = [];
-                
-                Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
-                    results.data.forEach(row => {
-                        const title = row.Title || row.title || "";
-                        const dateVal = row.Date || row.date || "";
-                        const startTimeVal = row.StartTime || row.starttime || "";
-                        const endTimeVal = row.EndTime || row.endtime || "";
-                        const room = row.Room || row.room || "";
-                        const color = row.Color || row.color || "#0284c7";
-                        
-                        if (title && dateVal && startTimeVal) {
-                            let startIso = convertToValidDateString(dateVal, startTimeVal);
-                            let endIso = convertToValidDateString(dateVal, endTimeVal);
-                            let startObj = startIso ? new Date(startIso) : null;
-                            let endObj = endIso ? new Date(endIso) : null;
-
-                            if (startObj && !isNaN(startObj.getTime())) {
-                                allClassEvents.push({
-                                    title: title,
-                                    start: startObj,
-                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
-                                    room: String(room).trim(),
-                                    color: color,
-                                    isBooking: false
-                                });
-                            }
-                        }
-                    });
-
-                    // API จองห้องเรียน
-                    if (roomApiData && roomApiData.success && roomApiData.events) {
-                        roomApiData.events.forEach(ev => {
-                            let startObj = parseApiDate(ev.from);
-                            let endObj = parseApiDate(ev.to);
-
-                            if (startObj && !isNaN(startObj.getTime())) {
-                                let shortRoom = String(ev.room).replace("ห้องเรียน ", "").replace("ห้องปฏิบัติการ ", "").trim();
-                                let purposeTitle = ev.purpose || "จองห้อง";
-                                
-                                allClassEvents.push({
-                                    title: `${purposeTitle} (${ev.name})`, 
-                                    start: startObj,
-                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
-                                    room: shortRoom,
-                                    color: "#f59e0b", 
-                                    isBooking: true
-                                });
-                            }
-                        });
-                    }
-
-                    // API เบิกอุปกรณ์/แลป
-                    if (equipApiData && equipApiData.success && equipApiData.events) {
-                        equipApiData.events.forEach(ev => {
-                            if (ev.type !== "lab") return; 
-                            let startObj = parseApiDate(ev.from);
-                            let endObj = parseApiDate(ev.to);
-
-                            if (startObj && !isNaN(startObj.getTime())) {
-                                let shortRoom = String(ev.room).replace("ห้องแลป ", "").replace("ห้องประชุม ", "").trim();
-                                let purposeTitle = ev.purpose || "จองห้อง";
-                                
-                                allClassEvents.push({
-                                    title: `${purposeTitle} (${ev.name})`, 
-                                    start: startObj,
-                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
-                                    room: shortRoom,
-                                    color: "#9b59b6", 
-                                    isBooking: true
-                                });
-                            }
-                        });
-                    }
-                    
-                    // API ระบบจองห้องประชุม 
-                    if (meetingApiData && meetingApiData.success && meetingApiData.events) {
-                        meetingApiData.events.forEach(ev => {
-                            // ใช้ parseApiDate แก้ปัญหาจาก Google Sheets ที่ส่งวันผิดรูปแบบ
-                            let startObj = parseApiDate(ev.from);
-                            let endObj = parseApiDate(ev.to);
-                            
-                            if (startObj && !isNaN(startObj.getTime())) {
-                                let shortRoom = String(ev.room).replace("ห้องประชุม ", "").trim();
-                                let purposeTitle = ev.purpose || "จองห้องประชุม";
-                                
-                                allClassEvents.push({
-                                    title: `${purposeTitle} (${ev.name})`, 
-                                    start: startObj,
-                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
-                                    room: shortRoom, // ให้ตรงกับ option value ใน Dropdown
-                                    color: "#10b981", 
-                                    isBooking: true
-                                });
-                            }
-                        });
-                    }
-                    
-                    applyClassFilters();
-                }});
-            });
-        }
-
-        function changeWeek(offset) {
-            if(offset === 0) currentWeekStart = getMonday(new Date());
-            else currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
-            applyClassFilters();
-        }
-
-        function applyClassFilters() {
-            const selectedRoom = document.getElementById('room-filter').value;
-            const weekEnd = new Date(currentWeekStart);
-            weekEnd.setDate(weekEnd.getDate() + 7);
-            
-            let filtered = allClassEvents.filter(ev => ev.start >= currentWeekStart && ev.start < weekEnd);
-            if (selectedRoom !== 'all') filtered = filtered.filter(ev => ev.room === selectedRoom);
-            
-            renderClassGrid(filtered);
-            
-            const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            const endOfWeek = new Date(currentWeekStart);
-            endOfWeek.setDate(endOfWeek.getDate() + 6);
-            document.getElementById('schedule-week-label').innerText = `${currentWeekStart.getDate()} ${thaiMonths[currentWeekStart.getMonth()]} - ${endOfWeek.getDate()} ${thaiMonths[endOfWeek.getMonth()]} ${endOfWeek.getFullYear() + 543}`;
-        }
-
-        function renderClassGrid(events) {
-            const gridEl = document.getElementById('class-schedule-grid');
-            let html = `<div class="grid-header" style="grid-column: 1; grid-row: 1;">วัน/เวลา</div>`;
-            
-            for(let h=8; h<20; h++) {
-                let colIndex = h - 8 + 2; 
-                html += `<div class="grid-header" style="grid-column: ${colIndex}; grid-row: 1;">${h.toString().padStart(2,'0')}:00</div>`;
-            }
-            
-            const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
-            for(let d=0; d<7; d++) {
-                let row = d + 2; 
-                let targetDate = new Date(currentWeekStart);
-                targetDate.setDate(targetDate.getDate() + d);
-                html += `<div class="grid-day-label" style="grid-column: 1; grid-row: ${row};">
-                            <span>${days[d]}</span>
-                            <span style="font-size: 10px; color: #64748b; font-weight: normal;">${targetDate.getDate()}/${targetDate.getMonth()+1}</span>
-                         </div>`;
-                
-                html += `<div class="grid-event-container" style="grid-column: 2 / 14; grid-row: ${row};">`;
-                
-                for(let col = 0; col < 12; col++) {
-                    html += `<div class="grid-cell-hour" style="position: absolute; left: ${(col/12)*100}%; width: ${(1/12)*100}%; height: 100%;"></div>`;
-                }
-                
-                let dayEvents = events.filter(ev => {
-                    let mappedDay = ev.start.getDay() === 0 ? 6 : ev.start.getDay() - 1;
-                    return mappedDay === d;
-                });
-
-                dayEvents.forEach(ev => {
-                    let sHour = ev.start.getHours(), sMin = ev.start.getMinutes();
-                    let eHour = ev.end.getHours(), eMin = ev.end.getMinutes();
-                    
-                    let totalWorkingMinutes = 12 * 60; 
-                    let startMinutes = (sHour - 8) * 60 + sMin;
-                    let endMinutes = (eHour - 8) * 60 + eMin;
-                    
-                    if(startMinutes < 0) startMinutes = 0;
-                    if(endMinutes > totalWorkingMinutes) endMinutes = totalWorkingMinutes;
-                    if(startMinutes >= totalWorkingMinutes || endMinutes <= 0) return;
-                    
-                    let leftPercent = (startMinutes / totalWorkingMinutes) * 100;
-                    let widthPercent = ((endMinutes - startMinutes) / totalWorkingMinutes) * 100;
-                    const timeStr = `${sHour.toString().padStart(2,'0')}:${sMin.toString().padStart(2,'0')}-${eHour.toString().padStart(2,'0')}:${eMin.toString().padStart(2,'0')}`;
-                    
-                    let iconStr = ev.isBooking ? `<i class="fa-solid fa-address-card" style="margin-right:2px;"></i> ` : "";
-
-                    html += `
-                        <div class="grid-event" style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${ev.color};" title="${ev.title}\nเวลา: ${timeStr} ห้อง: ${ev.room}">
-                            <div style="font-weight: 600; width: 100%;">${iconStr}${ev.title}</div>
-                            <div style="opacity: 0.9; width: 100%;">เวลา ${timeStr} ${ev.room ? 'ห้อง ' + ev.room : ''}</div>
-                        </div>`;
-                });
-                html += `</div>`; 
-            }
-            gridEl.innerHTML = html;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
