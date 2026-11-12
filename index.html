@@ -28,6 +28,7 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         
+        /* เพิ่มคำสั่งป้องกัน Android ขยายฟอนต์เอง (-webkit-text-size-adjust) */
         body { 
             background-color: var(--bg-light); 
             color: var(--text-dark); 
@@ -48,7 +49,7 @@
         .nav-menu::-webkit-scrollbar { width: 4px; }
         .nav-menu::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         
-        .nav-item { display: flex; align-items: center; padding: 12px 18px; color: var(--sidebar-text); text-decoration: none; font-size: 14px; font-weight: 400; transition: all 0.25s ease; border-radius: 10px; cursor: pointer; }
+        .nav-item { display: flex; align-items: center; padding: 12px 18px; color: var(--sidebar-text); text-decoration: none; font-size: 14px; font-weight: 400; transition: all 0.25s ease; border-radius: 10px; }
         .nav-item i { width: 24px; font-size: 16px; margin-right: 12px; text-align: center; transition: transform 0.2s; }
         .nav-item:hover { background-color: var(--sidebar-hover); color: white; }
         .nav-item:hover i { transform: scale(1.1); }
@@ -66,11 +67,14 @@
         .page-title { font-size: 22px; color: #0f172a; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
         .page-title::before { content: ''; display: inline-block; width: 6px; height: 22px; background-color: var(--primary-color); border-radius: 3px; }
 
+        /* Modern Stack Layout */
         .content-stack { display: flex; flex-direction: column; gap: 25px; }
+
         .card { background-color: var(--card-bg); border-radius: var(--radius-box); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); overflow: hidden; transition: transform 0.2s; }
         .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; }
         .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
+        /* Announcements Style */
         .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
         .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
         .announcement-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); border-radius: 4px 0 0 4px; }
@@ -79,6 +83,7 @@
         .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
         .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
         
+        /* Calendar & Schedule Base Styles */
         .card-body { padding: 25px; }
         .fc { font-family: 'Prompt', sans-serif; font-size: 0.8em; }
         .fc .fc-toolbar-title { font-size: 15px !important; font-weight: 600; color: #0f172a; }
@@ -106,31 +111,16 @@
         .grid-event { position: absolute; top: 4px; bottom: 4px; background: var(--primary-color); color: white; border-radius: 6px; padding: 4px 8px; font-size: 11px; line-height: 1.3; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.12); cursor: pointer; border: none; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: transform 0.15s ease; }
         .grid-event:hover { transform: scale(1.02); z-index: 20; }
         
+        /* Mobile Shortcuts Hide Desktop */
         .mobile-shortcuts { display: none; }
 
-        /* Modal Styles สำหรับฟอร์มจองห้อง */
-        .modal-wrapper { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        .modal-wrapper.active { display: flex; }
-        .modal-box { background: white; width: 90%; max-width: 500px; border-radius: 20px; padding: 30px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: modalFadeIn 0.3s ease; }
-        @keyframes modalFadeIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .btn-close-modal { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer; transition: 0.2s; }
-        .btn-close-modal:hover { color: #ef4444; }
-        .modal-title { font-size: 18px; font-weight: 600; color: #0f172a; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Prompt', sans-serif; font-size: 14px; color: #1e293b; background: #f8fafc; transition: 0.2s; }
-        .form-control:focus { background: white; border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn-submit { width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .btn-submit:hover { background: var(--primary-hover); }
-        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
-
+        /* 🌟 ปรับจุดตัด Breakpoint เป็น 992px เพื่อดักโทรศัพท์รุ่นใหม่/แอนดรอยด์หน้าจอใหญ่ที่โดนซูมออก 0.5 */
         @media (max-width: 992px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.active { transform: translateX(0); }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
-            .page-title { display: none; } 
+            .page-title { display: none; } /* ซ่อนหัวข้อในโทรศัพท์ */
 
             .mobile-shortcuts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
             .shortcut-btn { 
@@ -138,15 +128,21 @@
                 display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
                 gap: 8px; text-decoration: none; color: var(--text-dark); font-size: 11px; 
                 box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border-color); 
-                text-align: center; line-height: 1.2; cursor: pointer;
+                text-align: center; line-height: 1.2;
             }
             .shortcut-btn i { font-size: 20px; color: var(--primary-color); }
 
-            .schedule-grid-wrapper { overflow-x: hidden; }
-            .schedule-grid { min-width: 100%; grid-template-columns: 35px repeat(12, 1fr); }
+            /* บีบตารางเรียนให้อยู่พอดีจอ (100%) ไม่ต้องเลื่อนแนวนอน */
+            .schedule-grid-wrapper {
+                overflow-x: hidden; /* ปิดการเลื่อนแนวนอน */
+            }
+            .schedule-grid {
+                min-width: 100%; /* บังคับให้พอดีความกว้างหน้าจอ */
+                grid-template-columns: 35px repeat(12, 1fr); /* ลดขนาดคอลัมน์บอกวัน */
+            }
             .grid-header { font-size: 7px; padding: 2px 0; }
             .grid-day-label { font-size: 9px; padding: 2px 0; }
-            .grid-day-label span:last-child { display: none; } 
+            .grid-day-label span:last-child { display: none; } /* ซ่อนวันที่ด้านล่างวันจันทร์-ศุกร์ เพื่อประหยัดพื้นที่ */
             .grid-event-container { min-height: 40px; }
             .grid-event { font-size: 7.5px; padding: 1px; border-radius: 3px; line-height: 1.1; }
             .grid-event div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
@@ -170,18 +166,20 @@
             <a href="Maintenance.html" class="nav-item"><i class="fa-solid fa-wrench"></i> แจ้งซ่อมอุปกรณ์</a>
             <a href="staffs.html" class="nav-item"><i class="fa-solid fa-headset"></i> ติดต่อเจ้าหน้าที่</a>
             <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="nav-item"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
-            <a onclick="openMeetingModal()" class="nav-item"><i class="fa-solid fa-people-roof"></i> จองห้องประชุม</a>
+            <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="nav-item"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
         </nav>
     </aside>
 
     <main class="main-content">
         <header class="topbar">
+            <!-- ปุ่ม 3 ขีดสำหรับกดเปิด-ปิด เมนูด้านข้างบนมือถือ -->
             <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
         </header>
 
         <div class="dashboard-container">
             <h1 class="page-title">ระบบจัดการข้อมูลภาควิชา (Dashboard)</h1>
 
+            <!-- ปุ่มเมนูทางลัดสำหรับมือถือ (แสดงเฉพาะมือถือ) -->
             <div class="mobile-shortcuts">
                 <a href="knowledge.html" class="shortcut-btn"><i class="fa-solid fa-book-open"></i> คู่มืออุปกรณ์</a>
                 <a href="forms.html" class="shortcut-btn"><i class="fa-solid fa-file-signature"></i> แบบฟอร์ม</a>
@@ -190,10 +188,11 @@
                 <a href="Maintenance.html" class="shortcut-btn"><i class="fa-solid fa-wrench"></i> แจ้งซ่อม</a>
                 <a href="staffs.html" class="shortcut-btn"><i class="fa-solid fa-headset"></i> ติดต่อจนท.</a>
                 <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="shortcut-btn"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
-                <a onclick="openMeetingModal()" class="shortcut-btn"><i class="fa-solid fa-people-roof"></i> จองห้องประชุม</a>
+                <a href="https://engineer.rmutt.ac.th/pr/" target="_blank" class="shortcut-btn"><i class="fa-regular fa-newspaper"></i> ข่าวสาร</a>
             </div>
 
             <div class="content-stack">
+                <!-- ประกาศล่าสุด -->
                 <div class="card">
                     <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: #f59e0b;"></i> ประกาศล่าสุด</h3></div>
                     <div class="card-body">
@@ -201,6 +200,7 @@
                     </div>
                 </div>
 
+                <!-- ตารางเรียนและการใช้ห้อง (รวมข้อมูล API จองห้องเรียนด้วย) -->
                 <div class="card">
                     <div class="card-header">
                         <h3><i class="fa-solid fa-chalkboard-user" style="color: #0284c7;"></i> ตารางเรียนและการใช้ห้อง</h3>
@@ -228,9 +228,6 @@
                                 <option value="807">ห้องปฏิบัติการ 807</option>
                                 <option value="808">ห้องปฏิบัติการ 808</option>
                             </optgroup>
-                            <optgroup label="ส่วนกลาง">
-                                <option value="ห้องประชุม">ห้องประชุม</option>
-                            </optgroup>
                         </select>
                     </div>
                     <div class="card-body">
@@ -249,6 +246,7 @@
                     </div>
                 </div>
 
+                <!-- ปฏิทินกิจกรรมภาควิชา -->
                 <div class="card" id="activity-card">
                     <div class="card-header"><h3><i class="fa-regular fa-calendar-days" style="color: var(--primary-color);"></i> ปฏิทินกิจกรรมภาควิชา</h3></div>
                     <div class="card-body">
@@ -263,47 +261,15 @@
         </div>
     </main>
 
-    <!-- Modal Form: จองห้องประชุม -->
-    <div class="modal-wrapper" id="meetingModal">
-        <div class="modal-box">
-            <button class="btn-close-modal" onclick="closeMeetingModal()"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="modal-title"><i class="fa-solid fa-people-roof" style="color: var(--primary-color);"></i> แบบฟอร์มจองห้องประชุม</h3>
-            <form id="meetingForm" onsubmit="submitMeetingForm(event)">
-                <div class="form-group">
-                    <label>ชื่อ-สกุล</label>
-                    <input type="text" id="m_name" class="form-control" placeholder="ระบุชื่อ-สกุล ผู้จอง" required>
-                </div>
-                <div class="form-group">
-                    <label>เบอร์โทรศัพท์</label>
-                    <input type="tel" id="m_phone" class="form-control" placeholder="08xxxxxxxx" required>
-                </div>
-                <div class="form-group">
-                    <label>วันที่ต้องการจอง</label>
-                    <input type="date" id="m_date" class="form-control" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>เวลาเริ่มต้น</label>
-                        <input type="time" id="m_start" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>เวลาเสร็จสิ้น</label>
-                        <input type="time" id="m_end" class="form-control" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit" id="btn-submit-meeting">ยืนยันการจองห้อง</button>
-            </form>
-        </div>
-    </div>
-
     <script>
+        // Data URLs
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
         
+        // ⚠️ ต้องวาง URL ของ Web App ฝั่งขอใช้ห้องเรียน และ เครื่องมือ/ห้องปฏิบัติการ 
         const ROOM_API_URL = 'https://script.google.com/macros/s/AKfycbxI-BYg7BRcD_RmSwQ-HRcxmLhCwyiCsIIJSuOJLIUm_uL70s21KhfqnEWyU223eyHMuQ/exec';
         const EQUIP_API_URL = 'https://script.google.com/macros/s/AKfycbwvUSyfP5iuJg5LvFmNiMOLnHCz2VVahjRXmTLGY7V_KrIf8p8V7tBY24KOBwOeJUwZAA/exec'; 
-        const MEETING_API_URL = 'https://script.google.com/macros/s/AKfycbxCUKOeKOqTq2dUN7peHLvJdanUFCm38AijDgY_bvZ_gyGn1Yiy2Yf6UzhcXzyg7Us-vw/exec'; // ⚠️ ใส่ URL Web App ของคุณที่นี่
 
         function getNoCacheUrl(url) {
             if (!url) return "";
@@ -311,54 +277,6 @@
             return `${url}${separator}t=${new Date().getTime()}`;
         }
 
-        /* --- Modal Control --- */
-        function openMeetingModal() {
-            document.getElementById('meetingModal').classList.add('active');
-            if(document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
-        }
-        function closeMeetingModal() {
-            document.getElementById('meetingModal').classList.remove('active');
-        }
-
-        /* --- Submit Form --- */
-        function submitMeetingForm(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-submit-meeting');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่งคำจอง...';
-            btn.disabled = true;
-
-            const data = {
-                name: document.getElementById('m_name').value,
-                phone: document.getElementById('m_phone').value,
-                date: document.getElementById('m_date').value,
-                start: document.getElementById('m_start').value,
-                end: document.getElementById('m_end').value
-            };
-
-            fetch(MEETING_API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "book_meeting", data: data })
-            })
-            .then(res => res.json())
-            .then(res => {
-                if(res.success) {
-                    alert("✅ จองห้องประชุมสำเร็จเรียบร้อย\nข้อมูลถูกบันทึกลงระบบและส่งแจ้งเตือนให้แอดมินแล้ว กรุณารออนุมัติเพื่อแสดงผลบนตารางการใช้ห้อง");
-                    document.getElementById('meetingForm').reset();
-                    closeMeetingModal();
-                } else {
-                    alert("❌ เกิดข้อผิดพลาด: " + res.error);
-                }
-            })
-            .catch(err => {
-                alert("❌ เกิดข้อผิดพลาดในการเชื่อมต่อ (กรุณาตรวจการตั้งค่า Web App)");
-            })
-            .finally(() => {
-                btn.innerHTML = 'ยืนยันการจองห้อง';
-                btn.disabled = false;
-            });
-        }
-
-        /* --- Components --- */
         function loadAnnouncements() {
             fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
@@ -430,6 +348,7 @@
                     let dateStr = ev.start.split('T')[0];
                     if (ev.actualEnd && ev.actualEnd !== dateStr) dateStr += ` ถึง ${ev.actualEnd.split('T')[0]}`;
                     
+                    // ดึงสีจากการตั้งค่าใน Sheet มาใช้เป็นสีพื้นหลังการ์ด
                     listEl.innerHTML += `
                         <div style="padding: 12px 14px; background-color: ${ev.color}; color: #ffffff; border-radius: 8px; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                             <b style="font-weight: 600;">${ev.title}</b><br>
@@ -453,26 +372,13 @@
         function convertToValidDateString(dateStr, timeStr) {
             if(!dateStr || !timeStr) return null;
             let formattedDate = dateStr.trim();
-            let formattedTime = timeStr.trim();
-            
-            if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
-            if(formattedTime.length === 5) formattedTime = formattedTime + ':00';
-            
-            if (formattedDate.includes('-')) {
-                let parts = formattedDate.split('-');
-                if (parts.length === 3) {
-                    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}T${formattedTime}`;
-                }
-            } else if (formattedDate.includes('/')) {
+            if (formattedDate.includes('/')) {
                 let parts = formattedDate.split('/');
-                if(parts.length === 3) {
-                    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}T${formattedTime}`;
-                }
+                if(parts.length === 3) formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
             }
-            if (formattedDate.includes('T')) {
-                return formattedDate.split('T')[0] + 'T' + formattedTime;
-            }
-            return `${formattedDate}T${formattedTime}`;
+            let formattedTime = timeStr.trim();
+            if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
+            return `${formattedDate}T${formattedTime}:00`;
         }
 
         function parseThaiDateStr(str) {
@@ -496,9 +402,8 @@
             Promise.all([
                 fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()),
                 fetch(ROOM_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
-                fetch(EQUIP_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
-                fetch(MEETING_API_URL + "?action=meeting_calendar").then(res => res.json()).catch(() => ({ success: false }))
-            ]).then(([csvText, roomApiData, equipApiData, meetingApiData]) => {
+                fetch(EQUIP_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false }))
+            ]).then(([csvText, roomApiData, equipApiData]) => {
                 allClassEvents = [];
                 
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
@@ -518,7 +423,12 @@
 
                             if (startObj && !isNaN(startObj.getTime())) {
                                 allClassEvents.push({
-                                    title: title, start: startObj, end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000), room: String(room).trim(), color: color, isBooking: false
+                                    title: title,
+                                    start: startObj,
+                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                                    room: String(room).trim(),
+                                    color: color,
+                                    isBooking: false
                                 });
                             }
                         }
@@ -528,13 +438,21 @@
                         roomApiData.events.forEach(ev => {
                             let startObj = new Date(ev.from);
                             let endObj = new Date(ev.to);
+                            
                             if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
                             if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
 
                             if (startObj && !isNaN(startObj.getTime())) {
                                 let shortRoom = String(ev.room).replace("ห้องเรียน ", "").replace("ห้องปฏิบัติการ ", "").trim();
+                                let purposeTitle = ev.purpose || "จองห้อง";
+                                
                                 allClassEvents.push({
-                                    title: `${ev.purpose || "จองห้อง"} (${ev.name})`, start: startObj, end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000), room: shortRoom, color: "#f59e0b", isBooking: true
+                                    title: `${purposeTitle} (${ev.name})`, 
+                                    start: startObj,
+                                    end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
+                                    room: shortRoom,
+                                    color: "#f59e0b", 
+                                    isBooking: true
                                 });
                             }
                         });
@@ -543,34 +461,23 @@
                     if (equipApiData && equipApiData.success && equipApiData.events) {
                         equipApiData.events.forEach(ev => {
                             if (ev.type !== "lab") return; 
+                            
                             let startObj = new Date(ev.from);
                             let endObj = new Date(ev.to);
+                            
                             if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
                             if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
 
                             if (startObj && !isNaN(startObj.getTime())) {
                                 let shortRoom = String(ev.room).replace("ห้องแลป ", "").replace("ห้องประชุม ", "").trim();
+                                let purposeTitle = ev.purpose || "จองห้อง";
+                                
                                 allClassEvents.push({
-                                    title: `${ev.purpose || "จองห้อง"} (${ev.name})`, start: startObj, end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000), room: shortRoom, color: "#9b59b6", isBooking: true
-                                });
-                            }
-                        });
-                    }
-
-                    if (meetingApiData && meetingApiData.success && meetingApiData.events) {
-                        meetingApiData.events.forEach(ev => {
-                            let startIso = convertToValidDateString(ev.date, ev.starttime);
-                            let endIso = convertToValidDateString(ev.date, ev.endtime);
-                            let startObj = startIso ? new Date(startIso) : null;
-                            let endObj = endIso ? new Date(endIso) : null;
-                            
-                            if (startObj && !isNaN(startObj.getTime())) {
-                                allClassEvents.push({
-                                    title: `ประชุม: ${ev.title}`, 
+                                    title: `${purposeTitle} (${ev.name})`, 
                                     start: startObj,
                                     end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
-                                    room: ev.room || "ห้องประชุม",
-                                    color: ev.color || "#8b5cf6",
+                                    room: shortRoom,
+                                    color: "#9b59b6", 
                                     isBooking: true
                                 });
                             }
