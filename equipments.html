@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>ระบบบริการเบิก-ยืมคืนอุปกรณ์และห้องปฏิบัติการ</title>
+  <title>ระบบบริการเบิก-ยืมคืนอุปกรณ์</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -105,7 +105,7 @@
 
   <div class="container">
     <div class="header">
-      <h1><i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i> บริการเบิกอุปกรณ์และจองห้องปฏิบัติการ</h1>
+      <h1><i class="fa-solid fa-boxes-stacked" style="color: #e67e22;"></i> บริการเบิกอุปกรณ์และจองเครื่องมือ</h1>
       <a href="index.html" class="back-btn"><i class="fa-solid fa-message"></i> กลับไปหน้าหลัก</a>
     </div>
 
@@ -133,15 +133,6 @@
         <div class="file-info">
           <i class="fa-solid fa-microscope action-icon icon-tool"></i>
           <div><div class="file-name">ขอใช้เครื่องมือ-ครุภัณฑ์ (TOOL)</div><span class="file-tag">แบบฟอร์มขอใช้เครื่องมือใหญ่และเครื่องมือวิเคราะห์</span></div>
-        </div>
-        <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
-      </div>
-
-      <!-- 4. ขอใช้ห้องปฏิบัติการ -->
-      <div class="file-card" onclick="openModal('labModal')">
-        <div class="file-info">
-          <i class="fa-solid fa-flask action-icon icon-lab"></i>
-          <div><div class="file-name">ขอใช้ห้องปฏิบัติการ (LAB)</div><span class="file-tag">แบบฟอร์มจองห้องห้องปฏิบัติการ</span></div>
         </div>
         <i class="fa-solid fa-chevron-right" style="color: #cbd5e1;"></i>
       </div>
@@ -292,31 +283,6 @@
         <button type="submit" id="btnSubmitTool" class="btn-main" style="background-color: #3498db;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอใช้เครื่องมือ</button>
       </form>
       <div id="toolSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_TOOL" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
-    </div>
-  </div>
-
-  <!-- ================= 3. Popup ขอใช้ห้องปฏิบัติการ ================= -->
-  <div class="modal-overlay" id="labModal">
-    <div class="modal-box">
-      <div class="modal-header"><h3>แบบฟอร์มขอใช้ห้องปฏิบัติการ</h3><button class="close-modal" onclick="closeModal('labModal')"><i class="fa-solid fa-xmark"></i></button></div>
-      <form id="labForm" onsubmit="submitLabForm(event)">
-        <div class="form-group"><label>ชื่อ-สกุล *</label><input type="text" id="l_name" required></div>
-        <div class="form-group"><label>สถานะผู้แจ้ง *</label><select id="l_userType" onchange="toggleUserFields('l')" required><option value="">-- เลือกสถานะ --</option><option value="นักศึกษา ป.ตรี">นักศึกษา ป.ตรี</option><option value="นักศึกษา ป.โท">นักศึกษา ป.โท</option><option value="นักศึกษา ป.เอก">นักศึกษา ป.เอก</option><option value="ผู้ช่วยนักวิจัย">ผู้ช่วยนักวิจัย</option><option value="เจ้าหน้าที่">เจ้าหน้าที่</option><option value="อาจารย์">อาจารย์</option><option value="อื่นๆ">อื่นๆ</option></select></div>
-        <div id="l_student_fields" class="hidden" style="display: flex; gap: 10px; flex-wrap: wrap;"><div class="form-group" style="flex: 1; min-width: 140px;"><label>รหัสนักศึกษา</label><input type="text" id="l_studentId"></div><div class="form-group" style="width: 80px;"><label>ชั้นปีที่</label><select id="l_year"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div><div class="form-group" style="width: 80px;"><label>Section</label><select id="l_section"><option value="">เลือก</option><option value="1">1</option><option value="2">2</option></select></div></div>
-        <div id="l_other_user_div" class="form-group hidden"><label>โปรดระบุสถานะ</label><input type="text" id="l_otherUser"></div>
-        <div class="form-group"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="l_phone" required></div>
-        <div class="form-group"><label>Email *</label><input type="email" id="l_email" required></div>
-        <div class="form-group"><label>ภาควิชาผู้ขอใช้ห้อง *</label><select id="l_dept" required><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม</option><option value="ภาควิชาวิศวกรรมวัสดุและโลหการ">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select></div>
-        <div class="form-group"><label>มีความประสงค์ขอใช้ห้องเพื่อ *</label><input type="text" id="l_purpose" required></div>
-        <div class="form-group"><label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label><select id="l_advisor" onchange="toggleAdvisor('l')" required><option value="">-- เลือกอาจารย์ --</option><option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option><option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option><option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option><option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option><option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option><option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option><option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option><option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option><option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option><option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option><option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option><option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option><option value="อื่นๆ">อื่นๆ</option></select></div>
-        <div id="l_other_advisor_div" class="form-group hidden"><label>ระบุชื่ออาจารย์</label><input type="text" id="l_otherAdvisor"></div>
-        <div class="form-group"><label>ขอใช้ห้อง *</label><select id="l_room" required><option value="">-- เลือกห้อง --</option><option value="ห้องแลป 107">ห้องแลป 107</option><option value="ห้องแลป 201">ห้องแลป 201</option><option value="ห้องแลป 202">ห้องแลป 202</option><option value="ห้องแลป 203">ห้องแลป 203</option><option value="ห้องแลป 204">ห้องแลป 204</option><option value="ห้องแลป 205">ห้องแลป 205</option><option value="ห้องแลป 208">ห้องแลป 208</option><option value="ห้องแลป 307">ห้องแลป 307</option></select></div>
-        <div class="form-group"><label>เลือกเวลา *</label><select id="l_timeSlot" required><option value="">-- เลือกระยะเวลา --</option><option value="ในเวลาราชการ">ในเวลาราชการ</option><option value="นอกเวลาราชการ">นอกเวลาราชการ</option></select></div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="form-group"><label>ในวันที่ ตั้งแต่ *</label><input type="datetime-local" id="l_fromDate" required></div><div class="form-group"><label>ถึงวันที่ *</label><input type="datetime-local" id="l_toDate" required></div></div>
-        <div id="l_evidence_div" class="form-group hidden"><label><i class="fa-solid fa-image"></i> แนบรูปหลักฐาน (ถ้ามี)</label><input type="file" id="l_evidenceFile" accept="image/*"></div>
-        <button type="submit" id="btnSubmitLab" class="btn-main" style="background-color: #9b59b6;"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอจองห้อง</button>
-      </form>
-      <div id="labSuccess" class="hidden" style="text-align: center; padding: 20px 0;"><i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745;"></i><h3>ส่งคำขอเรียบร้อย!</h3><div id="showTicketId_LAB" style="font-weight: bold; font-size: 20px; margin-top: 10px;"></div></div>
     </div>
   </div>
 
