@@ -131,7 +131,7 @@
         <div class="form-group"><label>Email *</label><input type="email" id="r_email" required></div>
         <div class="form-group"><label>ภาควิชาผู้ขอใช้ห้อง *</label><select id="r_dept" required><option value="">-- เลือกภาควิชา --</option><option value="ภาควิชาวิศวกรรมเคมี">ภาควิชาวิศวกรรมเคมี</option><option value="ภาควิชาวิศวกรรมโยธา">ภาควิชาวิศวกรรมโยธา</option><option value="ภาควิชาวิศวกรรมไฟฟ้า">ภาควิชาวิศวกรรมไฟฟ้า</option><option value="ภาควิชาวิศวกรรมเครื่องกล">ภาควิชาวิศวกรรมเครื่องกล</option><option value="ภาควิชาวิศวกรรมอุตสาหการ">ภาควิชาวิศวกรรมอุตสาหการ</option><option value="ภาควิชาวิศวกรรมคอมพิวเตอร์">ภาควิชาวิศวกรรมคอมพิวเตอร์</option><option value="ภาควิชาวิศวกรรมอิเล็กทรอนิกส์และโทรคมนาคม">ภาควิชาวิศวกรรมวัสดุและโลหการ</option><option value="ภาควิชาวิศวกรรมสิ่งทอ">ภาควิชาวิศวกรรมสิ่งทอ</option><option value="ภาควิชาวิศวกรรมเกษตร">ภาควิชาวิศวกรรมเกษตร</option></select></div>
         <div class="form-group"><label>มีความประสงค์ขอใช้ห้องเพื่อ *</label><input type="text" id="r_purpose" required></div>
-        <div class="form-group">
+        <div class="form-group" id="r_advisor_container">
           <label>ชื่ออาจารย์ผู้สอนหรือที่ปรึกษา *</label>
           <select id="r_advisor" onchange="toggleRoomAdvisor()" required>
             <option value="">-- เลือกอาจารย์ --</option><option value="รศ.ดร.ไชยยันต์ ไชยยะ">รศ.ดร.ไชยยันต์ ไชยยะ</option><option value="รศ.ดร.ศศิรดี จันทสี">รศ.ดร.ศศิรดี จันทสี</option><option value="รศ.ดร.วีรินทร์ดา เมนส์">รศ.ดร.วีรินทร์ดา เมนส์</option><option value="รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย">รศ.ดร.ธีระวัฒน์ เหมือนศรีชัย</option><option value="รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม">รศ.ดร.ณัฐชา เพ็ชร์ยิ้ม</option><option value="ผศ.ดร.รินลดา สิริแสงสว่าง">ผศ.ดร.รินลดา สิริแสงสว่าง</option><option value="ผศ.ยรรยง สุขคล้าย">ผศ.ยรรยง สุขคล้าย</option><option value="รศ.ศราวุธ จิตต์พินิจ">รศ.ศราวุธ จิตต์พินิจ</option><option value="รศ.ดร.วีราภรณ์ ผิวสอาด">รศ.ดร.วีราภรณ์ ผิวสอาด</option><option value="ผศ.ดร.ชัยภพ ศิระวรกุล">ผศ.ดร.ชัยภพ ศิระวรกุล</option><option value="อาจารย์พุทธิพร เทียมสินสังวร">อาจารย์พุทธิพร เทียมสินสังวร</option><option value="อาจารย์นวพร เพิ่มสมบัติ">อาจารย์นวพร เพิ่มสมบัติ</option><option value="อื่นๆ">อื่นๆ</option>
@@ -181,7 +181,7 @@
         <div id="s_dept_faculty_div" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="hidden">
           <div class="form-group">
             <label>คณะ *</label>
-            <select id="s_faculty"><option value="">-- เลือกคณะ --</option><option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option><option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option><option value="คณะเทคโนโลยีคหกรรมศาสตร์">คณะเทคโนโลยีคหกรรมศาสตร์</option><option value="คณะศิลปกรรมศาสตร์">คณะศิลปกรรมศาสตร์</option><option value="คณะเทคโนโลยีการเกษตร">คณะเทคโนโลยีการเกษตร</option><option value="คณะครุศาสตร์อุตสาหกรรม">คณะครุศาสตร์อุตสาหกรรม</option><option value="คณะสถาปัตยกรรมศาสตร์">คณะสถาปัตยกรรมศาสตร์</option><option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option><option value="คณะเทคโนโลยีสื่อสารมวลชน">คณะเทคโนโลยีสื่อสารมวลชน</option><option value="คณะศิลปศาสตร์">คณะศิลปศาสตร์</option><option value="คณะพยาบาลศาสตร์">คณะพยาบาลศาสตร์</option><option value="คณะการแพทย์บูรณาการ">คณะการแพทย์บูรณาการ</option></select>
+            <select id="s_faculty"><option value="">-- เลือกคณะ --</option><option value="คณะวิศวกรรมศาสตร์">คณะวิศวกรรมศาสตร์</option><option value="คณะบริหารธุรกิจ">คณะบริหารธุรกิจ</option><option value="คณะเทคโนโลยีคหกรรมศาสตร์">คณะเทคโนโลยีคหกรรมศาสตร์</option><option value="คณะศิลปกรรมศาสตร์">คณะศิลปกรรมศาสตร์</option><option value="คณะเทคโนโลยีการเกษตร">คณะเทคโนโลยีการเกษตร</option><option value="คณะครุศาสตร์อุตสาหกรรม">คณะครุศาสตร์อุตสาหกรรม</option><option value="คณะสถาปัตยกรรมศาสตร์">คณะสถาปัตยกรรมศาสตร์</option><option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option><option value="คณะเทคโนโลยีสื่อสารมวลชน">คณะเทคโนโลยีสื่อสารมวลชน</option><option value="คณะศิลปศาสตร์">คณะพยาบาลศาสตร์</option><option value="คณะการแพทย์บูรณาการ">คณะการแพทย์บูรณาการ</option></select>
           </div>
           <div class="form-group">
             <label>ภาควิชา *</label>
@@ -290,6 +290,7 @@
       document.getElementById('s_advisor').required = reqAdvisor;
       toggleScanAdvisor();
     }
+    
     function toggleScanAdvisor() { 
       const advContainerHidden = document.getElementById('s_advisor_container').classList.contains('hidden');
       const val = document.getElementById('s_advisor').value; 
@@ -298,8 +299,26 @@
       document.getElementById('s_evidence_div').classList.toggle('hidden', !isOther); 
     }
     
-    function toggleRoomUserFields() { const val = document.getElementById('r_userType').value; document.getElementById('r_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); document.getElementById('r_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
-    function toggleRoomAdvisor() { const val = document.getElementById('r_advisor').value; document.getElementById('r_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); document.getElementById('r_evidence_div').classList.toggle('hidden', val !== 'อื่นๆ'); }
+    function toggleRoomUserFields() { 
+      const val = document.getElementById('r_userType').value; 
+      document.getElementById('r_student_fields').classList.toggle('hidden', val !== 'นักศึกษา ป.ตรี'); 
+      document.getElementById('r_other_user_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
+      
+      const isAutoApprove = ['เจ้าหน้าที่', 'อาจารย์', 'อื่นๆ'].includes(val);
+      document.getElementById('r_advisor_container').classList.toggle('hidden', isAutoApprove);
+      document.getElementById('r_advisor').required = !isAutoApprove; 
+      
+      if (isAutoApprove) {
+        document.getElementById('r_advisor').value = ''; 
+        toggleRoomAdvisor(); 
+      }
+    }
+    
+    function toggleRoomAdvisor() { 
+      const val = document.getElementById('r_advisor').value; 
+      document.getElementById('r_other_advisor_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
+      document.getElementById('r_evidence_div').classList.toggle('hidden', val !== 'อื่นๆ'); 
+    }
 
     function formatDate(raw) { return raw.replace('T', ' เวลา ') + ' น.'; }
     function getBase64(file) {
@@ -482,7 +501,6 @@
         setTimeout(() => { fetchTicketData(); }, 500);
       }
     });
-
   </script>
 </body>
 </html>
