@@ -48,7 +48,7 @@
         .nav-menu::-webkit-scrollbar { width: 4px; }
         .nav-menu::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         
-        .nav-item { display: flex; align-items: center; padding: 12px 18px; color: var(--sidebar-text); text-decoration: none; font-size: 14px; font-weight: 400; transition: all 0.25s ease; border-radius: 10px; cursor: pointer; }
+        .nav-item { display: flex; align-items: center; padding: 12px 18px; color: var(--sidebar-text); text-decoration: none; font-size: 14px; font-weight: 400; transition: all 0.25s ease; border-radius: 10px; cursor: pointer;}
         .nav-item i { width: 24px; font-size: 16px; margin-right: 12px; text-align: center; transition: transform 0.2s; }
         .nav-item:hover { background-color: var(--sidebar-hover); color: white; }
         .nav-item:hover i { transform: scale(1.1); }
@@ -135,6 +135,14 @@
             .grid-event { font-size: 7.5px; padding: 1px; border-radius: 3px; line-height: 1.1; }
             .grid-event div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
         }
+        
+        /* สไตล์เสริมสำหรับป๊อปอัพ */
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); z-index:999; justify-content:center; align-items:center; backdrop-filter: blur(3px); padding: 20px;}
+        .modal-content { background:#fff; padding:30px; border-radius:16px; width:100%; max-width:500px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); position: relative;}
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-family: 'Prompt', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus { border-color: var(--primary-color); }
+        .modal-content label { font-size: 13px; color: #475569; margin-bottom: 4px; font-weight: 500;}
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px;}
     </style>
 </head>
 <body>
@@ -244,26 +252,48 @@
         </div>
         
         <!-- Modal จองห้องประชุม -->
-        <div id="meetingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
-            <div style="background:#fff; padding:25px; border-radius:12px; width:90%; max-width:500px; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
-                <h3 style="margin-bottom:15px; color:#0f172a;"><i class="fa-solid fa-people-roof"></i> จองห้องประชุม</h3>
-                <form id="meetingForm" onsubmit="submitMeetingForm(event)" style="display:flex; flex-direction:column; gap:12px;">
-                    <input type="text" id="m_name" placeholder="ชื่อ-สกุล ผู้จอง" required style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-family: 'Prompt', sans-serif;">
-                    <select id="m_room" required style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-family: 'Prompt', sans-serif;">
-                        <option value="">เลือกห้องประชุม</option>
-                        <option value="304">ห้องประชุม 304</option>
-                    </select>
-                    <input type="date" id="m_date" required style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-family: 'Prompt', sans-serif;">
-                    <div style="display:flex; gap:10px;">
-                        <input type="time" id="m_start" required style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; flex:1; font-family: 'Prompt', sans-serif;">
-                        <span style="align-self:center;">ถึง</span>
-                        <input type="time" id="m_end" required style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; flex:1; font-family: 'Prompt', sans-serif;">
-                    </div>
-                    <textarea id="m_purpose" placeholder="วัตถุประสงค์การใช้งาน" required style="padding:10px; border:1px solid #cbd5e1; border-radius:6px; height:80px; font-family: 'Prompt', sans-serif;"></textarea>
+        <div id="meetingModal" class="modal-overlay">
+            <div class="modal-content">
+                <h3 style="margin-bottom:20px; color:#0f172a; font-size: 20px;"><i class="fa-solid fa-people-roof" style="color: var(--primary-color);"></i> จองห้องประชุม</h3>
+                <form id="meetingForm" onsubmit="submitMeetingForm(event)">
                     
-                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
-                        <button type="button" onclick="closeMeetingModal()" style="padding:10px 15px; background:#e2e8f0; color:#475569; border:none; border-radius:6px; cursor:pointer; font-family: 'Prompt', sans-serif;">ยกเลิก</button>
-                        <button type="submit" id="m_submitBtn" style="padding:10px 15px; background:#0d9488; color:#fff; border:none; border-radius:6px; cursor:pointer; font-family: 'Prompt', sans-serif;">ยืนยันการจอง</button>
+                    <div class="form-group">
+                        <label>ชื่อ-สกุล ผู้จอง</label>
+                        <input type="text" id="m_name" placeholder="ระบุชื่อ-สกุล" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>เลือกห้องประชุม</label>
+                        <select id="m_room" required>
+                            <option value="">เลือกห้องประชุม...</option>
+                            <option value="304">ห้องประชุม 304</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>วันที่ต้องการใช้ห้อง</label>
+                        <input type="date" id="m_date" required>
+                    </div>
+                    
+                    <div style="display:flex; gap:15px; margin-bottom: 15px;">
+                        <div style="flex:1;">
+                            <label>ตั้งแต่เวลา</label>
+                            <input type="time" id="m_start" required>
+                        </div>
+                        <div style="flex:1;">
+                            <label>ถึงเวลา</label>
+                            <input type="time" id="m_end" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>วัตถุประสงค์การใช้งาน</label>
+                        <textarea id="m_purpose" placeholder="ระบุรายละเอียด เช่น ประชุมโครงการ..." required style="height:80px; resize: none;"></textarea>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:25px;">
+                        <button type="button" onclick="closeMeetingModal()" style="padding:10px 20px; background:#f1f5f9; color:#475569; border:none; border-radius:8px; cursor:pointer; font-family: 'Prompt', sans-serif; font-weight: 500;">ยกเลิก</button>
+                        <button type="submit" id="m_submitBtn" style="padding:10px 20px; background:var(--primary-color); color:#fff; border:none; border-radius:8px; cursor:pointer; font-family: 'Prompt', sans-serif; font-weight: 500; box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.2);">ยืนยันการจอง</button>
                     </div>
                 </form>
             </div>
@@ -271,14 +301,16 @@
     </main>
 
     <script>
+        // Data URLs
         const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
         
+        // API ตารางเรียนและอุปกรณ์เดิม
         const ROOM_API_URL = 'https://script.google.com/macros/s/AKfycbxI-BYg7BRcD_RmSwQ-HRcxmLhCwyiCsIIJSuOJLIUm_uL70s21KhfqnEWyU223eyHMuQ/exec';
         const EQUIP_API_URL = 'https://script.google.com/macros/s/AKfycbwvUSyfP5iuJg5LvFmNiMOLnHCz2VVahjRXmTLGY7V_KrIf8p8V7tBY24KOBwOeJUwZAA/exec'; 
         
-        // ⚠️ ต้องวาง URL ของ Web App ห้องประชุมที่ได้ใหม่ตรงนี้
+        // ⚠️ ต้องวาง URL ของ Web App ห้องประชุมที่เพิ่งสร้างใหม่ตรงนี้ ⚠️
         const MEETING_API_URL = 'https://script.google.com/macros/s/AKfycbxfN9Tq6QiewlPs0gDLJnvjS7-w9dbS9mSz1ZuN-hw9hPGaoGVMW_PGUDXmpIgU7EtSqw/exec'; 
 
         function getNoCacheUrl(url) {
@@ -301,12 +333,12 @@
         function submitMeetingForm(e) {
             e.preventDefault();
             if(!MEETING_API_URL || MEETING_API_URL === 'ใส่_URL_WEB_APP_ห้องประชุมที่นี่'){
-                alert("กรุณาใส่ลิงก์ API ระบบจองห้องประชุมในโค้ดก่อนครับ");
+                alert("กรุณาใส่ลิงก์ Web App API ของระบบจองห้องประชุมในโค้ดก่อนครับ");
                 return;
             }
 
             const btn = document.getElementById('m_submitBtn');
-            btn.innerText = "กำลังส่งข้อมูล...";
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่งข้อมูล...';
             btn.disabled = true;
 
             const data = {
@@ -324,7 +356,7 @@
             })
             .then(res => res.json())
             .then(resData => {
-                alert("ส่งคำขอจองห้องประชุมสำเร็จ! กรุณารอแอดมินอนุมัติ");
+                alert("ส่งคำขอจองห้องประชุมสำเร็จ! ระบบได้ส่งแจ้งเตือนให้แอดมินแล้ว กรุณารอการอนุมัติ");
                 closeMeetingModal();
                 btn.innerText = "ยืนยันการจอง";
                 btn.disabled = false;
@@ -464,10 +496,11 @@
                 fetch(EQUIP_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
                 (MEETING_API_URL && MEETING_API_URL !== 'ใส่_URL_WEB_APP_ห้องประชุมที่นี่') 
                     ? fetch(MEETING_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })) 
-                    : Promise.resolve({ success: false }) // ถ้ายังไม่ได้ใส่ API ให้ข้ามไป
+                    : Promise.resolve({ success: false }) 
             ]).then(([csvText, roomApiData, equipApiData, meetingApiData]) => {
                 allClassEvents = [];
                 
+                // ตารางสอนแบบ CSV
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                     results.data.forEach(row => {
                         const title = row.Title || row.title || "";
@@ -496,11 +529,11 @@
                         }
                     });
 
+                    // API จองห้องเรียน
                     if (roomApiData && roomApiData.success && roomApiData.events) {
                         roomApiData.events.forEach(ev => {
                             let startObj = new Date(ev.from);
                             let endObj = new Date(ev.to);
-                            
                             if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
                             if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
 
@@ -520,13 +553,12 @@
                         });
                     }
 
+                    // API เบิกอุปกรณ์/แลป
                     if (equipApiData && equipApiData.success && equipApiData.events) {
                         equipApiData.events.forEach(ev => {
                             if (ev.type !== "lab") return; 
-                            
                             let startObj = new Date(ev.from);
                             let endObj = new Date(ev.to);
-                            
                             if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
                             if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
 
@@ -546,6 +578,7 @@
                         });
                     }
                     
+                    // API ระบบจองห้องประชุม (อันใหม่ที่เพิ่งทำ)
                     if (meetingApiData && meetingApiData.success && meetingApiData.events) {
                         meetingApiData.events.forEach(ev => {
                             let startObj = new Date(ev.from);
@@ -560,7 +593,7 @@
                                     start: startObj,
                                     end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
                                     room: shortRoom,
-                                    color: "#059669", // สีเขียวสำหรับระบบจองห้องประชุมใหม่
+                                    color: "#10b981", // สีเขียวมินต์แยกให้ชัดสำหรับห้องประชุม
                                     isBooking: true
                                 });
                             }
