@@ -48,7 +48,7 @@
         .nav-menu::-webkit-scrollbar { width: 4px; }
         .nav-menu::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         
-        .nav-item { display: flex; align-items: center; padding: 12px 18px; color: var(--sidebar-text); text-decoration: none; font-size: 14px; font-weight: 400; transition: all 0.25s ease; border-radius: 10px; cursor: pointer;}
+        .nav-item { display: flex; align-items: center; padding: 12px 18px; color: var(--sidebar-text); text-decoration: none; font-size: 14px; font-weight: 400; transition: all 0.25s ease; border-radius: 10px; cursor: pointer; }
         .nav-item i { width: 24px; font-size: 16px; margin-right: 12px; text-align: center; transition: transform 0.2s; }
         .nav-item:hover { background-color: var(--sidebar-hover); color: white; }
         .nav-item:hover i { transform: scale(1.1); }
@@ -136,7 +136,7 @@
             .grid-event div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
         }
         
-        /* สไตล์เสริมสำหรับป๊อปอัพ */
+        /* สไตล์เสริมสำหรับป๊อปอัพจองห้องประชุม */
         .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); z-index:999; justify-content:center; align-items:center; backdrop-filter: blur(3px); padding: 20px;}
         .modal-content { background:#fff; padding:30px; border-radius:16px; width:100%; max-width:500px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); position: relative;}
         .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-family: 'Prompt', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
@@ -199,7 +199,7 @@
                         <select id="room-filter" class="room-filter" onchange="applyClassFilters()">
                             <option value="all">ดูทุกห้องรวมกัน</option>
                             <optgroup label="ห้องเรียน">
-                                <option value="301" selected>ห้อง 301</option>
+                                <option value="301">ห้อง 301</option>
                                 <option value="303">ห้อง 303</option>
                                 <option value="304">ห้อง 304</option>
                                 <option value="806">ห้อง 806</option>
@@ -215,7 +215,7 @@
                                 <option value="204">ห้องปฏิบัติการ 204</option>
                                 <option value="205">ห้องปฏิบัติการ 205</option>
                                 <option value="208">ห้องปฏิบัติการ 208</option>
-                                <option value="304">ห้องประชุม 304</option>
+                                <option value="304" selected>ห้องประชุม 304</option>
                                 <option value="307">ห้องปฏิบัติการ 307</option>
                                 <option value="807">ห้องปฏิบัติการ 807</option>
                                 <option value="808">ห้องปฏิบัติการ 808</option>
@@ -306,17 +306,35 @@
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
         
-        // API ตารางเรียนและอุปกรณ์เดิม
         const ROOM_API_URL = 'https://script.google.com/macros/s/AKfycbxI-BYg7BRcD_RmSwQ-HRcxmLhCwyiCsIIJSuOJLIUm_uL70s21KhfqnEWyU223eyHMuQ/exec';
         const EQUIP_API_URL = 'https://script.google.com/macros/s/AKfycbwvUSyfP5iuJg5LvFmNiMOLnHCz2VVahjRXmTLGY7V_KrIf8p8V7tBY24KOBwOeJUwZAA/exec'; 
         
-        // ⚠️ ต้องวาง URL ของ Web App ห้องประชุมที่เพิ่งสร้างใหม่ตรงนี้ ⚠️
+        // ⚠️ นำ URL ของ Web App ห้องประชุมที่ได้ใหม่มาใส่ตรงนี้ ⚠️
         const MEETING_API_URL = 'https://script.google.com/macros/s/AKfycbxfN9Tq6QiewlPs0gDLJnvjS7-w9dbS9mSz1ZuN-hw9hPGaoGVMW_PGUDXmpIgU7EtSqw/exec'; 
 
         function getNoCacheUrl(url) {
             if (!url) return "";
             const separator = url.includes('?') ? '&' : '?';
             return `${url}${separator}t=${new Date().getTime()}`;
+        }
+
+        // ================= ฟังก์ชันแปลงวันที่ดักจับรูปแบบที่ผิดเพี้ยน =================
+        function parseApiDate(dateStr) {
+            if (!dateStr) return null;
+            let d = new Date(dateStr);
+            if (!isNaN(d.getTime())) return d;
+            
+            // กรณี Apps Script ส่งวันที่มีข้อความ Timezone ติดมาด้วย (เช่น "Thu Nov 12 ... GMT+0700 T 09:00")
+            if (dateStr.includes('T')) {
+                let parts = dateStr.split('T');
+                let baseDate = new Date(parts[0]);
+                if (!isNaN(baseDate.getTime())) {
+                    let timeParts = (parts[1] || '00:00').split(':');
+                    baseDate.setHours(parseInt(timeParts[0]||0), parseInt(timeParts[1]||0), 0);
+                    return baseDate;
+                }
+            }
+            return parseThaiDateStr(dateStr);
         }
 
         // ================= Meeting Modal Logic =================
@@ -500,7 +518,6 @@
             ]).then(([csvText, roomApiData, equipApiData, meetingApiData]) => {
                 allClassEvents = [];
                 
-                // ตารางสอนแบบ CSV
                 Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
                     results.data.forEach(row => {
                         const title = row.Title || row.title || "";
@@ -532,10 +549,8 @@
                     // API จองห้องเรียน
                     if (roomApiData && roomApiData.success && roomApiData.events) {
                         roomApiData.events.forEach(ev => {
-                            let startObj = new Date(ev.from);
-                            let endObj = new Date(ev.to);
-                            if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
-                            if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
+                            let startObj = parseApiDate(ev.from);
+                            let endObj = parseApiDate(ev.to);
 
                             if (startObj && !isNaN(startObj.getTime())) {
                                 let shortRoom = String(ev.room).replace("ห้องเรียน ", "").replace("ห้องปฏิบัติการ ", "").trim();
@@ -557,10 +572,8 @@
                     if (equipApiData && equipApiData.success && equipApiData.events) {
                         equipApiData.events.forEach(ev => {
                             if (ev.type !== "lab") return; 
-                            let startObj = new Date(ev.from);
-                            let endObj = new Date(ev.to);
-                            if (isNaN(startObj.getTime()) && typeof ev.from === 'string') startObj = parseThaiDateStr(ev.from);
-                            if (isNaN(endObj.getTime()) && typeof ev.to === 'string') endObj = parseThaiDateStr(ev.to);
+                            let startObj = parseApiDate(ev.from);
+                            let endObj = parseApiDate(ev.to);
 
                             if (startObj && !isNaN(startObj.getTime())) {
                                 let shortRoom = String(ev.room).replace("ห้องแลป ", "").replace("ห้องประชุม ", "").trim();
@@ -578,11 +591,12 @@
                         });
                     }
                     
-                    // API ระบบจองห้องประชุม (อันใหม่ที่เพิ่งทำ)
+                    // API ระบบจองห้องประชุม 
                     if (meetingApiData && meetingApiData.success && meetingApiData.events) {
                         meetingApiData.events.forEach(ev => {
-                            let startObj = new Date(ev.from);
-                            let endObj = new Date(ev.to);
+                            // ใช้ parseApiDate แก้ปัญหาจาก Google Sheets ที่ส่งวันผิดรูปแบบ
+                            let startObj = parseApiDate(ev.from);
+                            let endObj = parseApiDate(ev.to);
                             
                             if (startObj && !isNaN(startObj.getTime())) {
                                 let shortRoom = String(ev.room).replace("ห้องประชุม ", "").trim();
@@ -592,8 +606,8 @@
                                     title: `${purposeTitle} (${ev.name})`, 
                                     start: startObj,
                                     end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
-                                    room: shortRoom,
-                                    color: "#10b981", // สีเขียวมินต์แยกให้ชัดสำหรับห้องประชุม
+                                    room: shortRoom, // ให้ตรงกับ option value ใน Dropdown
+                                    color: "#10b981", 
                                     isBooking: true
                                 });
                             }
