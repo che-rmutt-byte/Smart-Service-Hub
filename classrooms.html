@@ -112,7 +112,7 @@
   <!-- ================= 1. Popup ขอใช้ห้องเรียน ================= -->
   <div class="modal-overlay" id="roomModal">
     <div class="modal-box">
-      <div class="modal-header"><h3>แบบฟอร์มการขอใช้ห้องเรียน</h3><button class="close-modal" onclick="closeModal('roomModal')"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="modal-header"><h3>แบบฟอร์มการขอใช้ห้องเรียนและห้องปฏิบัติการ</h3><button class="close-modal" onclick="closeModal('roomModal')"><i class="fa-solid fa-xmark"></i></button></div>
       <form id="roomForm" onsubmit="submitRoomForm(event)">
         <div class="form-group"><label>ชื่อ-สกุล *</label><input type="text" id="r_name" required></div>
         <div class="form-group">
@@ -143,7 +143,7 @@
           <select id="r_room" required>
             <option value="">-- เลือกห้อง --</option>
             <option value="ห้องเรียน 301">ห้องเรียน 301</option><option value="ห้องเรียน 303">ห้องเรียน 303</option><option value="ห้องเรียน 304">ห้องประชุม 304</option><option value="ห้องเรียน 806">ห้องเรียน 806</option><option value="ห้องเรียน 809">ห้องเรียน 809</option>
-            <option value="ห้องปฏิบัติการ 103">ห้องปฏิบัติการ 103</option><option value="ห้องปฏิบัติการ 108">ห้องปฏิบัติการ 108</option><option value="ห้องปฏิบัติการ 807">ห้องปฏิบัติการ 807</option><option value="ห้องปฏิบัติการ 808">ห้องปฏิบัติการ 808</option>
+            <option value="ห้องปฏิบัติการ 103">ห้องปฏิบัติการ 103</option><option value="ห้องปฏิบัติการ 107">ห้องปฏิบัติการ 107</option><option value="ห้องปฏิบัติการ 108">ห้องปฏิบัติการ 108</option><option value="ห้องปฏิบัติการ 807">ห้องปฏิบัติการ 807</option><option value="ห้องปฏิบัติการ 808">ห้องปฏิบัติการ 808</option>
           </select>
         </div>
         <div class="form-group"><label>เลือกเวลา *</label><select id="r_timeSlot" required><option value="">-- เลือกระยะเวลา --</option><option value="ในเวลาราชการ">ในเวลาราชการ</option><option value="นอกเวลาราชการ">นอกเวลาราชการ</option></select></div>
