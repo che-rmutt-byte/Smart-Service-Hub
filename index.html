@@ -170,7 +170,6 @@
             <a href="Maintenance.html" class="nav-item"><i class="fa-solid fa-wrench"></i> แจ้งซ่อมอุปกรณ์</a>
             <a href="staffs.html" class="nav-item"><i class="fa-solid fa-headset"></i> ติดต่อเจ้าหน้าที่</a>
             <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="nav-item"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
-            <!-- เปลี่ยนจากข่าวสาร เป็นจองห้องประชุม -->
             <a onclick="openMeetingModal()" class="nav-item"><i class="fa-solid fa-people-roof"></i> จองห้องประชุม</a>
         </nav>
     </aside>
@@ -191,7 +190,6 @@
                 <a href="Maintenance.html" class="shortcut-btn"><i class="fa-solid fa-wrench"></i> แจ้งซ่อม</a>
                 <a href="staffs.html" class="shortcut-btn"><i class="fa-solid fa-headset"></i> ติดต่อจนท.</a>
                 <a href="https://engineer.rmutt.ac.th/chemistry-2/" target="_blank" class="shortcut-btn"><i class="fa-solid fa-building-user"></i> ภาควิชา</a>
-                <!-- เปลี่ยนจากข่าวสาร เป็นจองห้องประชุม -->
                 <a onclick="openMeetingModal()" class="shortcut-btn"><i class="fa-solid fa-people-roof"></i> จองห้องประชุม</a>
             </div>
 
@@ -305,9 +303,7 @@
         
         const ROOM_API_URL = 'https://script.google.com/macros/s/AKfycbxI-BYg7BRcD_RmSwQ-HRcxmLhCwyiCsIIJSuOJLIUm_uL70s21KhfqnEWyU223eyHMuQ/exec';
         const EQUIP_API_URL = 'https://script.google.com/macros/s/AKfycbwvUSyfP5iuJg5LvFmNiMOLnHCz2VVahjRXmTLGY7V_KrIf8p8V7tBY24KOBwOeJUwZAA/exec'; 
-
-        // ⚠️ ใส่ URL Web App อันใหม่ที่สร้างจากโค้ด Google Apps Script (ส่วนรับฟอร์มและปฏิทินห้องประชุม) ลงไปที่นี่
-        const MEETING_API_URL = 'https://script.google.com/macros/s/AKfycbxCUKOeKOqTq2dUN7peHLvJdanUFCm38AijDgY_bvZ_gyGn1Yiy2Yf6UzhcXzyg7Us-vw/exec'; 
+        const MEETING_API_URL = 'https://script.google.com/macros/s/AKfycbxCUKOeKOqTq2dUN7peHLvJdanUFCm38AijDgY_bvZ_gyGn1Yiy2Yf6UzhcXzyg7Us-vw/exec'; // ⚠️ ใส่ URL Web App ของคุณที่นี่
 
         function getNoCacheUrl(url) {
             if (!url) return "";
@@ -457,13 +453,26 @@
         function convertToValidDateString(dateStr, timeStr) {
             if(!dateStr || !timeStr) return null;
             let formattedDate = dateStr.trim();
-            if (formattedDate.includes('/')) {
-                let parts = formattedDate.split('/');
-                if(parts.length === 3) formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            }
             let formattedTime = timeStr.trim();
+            
             if(formattedTime.length === 4) formattedTime = '0' + formattedTime;
-            return `${formattedDate}T${formattedTime}:00`;
+            if(formattedTime.length === 5) formattedTime = formattedTime + ':00';
+            
+            if (formattedDate.includes('-')) {
+                let parts = formattedDate.split('-');
+                if (parts.length === 3) {
+                    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}T${formattedTime}`;
+                }
+            } else if (formattedDate.includes('/')) {
+                let parts = formattedDate.split('/');
+                if(parts.length === 3) {
+                    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}T${formattedTime}`;
+                }
+            }
+            if (formattedDate.includes('T')) {
+                return formattedDate.split('T')[0] + 'T' + formattedTime;
+            }
+            return `${formattedDate}T${formattedTime}`;
         }
 
         function parseThaiDateStr(str) {
@@ -488,7 +497,6 @@
                 fetch(getNoCacheUrl(CLASS_CSV_URL)).then(res => res.text()),
                 fetch(ROOM_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
                 fetch(EQUIP_API_URL + "?action=calendar").then(res => res.json()).catch(() => ({ success: false })),
-                // เพิ่มการโหลดข้อมูลห้องประชุม (จาก Web App ตัวใหม่)
                 fetch(MEETING_API_URL + "?action=meeting_calendar").then(res => res.json()).catch(() => ({ success: false }))
             ]).then(([csvText, roomApiData, equipApiData, meetingApiData]) => {
                 allClassEvents = [];
@@ -549,7 +557,6 @@
                         });
                     }
 
-                    // 👉 การจัดการข้อมูลจากห้องประชุมใหม่ที่แอดมิน 'อนุมัติ' แล้ว
                     if (meetingApiData && meetingApiData.success && meetingApiData.events) {
                         meetingApiData.events.forEach(ev => {
                             let startIso = convertToValidDateString(ev.date, ev.starttime);
@@ -559,11 +566,11 @@
                             
                             if (startObj && !isNaN(startObj.getTime())) {
                                 allClassEvents.push({
-                                    title: `การประชุม: ${ev.title}`, 
+                                    title: `ประชุม: ${ev.title}`, 
                                     start: startObj,
                                     end: (endObj && !isNaN(endObj.getTime())) ? endObj : new Date(startObj.getTime() + 3600000),
                                     room: ev.room || "ห้องประชุม",
-                                    color: ev.color || "#8b5cf6", // สีม่วง
+                                    color: ev.color || "#8b5cf6",
                                     isBooking: true
                                 });
                             }
