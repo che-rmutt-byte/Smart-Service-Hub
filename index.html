@@ -81,7 +81,7 @@
         .announcement-item:hover { background-color: #f8fafc; border-color: #e2e8f0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .anno-date { font-size: 11px; color: #64748b; margin-bottom: 6px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
         .anno-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
-        .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; }
+        .anno-desc { font-size: 13px; color: #475569; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
         
         /* Calendar & Schedule Base Styles */
         .card-body { padding: 25px; }
@@ -255,7 +255,8 @@
 
     <script>
         // Data URLs
-        const ANNOUNCEMENT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=0&single=true&output=csv'; 
+        // ⚠️ นำลิงก์ Web App URL จาก Google Apps Script ของชีตประกาศมาวางตรงนี้
+        const ANNOUNCEMENT_API_URL = 'https://script.google.com/macros/s/AKfycbylYhuKVMfLoIMFDFUXlLwq5qj8lUaM-5cZr6Xy-ZIp6PsoGO5FDVI4DpJf5gvJwROD/exec'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
         
@@ -270,23 +271,25 @@
         }
 
         function loadAnnouncements() {
-            fetch(getNoCacheUrl(ANNOUNCEMENT_CSV_URL)).then(res => res.text()).then(csvText => {
-                Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) {
+            fetch(getNoCacheUrl(ANNOUNCEMENT_API_URL))
+                .then(res => res.json())
+                .then(result => {
                     const listEl = document.getElementById('announcement-list');
                     listEl.innerHTML = ''; 
-                    results.data.forEach(item => {
-                        const title = item.Title || item.title;
-                        if(title) {
-                            listEl.innerHTML += `
-                                <div class="announcement-item">
-                                    <div class="anno-date"><i class="fa-regular fa-clock"></i> ${item.Date || ''}</div>
-                                    <div class="anno-title">${title}</div>
-                                    <div class="anno-desc">${item.Description || ''}</div>
-                                </div>`;
-                        }
-                    });
-                }});
-            });
+                    if (result.success && result.data) {
+                        result.data.forEach(item => {
+                            if (item.Title) {
+                                listEl.innerHTML += `
+                                    <div class="announcement-item">
+                                        <div class="anno-date"><i class="fa-regular fa-clock"></i> ${item.Date || ''}</div>
+                                        <div class="anno-title">${item.Title}</div>
+                                        <div class="anno-desc">${item.DescriptionHtml || ''}</div>
+                                    </div>`;
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error("Error loading announcements:", err));
         }
 
         let allCalendarEvents = [];
