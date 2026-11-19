@@ -75,8 +75,8 @@
         .card-header h3 { font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
         
         /* Announcements Style */
-        .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
-        .announcement-item { padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; overflow: hidden; }
+        .announcement-list { display: flex; flex-direction: column; gap: 12px; max-height: 450px; overflow-y: auto; padding-right: 4px; }
+        .announcement-item { flex-shrink: 0; padding: 16px 18px; border: 1px solid #f1f5f9; background-color: #fafafa; border-radius: 12px; transition: all 0.2s ease; position: relative; }
         .announcement-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--primary-color); border-radius: 4px 0 0 4px; }
         .announcement-item:hover { background-color: #f8fafc; border-color: #e2e8f0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .anno-date { font-size: 11px; color: #64748b; margin-bottom: 6px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
@@ -256,7 +256,7 @@
     <script>
         // Data URLs
         // ⚠️ นำลิงก์ Web App URL จาก Google Apps Script ของชีตประกาศมาวางตรงนี้
-        const ANNOUNCEMENT_API_URL = 'https://script.google.com/macros/s/AKfycbylYhuKVMfLoIMFDFUXlLwq5qj8lUaM-5cZr6Xy-ZIp6PsoGO5FDVI4DpJf5gvJwROD/exec'; 
+        const ANNOUNCEMENT_API_URL = 'วาง_URL_WEB_APP_ของชีตประกาศที่นี่'; 
         const EVENT_CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=1360029296&single=true&output=csv';
         const CLASS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSB3yLbXUtTJwwDcqXEk1053MtVJB5rQ0Fd0Ft1JHZ1yGlUqY7WGf9_E5yirGuio6JoLVQAtcNkzb6l/pub?gid=566857702&single=true&output=csv'; 
         
